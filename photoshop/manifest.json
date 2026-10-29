@@ -1,0 +1,28 @@
+{
+  "manifestVersion": 5,
+  "id": "nkd.comfy.bridge",
+  "name": "NKD Comfy Bridge",
+  "version": "0.3.0",
+  "main": "index.html",
+  "host": { "app": "PS", "minVersion": "24.4.0" },
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "main",
+      "label": { "default": "NKD Comfy Bridge" },
+      "minimumSize": { "width": 230, "height": 280 },
+      "maximumSize": { "width": 2000, "height": 6000 },
+      "preferredDockedSize": { "width": 300, "height": 640 },
+      "preferredFloatingSize": { "width": 320, "height": 680 },
+      "icons": [
+        { "width": 23, "height": 23, "path": "icons/panel.png", "scale": [1, 2], "theme": ["all"], "species": ["chrome"] }
+      ]
+    }
+  ],
+  "icons": [
+    { "width": 48, "height": 48, "path": "icons/plugin.png", "scale": [1, 2], "theme": ["all"], "species": ["pluginList"] }
+  ],
+  "requiredPermissions": {
+    "network": { "domains": "all" }
+  }
+}

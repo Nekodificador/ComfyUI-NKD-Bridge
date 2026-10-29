@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="bar">
+    <div id="status" class="status off" title="">
+      <span id="statusIcon" class="dot"></span><span id="statusText"></span>
+    </div>
+    <sp-action-button id="btnSettings" quiet title="Settings">⚙</sp-action-button>
+  </header>
+
+  <section id="settings" class="settings" style="display:none">
+    <sp-detail id="lblServer"></sp-detail>
+    <sp-textfield id="inServer" placeholder="http://127.0.0.1:8188"></sp-textfield>
+    <sp-detail id="lblRes"></sp-detail>
+    <sp-picker id="inRes" size="s">
+      <sp-menu slot="options">
+        <sp-menu-item value="512">512 px</sp-menu-item>
+        <sp-menu-item value="768">768 px</sp-menu-item>
+        <sp-menu-item value="1024">1024 px</sp-menu-item>
+        <sp-menu-item value="1536">1536 px</sp-menu-item>
+        <sp-menu-item value="2048">2048 px</sp-menu-item>
+        <sp-menu-item value="0" id="resFull"></sp-menu-item>
+      </sp-menu>
+    </sp-picker>
+    <sp-body size="XS" id="hintRes" class="hint"></sp-body>
+    <sp-button id="btnConnect" variant="secondary" size="s"></sp-button>
+  </section>
+
+  <nav class="tabs">
+    <div id="tabGen" class="tab on"></div>
+    <div id="tabIo" class="tab"></div>
+  </nav>
+
+  <div id="pageGen">
+    <div id="previewBox" class="preview">
+      <img id="preview" alt="">
+      <div id="previewEmpty" class="previewEmpty"></div>
+      <div id="progress" class="progress"><div id="progressFill"></div></div>
+    </div>
+
+    <div class="actions">
+      <sp-button id="btnRun" variant="cta"></sp-button>
+      <sp-action-button id="btnCancel" title=""></sp-action-button>
+      <sp-checkbox id="chkLive"></sp-checkbox>
+    </div>
+    <div class="actions secondary">
+      <sp-action-button id="btnAddLayer" size="s"></sp-action-button>
+    </div>
+
+    <div id="empty" class="empty"></div>
+    <section id="secParams" style="display:none"><sp-heading size="XXS" id="hParams"></sp-heading><div id="params"></div></section>
+  </div>
+
+  <div id="pageIo" style="display:none">
+    <div id="emptyIo" class="empty"></div>
+    <section id="secSources" style="display:none"><sp-heading size="XXS" id="hSources"></sp-heading><div id="sources"></div></section>
+    <section id="secOutputs" style="display:none"><sp-heading size="XXS" id="hOutputs"></sp-heading><div id="outputs"></div></section>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>

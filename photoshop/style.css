@@ -1,0 +1,86 @@
+/* Theme comes from Photoshop: --uxp-host-* follow the user's interface brightness.
+   States are told apart by SHAPE + text, never by hue alone (colour-blind safe). */
+body {
+  margin: 0; padding: 8px 10px 16px;
+  color: var(--uxp-host-text-color);
+  background: var(--uxp-host-background-color);
+  font-size: var(--uxp-host-font-size, 12px);
+}
+[hidden] { display: none !important; }
+
+.bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.status { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.status span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ● ready   ◐ waiting for the ComfyUI tab   ○ disconnected */
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; box-sizing: border-box; }
+.status.ok   .dot { background: var(--uxp-host-text-color); }
+.status.warn .dot { border: 2px solid var(--uxp-host-text-color); background: transparent; border-left-color: transparent; }
+.status.off  .dot { border: 1.5px solid var(--uxp-host-text-color-secondary, #888); background: transparent; }
+.status.off { color: var(--uxp-host-text-color-secondary, #888); }
+
+.settings { display: flex; flex-direction: column; gap: 4px; padding: 8px; margin-bottom: 8px;
+  border: 1px solid var(--uxp-host-border-color); border-radius: 4px; }
+.settings sp-textfield, .settings sp-picker { width: 100%; }
+.settings sp-button { margin-top: 6px; align-self: flex-start; }
+.hint { color: var(--uxp-host-text-color-secondary, #888); }
+
+.preview { position: relative; width: 100%; height: 220px; border-radius: 4px; overflow: hidden;
+  border: 1px solid var(--uxp-host-border-color); background: rgba(127,127,127,0.12);
+  display: flex; align-items: center; justify-content: center; }
+.preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.previewEmpty { position: absolute; padding: 0 16px; text-align: center;
+  color: var(--uxp-host-text-color-secondary, #888); }
+.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: transparent; }
+.progress > div { height: 100%; width: 0; background: var(--uxp-host-text-color); }
+
+.actions { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.actions #btnRun { flex: 1; }
+.actions.secondary { margin-top: 4px; }
+
+.empty { margin-top: 14px; color: var(--uxp-host-text-color-secondary, #888); line-height: 1.4; }
+
+section { margin-top: 14px; }
+sp-heading { margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--uxp-host-text-color-secondary, #888); }
+
+.row { display: flex; align-items: center; gap: 6px; padding: 5px 0;
+  border-top: 1px solid var(--uxp-host-border-color); }
+.row:first-child { border-top: none; }
+.row .grow { flex: 1; min-width: 0; }
+.row .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub { color: var(--uxp-host-text-color-secondary, #888); font-size: 11px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub.bad { color: var(--uxp-host-text-color); font-weight: bold; }
+/* sync glyph: ✓ synced · ↑ sending · ! problem */
+.glyph { width: 14px; text-align: center; flex: none; }
+
+.param { padding: 4px 0; }
+.param sp-slider, .param sp-textarea { width: 100%; }
+.param sp-textarea { min-height: 60px; }
+.paramHead { display: flex; justify-content: space-between; }
+.paramHead .val { font-variant-numeric: tabular-nums; }
+
+/* Tabs: the active one is bold with a bar under it (shape, not colour). */
+.tabs { display: flex; gap: 14px; margin: 2px 0 10px; border-bottom: 1px solid var(--uxp-host-border-color); }
+.tab { padding: 4px 0 6px; cursor: pointer; color: var(--uxp-host-text-color-secondary, #888);
+  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tab.on { color: var(--uxp-host-text-color); font-weight: bold; border-bottom-color: var(--uxp-host-text-color); }
+
+.outRow { display: flex; flex-direction: column; gap: 4px; padding: 6px 0;
+  border-top: 1px solid var(--uxp-host-border-color); }
+.outRow:first-child { border-top: none; }
+.outHead { display: flex; align-items: center; gap: 6px; }
+.outRow sp-textfield { width: 100%; }
+
+/* Output target: Layer · Group · Panel. Active = bold, underlined and framed. */
+.segs { display: flex; gap: 4px; }
+.seg { flex: 1; text-align: center; padding: 3px 0; cursor: pointer; border-radius: 3px;
+  border: 1px solid transparent; color: var(--uxp-host-text-color-secondary, #888); }
+.seg.on { border-color: var(--uxp-host-text-color); color: var(--uxp-host-text-color);
+  font-weight: bold; text-decoration: underline; }
+
+/* Variable chips under the name field */
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { padding: 1px 6px; border-radius: 9px; cursor: pointer; font-size: 11px;
+  border: 1px solid var(--uxp-host-border-color); color: var(--uxp-host-text-color-secondary, #888); }
+.chip:hover { color: var(--uxp-host-text-color); border-color: var(--uxp-host-text-color); }

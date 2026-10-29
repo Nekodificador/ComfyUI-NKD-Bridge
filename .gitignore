@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+plan.md
+checks.md
+progress.md
+CLAUDE.md
+# local task board
+kanvas.json
+.agents/
+.claude/
+AGENTS.md
