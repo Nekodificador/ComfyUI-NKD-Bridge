@@ -1,8 +1,8 @@
-"""Check: selection → Bridge Crop → Bridge Output(region) lands the result exactly on the selection,
-in document pixels, even when sources were sent downscaled.
+"""Check: inpainting a selection writes a layer that is opaque on the selection and transparent
+everywhere else, at document size, even when sources were sent downscaled.
 
-Needs the browser tab on a workflow: Bridge Canvas → Bridge Crop(image) ← Bridge Selection(region),
-Crop → Bridge Output(images), Selection.region → Output.region.
+Needs the browser tab on the inpaint example: Bridge Input (Whole document: image + selection)
+→ 😺NKD Inpaint Crop → sampler → 😺NKD Inpaint Stitch → Bridge Output(images, mask = selection).
 """
 import asyncio
 import sys
@@ -43,12 +43,15 @@ async def main():
                 break
             if msg["type"] == "error" or msg.get("state") == "error":
                 sys.exit(f"FAIL: {msg}")
-        got = (msg["x"], msg["y"], msg["w"], msg["h"])
-        want = (SEL["x"] / S, SEL["y"] / S, SEL["w"] / S, SEL["h"] / S)
-        print("result box", got, "expected", want)
-        if got != tuple(int(v) for v in want):
-            sys.exit("FAIL: result not placed on the selection")
-        print("OK  region placement")
+        async with http.get(f"{URL}/nkd_bridge/result/{msg['id']}") as r:
+            buf = await r.read()
+        im = np.frombuffer(buf, np.uint8)[-msg["w"]*msg["h"]*4:].reshape(msg["h"], msg["w"], 4)
+        a = im[..., 3]; x, y, w, h = (int(v / S) for v in (SEL["x"], SEL["y"], SEL["w"], SEL["h"]))
+        inside = a[y+4:y+h-4, x+4:x+w-4]; out = a.copy(); out[y-4:y+h+4, x-4:x+w+4] = 0
+        print("size", msg["w"], msg["h"], "| alpha inside min", inside.min(), "| alpha outside max", out.max())
+        if inside.min() <= 250 or out.max() != 0:
+            sys.exit("FAIL: layer not transparent outside the selection")
+        print("OK  selection inpaint: opaque inside, transparent outside")
 
 
 asyncio.run(main())

@@ -58,13 +58,13 @@ Con ComfyUI en marcha y su pestaña abierta en el navegador, mira la parte de ar
 3. En Photoshop, crea un documento (1024 × 1024 vale) y pinta unas manchas de color.
 4. En el panel, pulsa **Generar**. Verás el progreso en tu pestaña de ComfyUI, y el resultado aparece en el panel y como una capa nueva llamada `NKD Live 1`.
 5. Marca **Live** y sigue pintando: se regenera cada vez que paras.
-6. Para hacer inpainting, abre `NKD Bridge - Inpaint selection SD1.5 LCM.json`, haz una selección en Photoshop y pulsa **Generar**: solo se rehace la zona seleccionada, y el resultado vuelve a su sitio como la capa `NKD Inpaint 1`.
+6. Para hacer inpainting, instala también [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools) (desde el ComfyUI Manager), abre `NKD Bridge - Inpaint selection SD1.5 LCM.json`, haz una selección en Photoshop y pulsa **Generar**: solo se rehace la zona seleccionada, y el resultado vuelve a su sitio como la capa `NKD Inpaint 1`.
 
 ## Vincular una capa a un nodo
 
-Usa un nodo **😺NKD Bridge Layer** cuando una parte del workflow tenga que leer siempre la misma capa o grupo.
+Un nodo **😺NKD Bridge Input** lee el documento entero por defecto. Cámbialo cuando una parte del workflow tenga que leer siempre la misma capa o grupo.
 
-- En ComfyUI, elige la capa en la lista **Photoshop layer** del nodo. O bien,
+- En ComfyUI, elige la capa en la lista **Photoshop source** del nodo. O bien,
 - en Photoshop, selecciona la capa, abre la pestaña **Entradas y salidas** del panel y pulsa **Usar activa** junto a esa entrada.
 
 El vínculo se guarda con el workflow. Renombrar la capa no lo rompe.

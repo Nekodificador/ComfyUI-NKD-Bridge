@@ -170,14 +170,14 @@
   },
   {
    "id": 3,
-   "type": "NKDBridgeCanvas",
+   "type": "NKDBridgeInput",
    "pos": [
     0,
-    450
+    470
    ],
    "size": [
     189.538671875,
-    46
+    128
    ],
    "flags": {},
    "order": 1,
@@ -197,24 +197,34 @@
      "name": "alpha",
      "type": "MASK",
      "links": null
+    },
+    {
+     "localized_name": "selection",
+     "name": "selection",
+     "type": "MASK",
+     "links": null
     }
    ],
    "title": "Photoshop canvas",
    "properties": {
-    "Node name for S&R": "NKDBridgeCanvas",
+    "Node name for S&R": "NKDBridgeInput",
     "ue_properties": {
      "widget_ue_connectable": {},
      "input_ue_unconnectable": {},
      "version": "7.8"
     }
-   }
+   },
+   "widgets_values": [
+    "@document",
+    "@selection"
+   ]
   },
   {
    "id": 4,
    "type": "NKDBridgeText",
    "pos": [
     300,
-    450
+    470
    ],
    "size": [
     400,
@@ -276,7 +286,7 @@
    "type": "NKDBridgeNumber",
    "pos": [
     300,
-    650
+    710
    ],
    "size": [
     270,
@@ -435,7 +445,7 @@
    "type": "CLIPTextEncode",
    "pos": [
     650,
-    200
+    230
    ],
    "size": [
     400,
@@ -492,8 +502,8 @@
    "id": 8,
    "type": "ImageScaleToTotalPixels",
    "pos": [
-    650,
-    450
+    750,
+    470
    ],
    "size": [
     276.4927734375,
@@ -572,8 +582,8 @@
    "id": 9,
    "type": "VAEEncode",
    "pos": [
-    950,
-    450
+    1100,
+    470
    ],
    "size": [
     140,
@@ -621,7 +631,7 @@
    "id": 10,
    "type": "KSampler",
    "pos": [
-    950,
+    1100,
     0
    ],
    "size": [
@@ -754,7 +764,7 @@
    "id": 11,
    "type": "VAEDecode",
    "pos": [
-    1300,
+    1420,
     0
    ],
    "size": [
@@ -803,7 +813,7 @@
    "id": 12,
    "type": "NKDBridgeOutput",
    "pos": [
-    1550,
+    1620,
     0
    ],
    "size": [
@@ -825,13 +835,6 @@
      "name": "mask",
      "shape": 7,
      "type": "MASK",
-     "link": null
-    },
-    {
-     "localized_name": "region",
-     "name": "region",
-     "shape": 7,
-     "type": "NKD_REGION",
      "link": null
     }
    ],

@@ -5,11 +5,21 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const REV = "0.2.0";
-const SOURCES = { NKDBridgeCanvas: "canvas", NKDBridgeLayer: "layer", NKDBridgeSelection: "selection" };
+const REV = "0.3.0";
+const SOURCES = { NKDBridgeInput: "layer" };
 const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text" };
 const OUTPUT = "NKDBridgeOutput";
 const NONE = "(pick a layer)";
+const DOCUMENT = "@document";          // Bridge Input reading the whole document
+const DOC_LABEL = "Whole document";
+const SELECTION = "@selection";        // selection_source: the live selection
+const SEL_LABEL = "Current selection";
+// saved channels/paths: "Channel: Cara" in the list, "channel:Cara #12" stored
+const maskLabelOf = (m) => `${m.kind === "channel" ? "Channel" : "Path"}: ${m.name}${m.id != null ? ` #${m.id}` : ""}`;
+const maskLabels = () => [SEL_LABEL, ...(doc?.masks ?? []).map(maskLabelOf)];
+const maskToLabel = (v) => (!v || v === SELECTION ? SEL_LABEL : (doc?.masks ?? []).find((m) => m.binding === v)
+  ? maskLabelOf(doc.masks.find((m) => m.binding === v)) : v);
+const labelToMask = (l) => (l === SEL_LABEL ? SELECTION : (doc?.masks ?? []).find((m) => maskLabelOf(m) === l)?.binding ?? l);
 
 let doc = null;        // last document info from the host
 let hosts = 0;         // connected hosts, as last reported by the server
@@ -28,7 +38,7 @@ const active = (n) => !n.mode;  // 0 = always; muted (2) and bypassed (4) don't 
 // Groups end in "/" like folders, so they read as groups in every list
 const labelOf = (l) => `${l.path}${l.kind === "group" ? "/" : ""} #${l.id}`;
 const docLabels = () => (doc?.layers ?? []).map(labelOf);
-function layerLabels() { return [NONE, ...docLabels()]; }
+function sourceLabels() { return [DOC_LABEL, ...docLabels()]; }
 
 // Output destination: friendly label <-> stored value
 const DEST_SPECIAL = [["Panel only", "panel"], ["+ New layer", "new:layer"], ["+ New group", "new:group"]];
@@ -52,10 +62,19 @@ function manifest() {
   for (const n of bridgeNodes()) {
     const v = (name) => widget(n, name)?.value;
     if (n.type in SOURCES) {
-      const kind = SOURCES[n.type];
-      const binding = kind === "layer" ? String(v("layer") ?? "").trim() : "";
-      m.sources.push({ id: n.id, kind, title: n.title, binding,
+      let kind = SOURCES[n.type];
+      let binding = kind === "layer" ? String(v("source") ?? "").trim() : "";
+      const bindable = kind === "layer";           // Bridge Input: the panel can rebind it
+      if (binding === DOCUMENT) { kind = "canvas"; binding = ""; }
+      m.sources.push({ id: n.id, kind, title: n.title, binding, bindable,
         key: kind === "layer" ? "layer:" + binding : kind });
+      // the selection is read only while its output is wired, so selecting never re-runs for nothing
+      if (n.outputs?.find((o) => o.name === "selection")?.links?.length) {
+        const sb = String(v("selection_source") ?? "").trim();
+        const saved = sb && sb !== SELECTION;
+        m.sources.push({ id: n.id, kind: "selection", title: n.title, binding: saved ? sb : "", bindable: true,
+          key: saved ? "selection:" + sb : "selection" });
+      }
     } else if (n.type in PARAMS) {
       const p = { id: n.id, kind: PARAMS[n.type], name: v("name") || n.title };
       if (p.kind === "number") Object.assign(p, { value: v("value"), min: v("min"), max: v("max"), step: v("step") });
@@ -66,6 +85,15 @@ function manifest() {
     }
   }
   return m;
+}
+
+/** "KSampler: Required input is missing (latent_image)" from ComfyUI's validation answer. */
+function rejection(err) {
+  const nodeErrors = Object.values(err?.response?.node_errors ?? app.lastNodeErrors ?? {});   // queuePrompt may just return false
+  const first = nodeErrors[0], e0 = first?.errors?.[0];
+  const cut = (t) => (t.length > 120 ? t.slice(0, 117) + "…" : t);
+  if (e0) return `ComfyUI: ${first.class_type}: ${e0.message}${e0.details ? ` (${cut(e0.details)})` : ""}`;
+  return `ComfyUI: ${err?.response?.error?.message || err?.message || "the workflow was not accepted, look at the ComfyUI tab"}`;
 }
 
 function publish(force) {
@@ -139,9 +167,16 @@ function addVariablePicker(node) {
   }, () => [VAR_PROMPT, ...BUILTIN_VARS, ...paramNames().map((n) => `{${n}}`)]);
 }
 
+// Photoshop's logo blues, so Bridge nodes read as "the Photoshop end" of a workflow at a glance
+const PS_TITLE = "#0a3a66", PS_BODY = "#001e36";
+function paintPhotoshop(node) { node.color = PS_TITLE; node.bgcolor = PS_BODY; }
+
 const SETUP = {
-  NKDBridgeLayer: (n) => addPicker(n, "layer", "Photoshop layer", layerLabels,
-    (v) => v || NONE, (l) => (l === NONE ? null : l)),
+  NKDBridgeInput: (n) => {
+    addPicker(n, "source", "Photoshop source", sourceLabels,
+      (v) => (v === DOCUMENT ? DOC_LABEL : v || NONE), (l) => (l === DOC_LABEL ? DOCUMENT : l === NONE ? null : l));
+    addPicker(n, "selection_source", "Selection source", maskLabels, maskToLabel, labelToMask);
+  },
   NKDBridgeOutput: (n) => {
     addPicker(n, "destination", "Destination", destLabels, destToLabel, labelToDest);
     addVariablePicker(n);
@@ -158,18 +193,20 @@ app.registerExtension({
   menuCommands: [{ path: ["Extensions", "NKD Comfy Bridge"], commands: ["NKD.Bridge.DownloadPlugin"] }],
 
   async beforeRegisterNodeDef(nodeType, nodeData) {
-    if (!(nodeData.name in SETUP) || nodeType.prototype.__nkdWrapped) return;
+    if (!nodeData.name.startsWith("NKDBridge") || nodeType.prototype.__nkdWrapped) return;
     nodeType.prototype.__nkdWrapped = true;
     const created = nodeType.prototype.onNodeCreated;
     nodeType.prototype.onNodeCreated = function () {
       const r = created?.apply(this, arguments);
-      SETUP[this.type](this);
+      SETUP[this.type]?.(this);
+      paintPhotoshop(this);
       return r;
     };
     const configured = nodeType.prototype.onConfigure;
     nodeType.prototype.onConfigure = function () {
       const r = configured?.apply(this, arguments);
       for (const refresh of this.__nkdPickers || []) refresh();   // saved values arrive after creation
+      paintPhotoshop(this);                                         // forced: a saved colour doesn't win
       return r;
     };
   },
@@ -178,9 +215,12 @@ app.registerExtension({
     console.log(`[NKD Bridge] rev ${REV}`);
     api.addEventListener("nkd_bridge.doc", (e) => { doc = e.detail; app.graph?.setDirtyCanvas(true, true); });
     api.addEventListener("nkd_bridge.set", (e) => setWidget(e.detail));
-    api.addEventListener("nkd_bridge.run", (e) => {
+    api.addEventListener("nkd_bridge.run", async (e) => {
       const outputs = (e.detail?.outputs ?? []).map(String);
-      app.queuePrompt(0, 1, outputs.length ? { queueNodeIds: outputs } : {});
+      // a workflow ComfyUI refuses never starts, so no execution event would tell the host: say it here
+      let ok, err;
+      try { ok = await app.queuePrompt(0, 1, outputs.length ? { queueNodeIds: outputs } : {}); } catch (x) { ok = false; err = x; }
+      if (ok === false) status("error", { message: rejection(err) });
     });
 
     // runner = the tab you last looked at

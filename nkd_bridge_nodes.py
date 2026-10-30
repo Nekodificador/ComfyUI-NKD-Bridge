@@ -14,11 +14,20 @@ from . import nkd_bridge_names as names
 from . import nkd_bridge_server as bridge
 
 CAT = "😺NKD Nodes/Bridge"
-Region = io.Custom("NKD_REGION")      # dict(x, y, w, h, dw, dh) in transfer-scale pixels
 
 
-def _key_layer(binding):
-    return "layer:" + binding.strip()
+DOCUMENT = "@document"                # Bridge Input value for the whole document
+SELECTION = "@selection"              # Bridge Input selection_source: the live selection
+
+
+def _sel_key(selection_source):
+    b = (selection_source or SELECTION).strip()
+    return "selection" if b in ("", SELECTION) else "selection:" + b
+
+
+def _key(source):
+    b = source.strip()
+    return "canvas" if b == DOCUMENT else "layer:" + b
 
 
 def _need(key, what):
@@ -52,104 +61,48 @@ def _place(src):
     return t[..., :3].contiguous(), t[..., 3].contiguous()
 
 
-class NKDBridgeCanvas(io.ComfyNode):
+class NKDBridgeInput(io.ComfyNode):
     @classmethod
     def define_schema(cls):
         return io.Schema(
-            node_id="NKDBridgeCanvas", display_name="😺NKD Bridge Canvas", category=CAT,
-            description="The whole visible document from Photoshop (all visible layers merged).",
-            outputs=[io.Image.Output("image"), io.Mask.Output("alpha")])
+            node_id="NKDBridgeInput", display_name="😺NKD Bridge Input", category=CAT,
+            description="The whole Photoshop document, or one layer or group (always the same one, "
+                        "no matter which layer is active). Pick it with the 'Photoshop source' list "
+                        "or from the panel. 'selection' is the document's current selection (or "
+                        "Quick Mask), whatever the source: white = selected, black elsewhere.",
+            inputs=[io.String.Input("source", default=DOCUMENT, socketless=True,
+                                    tooltip=f"'{DOCUMENT}' for the whole document, or a layer/group as "
+                                            "'Path/Name #id'. The id keeps the binding when you "
+                                            "rename; the path is the fallback."),
+                    io.String.Input("selection_source", default=SELECTION, socketless=True,
+                                    tooltip=f"What 'selection' outputs: '{SELECTION}' for the live "
+                                            "selection, or a saved one as 'channel:Name #id' / "
+                                            "'path:Name #id'. Use the 'Selection source' list.")],
+            outputs=[io.Image.Output("image"), io.Mask.Output("alpha"),
+                     io.Mask.Output("selection", tooltip="Document-sized: white where selected. All "
+                                                         "black with nothing selected.")])
 
     @classmethod
-    def fingerprint_inputs(cls, **kw):
-        return bridge.source_hash("canvas")
+    def fingerprint_inputs(cls, source, selection_source=SELECTION):
+        # Photoshop only sends the selection while the 'selection' output is connected (the tab's
+        # manifest), so an unused selection never changes this hash.
+        return f"{bridge.source_hash(_key(source))}|{bridge.source_hash(_sel_key(selection_source))}"
 
     @classmethod
-    def execute(cls):
-        return io.NodeOutput(*_place(_need("canvas", "the canvas")))
-
-
-class NKDBridgeLayer(io.ComfyNode):
-    @classmethod
-    def define_schema(cls):
-        return io.Schema(
-            node_id="NKDBridgeLayer", display_name="😺NKD Bridge Layer", category=CAT,
-            description="One Photoshop layer or group, always the same one no matter which layer "
-                        "is active. Pick it with the 'Photoshop layer' list or from the panel.",
-            inputs=[io.String.Input("layer", default="", socketless=True,
-                                    tooltip="Bound layer/group as 'Path/Name #id'. The id keeps the "
-                                            "binding when you rename; the path is the fallback.")],
-            outputs=[io.Image.Output("image"), io.Mask.Output("alpha")])
+    def validate_inputs(cls, source, selection_source=SELECTION):
+        return True if source.strip() else "NKD Bridge Input: pick the document or a layer first."
 
     @classmethod
-    def fingerprint_inputs(cls, layer):
-        return bridge.source_hash(_key_layer(layer))
-
-    @classmethod
-    def validate_inputs(cls, layer):
-        return True if layer.strip() else "NKD Bridge Layer: pick a Photoshop layer first."
-
-    @classmethod
-    def execute(cls, layer):
-        return io.NodeOutput(*_place(_need(_key_layer(layer), f"layer '{layer}'")))
-
-
-class NKDBridgeSelection(io.ComfyNode):
-    @classmethod
-    def define_schema(cls):
-        return io.Schema(
-            node_id="NKDBridgeSelection", display_name="😺NKD Bridge Selection", category=CAT,
-            description="The current Photoshop selection (or Quick Mask) as a mask, independent "
-                        "of any layer. 'region' is its bounding box: feed it to Bridge Output to "
-                        "paste the result exactly there. No selection = whole document.",
-            inputs=[io.Int.Input("padding", default=0, min=0, max=1024, step=8,
-                                 tooltip="Grow the region by this many pixels (context for inpaint).")],
-            outputs=[io.Mask.Output("mask"), Region.Output("region")])
-
-    @classmethod
-    def fingerprint_inputs(cls, padding):
-        return bridge.source_hash("selection")
-
-    @classmethod
-    def execute(cls, padding):
-        src = _need("selection", "the selection")
-        dw, dh = src["dw"], src["dh"]
-        mask = _place(src)[0][..., 0]          # 1-channel upload → gray rgb; outside box = 0
-        # The box comes from the selected pixels, not from the upload's size: Photoshop may send
-        # the selection as a whole-document mask.
-        ys, xs = torch.nonzero(mask[0] > 0.01, as_tuple=True)
-        if len(xs) == 0:                       # nothing selected
-            x, y, w, h = 0, 0, dw, dh
-        else:
-            x0, y0, x1, y1 = int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
-            x, y = max(0, x0 - padding), max(0, y0 - padding)
-            w, h = min(dw, x1 + padding) - x, min(dh, y1 + padding) - y
-        return io.NodeOutput(mask, {"x": x, "y": y, "w": w, "h": h, "dw": dw, "dh": dh})
-
-
-class NKDBridgeCrop(io.ComfyNode):
-    @classmethod
-    def define_schema(cls):
-        return io.Schema(
-            node_id="NKDBridgeCrop", display_name="😺NKD Bridge Crop", category=CAT,
-            description="Crop an image (and mask) to a Bridge Selection region, e.g. to inpaint "
-                        "only the selected area at full detail. Give the same region to Bridge "
-                        "Output and the result lands back in place.",
-            inputs=[io.Image.Input("image"), Region.Input("region"), io.Mask.Input("mask", optional=True)],
-            outputs=[io.Image.Output("image"), io.Mask.Output("mask")])
-
-    @classmethod
-    def execute(cls, image, region, mask=None):
-        # sources and regions share the transfer scale, but scale anyway in case the image was resized
-        sy, sx = image.shape[1] / region["dh"], image.shape[2] / region["dw"]
-        x0, y0 = round(region["x"] * sx), round(region["y"] * sy)
-        x1, y1 = x0 + max(1, round(region["w"] * sx)), y0 + max(1, round(region["h"] * sy))
-        img = image[:, y0:y1, x0:x1]
-        if mask is None:
-            m = torch.ones(img.shape[:3])
-        else:
-            m = _resize(mask.reshape(-1, *mask.shape[-2:])[..., None], image.shape[1:3])[..., 0][:, y0:y1, x0:x1]
-        return io.NodeOutput(img, m)
+    def execute(cls, source, selection_source=SELECTION):
+        what = "the document" if source.strip() == DOCUMENT else f"layer '{source}'"
+        img, alpha = _place(_need(_key(source), what))
+        sk = _sel_key(selection_source)
+        wanted = any(x.get("key") == sk for x in (bridge.S.manifest or {}).get("sources", []))
+        sel = bridge.get_source(sk) if wanted else None   # don't make Photoshop read it for nothing
+        mask = _place(sel)[0][..., 0] if sel is not None else torch.zeros(img.shape[:3])
+        if mask.shape != alpha.shape:            # sent at another scale: match the image
+            mask = _resize(mask[..., None], img.shape[1:3])[..., 0]
+        return io.NodeOutput(img, alpha, mask)
 
 
 class NKDBridgeNumber(io.ComfyNode):
@@ -213,10 +166,8 @@ class NKDBridgeOutput(io.ComfyNode):
                                             "{time} {doc}, and any Bridge Text/Number by its name, "
                                             "e.g. {Prompt}."),
                     io.Mask.Input("mask", optional=True,
-                                  tooltip="Transparency for the written layer (white = keep)."),
-                    Region.Input("region", optional=True,
-                                 tooltip="From Bridge Selection: paste the result into that box "
-                                         "instead of over the whole document.")],
+                                  tooltip="Transparency for the written layer (white = keep). Give "
+                                          "it Bridge Input's selection to change only the selection.")],
             outputs=[])
 
     @classmethod
@@ -226,23 +177,19 @@ class NKDBridgeOutput(io.ComfyNode):
         return float("nan")
 
     @classmethod
-    def execute(cls, images, destination, name, mask=None, region=None):
+    def execute(cls, images, destination, name, mask=None):
         # ponytail: first image of the batch only; batches → panel gallery when someone needs it
         img = images[:1, ..., :3]
         a = mask.reshape(-1, *mask.shape[-2:])[:1, ..., None] if mask is not None             else torch.ones((*img.shape[:3], 1))
         rgba = torch.cat([img, _resize(a.to(img), img.shape[1:3])], dim=-1)
         doc = bridge.S.doc or {}
-        if region:                                   # transfer-scale box → document pixels
-            s = (doc.get("w") or region["dw"]) / region["dw"]
-            box = [round(v * s) for v in (region["x"], region["y"], region["w"], region["h"])]
-        else:
-            box = [0, 0, doc.get("w") or img.shape[2], doc.get("h") or img.shape[1]]
-        rgba = _resize(rgba, (box[3], box[2]))
+        w, h = doc.get("w") or img.shape[2], doc.get("h") or img.shape[1]
+        rgba = _resize(rgba, (h, w))                 # transfer scale → document pixels
         arr = (rgba[0].clamp(0, 1) * 255).round().to(torch.uint8).cpu().numpy()
         layer_name = names.resolve(name, names.variables(cls.hidden.prompt, doc.get("name", "")))
         bridge.publish_result(arr, {"node": cls.hidden.unique_id, "dest": destination or DEST_DEFAULT,
                                     "name": layer_name or "NKD {n}",
-                                    "x": box[0], "y": box[1], "doc": doc.get("id")})
+                                    "x": 0, "y": 0, "doc": doc.get("id")})
         return io.NodeOutput(ui=ui.PreviewImage(img, cls=cls))
 
 
@@ -255,5 +202,4 @@ def _resize(t, hw):
     return x.movedim(1, -1)
 
 
-NODES = [NKDBridgeCanvas, NKDBridgeLayer, NKDBridgeSelection, NKDBridgeCrop,
-         NKDBridgeNumber, NKDBridgeText, NKDBridgeOutput]
+NODES = [NKDBridgeInput, NKDBridgeNumber, NKDBridgeText, NKDBridgeOutput]

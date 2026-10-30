@@ -4,7 +4,7 @@ Paint in Photoshop, generate in ComfyUI. Every layer, group or selection you wan
 
 <!-- hero video goes here -->
 
-- **Bound inputs.** A Layer node stays tied to one layer or group, whatever layer you happen to be painting on. Only bound layers are read, and only when their pixels change, so ComfyUI keeps everything else cached.
+- **Bound inputs.** An Input node reads the whole document or stays tied to one layer or group, whatever layer you happen to be painting on. Only bound layers are read, and only when their pixels change, so ComfyUI keeps everything else cached.
 - **You watch it run in ComfyUI.** Photoshop asks your open ComfyUI tab to queue the workflow, so progress, node highlighting and live previews show up there as if you had pressed Run yourself.
 - **Results go straight to a layer.** Name the layer (or group) in the Output node and every run replaces it. No preview-then-click-send round trip.
 - **Live mode.** Turn it on and the workflow re-runs when you stop drawing, one job at a time. Built for SD1.5 + LCM style models.
@@ -18,15 +18,12 @@ All of them live under `😺NKD Nodes/Bridge`.
 
 | Node | What it does |
 |---|---|
-| [Bridge Canvas](docs/nodes.md#bridge-canvas) | The whole visible document |
-| [Bridge Layer](docs/nodes.md#bridge-layer) | One layer or group, bound by id |
-| [Bridge Selection](docs/nodes.md#bridge-selection) | The current selection as a mask, plus its box |
-| [Bridge Crop](docs/nodes.md#bridge-crop) | Cuts an image to the selection box, for detail inpainting |
+| [Bridge Input](docs/nodes.md#bridge-input) | The whole document, or one layer or group bound by id, plus the current selection, or a saved channel or path, as a mask for [inpainting](docs/nodes.md#inpainting-a-selection) |
 | [Bridge Number](docs/nodes.md#bridge-number-and-bridge-text) | A slider in the Photoshop panel |
 | [Bridge Text](docs/nodes.md#bridge-number-and-bridge-text) | A text box in the Photoshop panel |
 | [Bridge Output](docs/nodes.md#bridge-output) | Sends the image back to a named layer, or to the panel |
 
-More: [Live mode and speed](docs/live.md) · [Protocol, for adding other apps](docs/protocol.md) · [Example workflows](example_workflows/)
+More: [Live mode and speed](docs/live.md) · [Protocol, for adding other apps](docs/protocol.md) · [Example workflows](example_workflows/) (the inpaint one also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools))
 
 ## Credits
 

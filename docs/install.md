@@ -58,13 +58,13 @@ With ComfyUI running and its tab open in your browser, look at the top of the pa
 3. In Photoshop, create a document (1024 × 1024 is fine) and paint some colour blobs.
 4. In the panel, press **Generate**. You'll see the progress in your ComfyUI tab, and the result appears in the panel and as a new layer called `NKD Live 1`.
 5. Tick **Live** and keep painting: it regenerates each time you pause.
-6. For inpainting, open `NKD Bridge - Inpaint selection SD1.5 LCM.json` instead, make a selection in Photoshop and press **Generate**: only the selected area is redone, and the result lands back on it as the `NKD Inpaint 1` layer.
+6. For inpainting, install [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools) too (from the ComfyUI Manager), open `NKD Bridge - Inpaint selection SD1.5 LCM.json` instead, make a selection in Photoshop and press **Generate**: only the selected area is redone, and the result lands back on it as the `NKD Inpaint 1` layer.
 
 ## Binding a layer to a node
 
-Use a **😺NKD Bridge Layer** node when one part of your workflow should always read the same layer or group.
+A **😺NKD Bridge Input** node reads the whole document by default. Change it when one part of your workflow should always read the same layer or group.
 
-- In ComfyUI, pick the layer in the node's **Photoshop layer** list. Or,
+- In ComfyUI, pick the layer in the node's **Photoshop source** list. Or,
 - in Photoshop, select the layer, open the panel's **Inputs & outputs** tab and press **Use active** next to that input.
 
 The binding is saved with the workflow. Renaming the layer doesn't break it.

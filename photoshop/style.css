@@ -79,6 +79,14 @@ sp-heading { margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.06em;
 .seg.on { border-color: var(--uxp-host-text-color); color: var(--uxp-host-text-color);
   font-weight: bold; text-decoration: underline; }
 
+/* the input's selection: title, then its dropdown on its own line */
+.selRow { display: flex; flex-direction: column; gap: 4px; padding: 5px 0; border-top: 1px solid var(--uxp-host-border-color); }
+.selPick { width: 100%; }
+
+/* "▸ Add a variable" folds the chips away */
+.fold { cursor: pointer; font-size: 11px; color: var(--uxp-host-text-color-secondary, #888); }
+.fold:hover { color: var(--uxp-host-text-color); }
+
 /* Variable chips under the name field */
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .chip { padding: 1px 6px; border-radius: 9px; cursor: pointer; font-size: 11px;

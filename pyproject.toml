@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "comfyui-nkd-bridge"
-version = "0.1.0"
+version = "0.2.0"
 description = "Photoshop <-> ComfyUI bridge: bound layer/group/selection nodes, results straight into named layers, live mode, progress in your ComfyUI tab."
 license = { file = "LICENSE" }
 requires-python = ">=3.10"

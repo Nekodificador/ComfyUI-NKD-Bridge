@@ -89,8 +89,8 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
 
 (async () => {
   await sleep(20);
-  const manifest = { sources: [{ id: 1, kind: "canvas", title: "Canvas", key: "canvas" },
-    { id: 2, kind: "layer", title: "Layer", binding: "Capa 0 #8", key: "layer:Capa 0 #8" }],
+  const manifest = { sources: [{ id: 1, kind: "canvas", title: "Canvas", key: "canvas", bindable: true },
+    { id: 2, kind: "layer", title: "Layer", binding: "Capa 0 #8", key: "layer:Capa 0 #8", bindable: true }],
     params: [], outputs: [{ id: 3, title: "Out", target: "layer", layer: "R" }] };
   ws.onmessage({ data: JSON.stringify({ type: "status", tab: true, manifest }) });
   await sleep(600);                        // a sync runs and bails out: no document yet
@@ -143,7 +143,7 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   doc.layers.push({ id: 60, name: "Personaje", kind: "group", bounds: { left: 0, top: 0, right: W, bottom: H },
     layers: [], async duplicate() { groupReads++; return { async merge() { return { id: 61, bounds: { left: 0, top: 0, right: W, bottom: H } }; } }; } });
   puts.length = 0;
-  manifest.sources.push({ id: 4, kind: "layer", title: "Group", binding: "Personaje #60", key: "layer:Personaje #60" });
+  manifest.sources.push({ id: 4, kind: "layer", title: "Group", binding: "Personaje #60", key: "layer:Personaje #60", bindable: true });
   ws.onmessage({ data: JSON.stringify({ type: "manifest", manifest }) });
   await sleep(700);
   if (!puts.includes("layer:Personaje #60")) fail(`group not uploaded (puts: ${puts})`);
@@ -191,6 +191,74 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   const lines = [ow({ dest: "panel" }), ow({ dest: "new:group", name: "Var {n}" }), ow({ dest: gBound }), ow({ dest: bound })];
   if (!/panel/.test(lines[0]) || !/Var/.test(lines[1]) || !/Var \(renamed\)\/ · capa nueva/.test(lines[2]) || !/Retrato 1 · se sustituye/.test(lines[3])) fail(`outWhere: ${lines.join(" | ")}`);
   console.log("OK  panel says where it lands:", lines.join(" | "));
+
+  // 9. PS 27 with nothing selected: getSelection resolves without imageData instead of throwing
+  photoshop.imaging.getSelection = async () => ({});
+  const empty = await vm.runInContext("readSourceRaw", ctx)({ kind: "selection" });
+  if (empty.w !== 0 || empty.data.length !== 0) fail(`no selection should read as empty, got ${JSON.stringify(empty)}`);
+  console.log("OK  nothing selected (no imageData) reads as an empty selection");
+
+  // 10. a selection is read as ITS box scaled, placed at its offset (never stretched over the document)
+  let asked = null;
+  doc.selection = { bounds: { left: 384, top: 100, right: 1184, bottom: 900 } };
+  photoshop.imaging.getSelection = async (o) => { asked = o; const t = o.targetSize || { width: 800, height: 800 };
+    return { sourceBounds: o.sourceBounds, imageData: { width: t.width, height: t.height, components: 1,
+      getData: async () => new Uint8Array(t.width * t.height), dispose() {} } }; };
+  vm.runInContext("S.maxSide = 1024; S.doc = { ...S.doc, w: 2048, h: 2048 }", ctx);   // scale 0.5
+  const sel = await vm.runInContext("readSourceRaw", ctx)({ kind: "selection" });
+  const k = vm.runInContext("scale()", ctx);
+  const want = { w: Math.round(800 * k), x: Math.round(384 * k), y: Math.round(100 * k) };
+  if (k >= 1 || !asked.targetSize || asked.targetSize.width !== want.w || sel.w !== want.w || sel.x !== want.x || sel.y !== want.y)
+    fail(`selection read wrong: scale ${k}, asked ${JSON.stringify(asked)}, got w${sel.w} x${sel.x} y${sel.y}, want ${JSON.stringify(want)}`);
+  doc.selection = { bounds: null };
+  const none = await vm.runInContext("readSourceRaw", ctx)({ kind: "selection" });
+  if (none.w !== 0) fail("selection.bounds null should read as empty");
+  delete doc.selection;
+  console.log(`OK  selection read as its own box at x${sel.x} y${sel.y} (${sel.w}px wide at scale ${k.toFixed(2)}), empty when bounds is null`);
+
+  // 11. the DOM selection API throws (PS 27: "reading 'batchPlay'"): one native read finds the box
+  const calls = [];
+  Object.defineProperty(doc, "selection", { configurable: true, get() { return { get bounds() { throw new TypeError("Cannot read properties of undefined (reading 'batchPlay')"); } }; } });
+  photoshop.imaging.getSelection = async (o) => { calls.push(o); const t = o.targetSize || { width: 800, height: 800 };
+    return { sourceBounds: o.sourceBounds || { left: 384, top: 100, right: 1184, bottom: 900 }, imageData: { width: t.width, height: t.height,
+      components: 1, getData: async () => new Uint8Array(t.width * t.height), dispose() {} } }; };
+  const fb = await vm.runInContext("readSourceRaw", ctx)({ kind: "selection" });
+  if (calls.length !== 2 || calls[1].targetSize?.width !== want.w || fb.w !== want.w || fb.x !== want.x || fb.y !== want.y)
+    fail(`fallback read wrong: calls ${JSON.stringify(calls)}, got w${fb.w} x${fb.x} y${fb.y}`);
+  console.log("OK  selection API throwing: found the box with one native read, placed it right");
+
+  // 12. a real getSelection failure is reported, not passed off as "nothing selected"
+  Object.defineProperty(doc, "selection", { configurable: true, value: { bounds: { left: 0, top: 0, right: 10, bottom: 10 } }, writable: true });
+  photoshop.imaging.getSelection = async () => { throw new Error("boom"); };
+  const nSent = ws.sent.length;
+  await vm.runInContext("readSourceRaw", ctx)({ kind: "selection" });
+  if (!ws.sent.slice(nSent).some((m) => m.type === "log" && /selection: boom/.test(m.message))) fail("getSelection error was swallowed");
+  ws.sent.splice(nSent);                            // expected error, keep the final check clean
+  delete doc.selection;
+  console.log("OK  getSelection error reported, not shown as an empty selection");
+
+  // 13. saved selections: alpha channels and paths are listed, read through a rolled-back selection
+  const boxC = { left: 4, top: 6, right: 20, bottom: 30 }, boxP = { left: 30, top: 2, right: 60, bottom: 12 };
+  let live = { left: 0, top: 0, right: 8, bottom: 8 };     // the user's own selection
+  Object.defineProperty(doc, "selection", { configurable: true, get() { return { bounds: live, load: async () => { live = boxC; } }; } });
+  doc.channels = [{ id: 20, name: "Rojo", kind: "component" }, { id: 21, name: "Cara", kind: "selectedAreaAlpha" }];
+  doc.pathItems = [{ id: 30, name: "Silueta", makeSelection: async () => { live = boxP; } }];
+  photoshop.imaging.getSelection = async (o) => { const b = o.sourceBounds, t = o.targetSize || { width: b.right - b.left, height: b.bottom - b.top };
+    return { sourceBounds: b, imageData: { width: t.width, height: t.height, components: 1, getData: async () => new Uint8Array(t.width * t.height), dispose() {} } }; };
+  vm.runInContext("publishDoc()", ctx);
+  const masks = vm.runInContext("S.doc.masks", ctx).map((x) => x.binding);
+  if (masks.join() !== "channel:Cara #21,path:Silueta #30") fail(`saved masks listed wrong: ${masks}`);
+  const nRes = resumed.length;
+  const ch = await vm.runInContext("readSourceRaw", ctx)({ kind: "selection", binding: "channel:Cara #21" });
+  const pa = await vm.runInContext("readSourceRaw", ctx)({ kind: "selection", binding: "path:Silueta #30" });
+  const gone = await vm.runInContext("readSourceRaw", ctx)({ kind: "selection", binding: "channel:Otra #99" });
+  if (ch.x !== 4 || ch.y !== 6 || ch.w !== 16 || pa.x !== 30 || pa.w !== 30) fail(`saved mask read wrong: channel ${JSON.stringify([ch.x, ch.y, ch.w])} path ${JSON.stringify([pa.x, pa.w])}`);
+  if (resumed.slice(nRes).join() !== "false,false") fail(`saved mask reads not rolled back: ${resumed.slice(nRes)}`);
+  if (!gone.missing) fail("a deleted channel should read as missing");
+  const opts = vm.runInContext("selectionOptions", ctx)("channel:Otra #99").map((o) => o.value);
+  if (opts.join() !== "@selection,channel:Cara #21,path:Silueta #30,channel:Otra #99") fail(`selection dropdown offers ${opts}`);
+  delete doc.selection; delete doc.channels; delete doc.pathItems;
+  console.log("OK  saved channel and path listed, read in place and rolled back; a deleted one is missing; the dropdown offers them all");
 
   const errors = ws.sent.filter((m) => m.type === "log" && !/connected|cerr/.test(m.message));
   if (errors.length) fail(`plugin reported errors: ${JSON.stringify(errors)}`);

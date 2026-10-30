@@ -6,8 +6,8 @@ Affinity, Photopea…) only has to do what this file does.
 
     python tools/fake_host.py [--url http://127.0.0.1:8188] [--runs 3]
 
-Needs ComfyUI running with a browser tab open on a workflow containing a 😺NKD Bridge Layer bound
-to "Sketch #2" (or a Canvas node) feeding a 😺NKD Bridge Output. Prints the round-trip latency.
+Needs ComfyUI running with a browser tab open on a workflow containing a 😺NKD Bridge Input bound
+to "Sketch #2" (or set to Whole document) feeding a 😺NKD Bridge Output. Prints the round-trip latency.
 """
 import argparse
 import asyncio

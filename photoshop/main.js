@@ -5,7 +5,7 @@
 const { app, core, action, imaging } = require("photoshop");
 const uxp = require("uxp");
 
-const VERSION = "0.3.0";
+const VERSION = "0.4.0";
 const $ = (id) => document.getElementById(id);
 
 // ── i18n ────────────────────────────────────────────────────────────────────────────────────
@@ -27,6 +27,7 @@ const T = {
     perRun: "a new layer each run", replaced: "replaced each run", recreate: "will be created again",
     nameLabel: "Name for new layers", insertVar: "Add to the name",
     docClosed: "The document this result belongs to was closed", layerName: "Layer or group name",
+    useDoc: "Document", addVar: "Add a variable", channel: "Channel", path: "Path", selLabel: "selection",
   },
   es: {
     off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
@@ -45,6 +46,7 @@ const T = {
     perRun: "capa nueva cada vez", replaced: "se sustituye", recreate: "se volverá a crear",
     nameLabel: "Nombre de las capas nuevas", insertVar: "Añadir al nombre",
     docClosed: "Se cerró el documento al que pertenece este resultado", layerName: "Nombre de capa o grupo",
+    useDoc: "Documento", addVar: "Añadir variable", channel: "Canal", path: "Trazado", selLabel: "selección",
   },
 };
 const L = T[String(uxp.host?.uiLocale || "en").slice(0, 2)] || T.en;
@@ -119,11 +121,38 @@ function flatLayers(layers, prefix = "", out = []) {
   return out;
 }
 
+/** Saved selections: alpha channels and paths, bound like layers ("channel:Cara #12"). */
+/** UXP collections aren't always iterable: read them by index. */
+function listOf(col) {
+  if (!col) return [];
+  const out = [];
+  for (let i = 0; i < (col.length || 0); i++) out.push(col[i]);
+  return out;
+}
+
+let masksDiag = "";
+function savedMasks(d) {
+  const out = [];
+  try {
+    // an alpha channel is any channel that isn't a colour component (don't trust .kind on PS 27)
+    const comp = new Set(listOf(d.componentChannels).map((c) => c.name));
+    const all = listOf(d.channels);
+    for (const c of all)
+      if (!comp.has(c.name) && !/component|spot/i.test(String(c.kind))) out.push({ id: c.id, name: c.name, kind: "channel" });
+    const diag = all.map((c) => `${c.name}(${c.kind},${c.id})`).join(" ");
+    if (!out.length && all.length > comp.size && diag !== masksDiag) { masksDiag = diag; send({ type: "log", message: `channels seen: ${diag}` }); }
+  } catch (e) { report("channels", e); }
+  try {
+    for (const p of listOf(d.pathItems)) out.push({ id: p.id, name: p.name, kind: "path" });
+  } catch (e) { report("paths", e); }
+  return out.map((m) => ({ ...m, binding: `${m.kind}:${m.name}${m.id != null ? ` #${m.id}` : ""}` }));
+}
+
 function readDoc() {
   const d = app.activeDocument;
   if (!d) return null;
   const layers = flatLayers(d.layers);
-  return { id: d.id, name: d.name, w: Math.round(d.width), h: Math.round(d.height), layers };
+  return { id: d.id, name: d.name, w: Math.round(d.width), h: Math.round(d.height), layers, masks: savedMasks(d) };
 }
 
 function publishDoc() {
@@ -131,6 +160,37 @@ function publishDoc() {
   const wire = S.doc && { ...S.doc, layers: S.doc.layers.map(({ ref, ...l }) => l) };
   const json = JSON.stringify(wire);
   if (json !== S.docJson) { S.docJson = json; send({ type: "doc", doc: wire }); renderLists(); }
+}
+
+/** "channel:Cara #12" -> the saved mask, by id first, then by kind + name. */
+function findMask(binding) {
+  const masks = S.doc?.masks || [];
+  const m = /^(channel|path):(.*?)(?:\s*#(\S+))?\s*$/.exec(binding || "");
+  if (!m) return null;
+  return masks.find((x) => x.kind === m[1] && m[3] != null && String(x.id) === m[3])
+    || masks.find((x) => x.kind === m[1] && x.name === m[2]) || null;
+}
+const maskLabel = (x) => `${x.kind === "channel" ? L.channel : L.path}: ${x.name}`;
+/** What the selection dropdown offers: the live selection, then every saved channel and path. */
+function selectionOptions(current) {
+  const opts = [{ value: "@selection", label: L.selection },
+    ...(S.doc?.masks || []).map((x) => ({ value: x.binding, label: maskLabel(x) }))];
+  if (current && !opts.some((o) => o.value === current)) opts.push({ value: current, label: `${L.missing}: ${current}` });
+  return opts;
+}
+// Rebuilt only when its options or value change: a re-render mid-click would close an open dropdown.
+const pickers = {};
+function selectionPicker(s, problem) {
+  const value = s.binding || "@selection", opts = selectionOptions(s.binding);
+  const key = JSON.stringify([value, opts, problem]);
+  if (pickers[s.id]?.key === key) return pickers[s.id].el;
+  const menu = el("sp-menu", { slot: "options" }, ...opts.map((o) =>
+    el("sp-menu-item", { value: o.value, selected: o.value === value }, o.label)));
+  const pick = el("sp-picker", { size: "s", class: "selPick",
+    onchange: (e) => send({ type: "set", node: s.id, widget: "selection_source", value: e.target.value }) }, menu);
+  const box = el("div", {}, pick, problem ? el("div", { class: "sub bad" }, problem) : null);
+  pickers[s.id] = { key, el: box };
+  return box;
 }
 
 /** "Group/Sub/Name #id" -> the layer, by id first (survives renames), then by path. */
@@ -175,29 +235,59 @@ async function readSourceRaw(src) {
   const d = app.activeDocument, s = scale();
   const dw = Math.max(1, Math.round(S.doc.w * s)), dh = Math.max(1, Math.round(S.doc.h * s));
   const base = { dw, dh };
+  const noSelection = { ...base, w: 0, h: 0, c: 1, x: 0, y: 0, data: new Uint8Array(0) };
   let res;
-  try {
-    if (src.kind === "selection") {
-      res = await withTimeout(imaging.getSelection({ documentID: d.id, ...(s < 1 && { targetSize: { width: dw, height: dh } }) }), 8000, "getSelection");
-    } else if (src.kind === "canvas") {
-      res = await withTimeout(imaging.getPixels({ documentID: d.id, componentSize: 8, applyAlpha: false,
-        ...(s < 1 && { targetSize: { width: dw, height: dh } }) }), 8000, "getPixels(canvas)");
-    } else {
-      const layer = resolveBinding(src.binding);
-      if (!layer) return { missing: true };
-      const b = layer.ref.bounds;
-      const bw = b.right - b.left, bh = b.bottom - b.top;
-      if (bw <= 0 || bh <= 0) return { ...base, w: 0, h: 0, c: 4, x: 0, y: 0, data: new Uint8Array(0) };
-      if (layer.kind === "group") return await readGroup(layer.ref, s, base);
-      res = await withTimeout(imaging.getPixels({ documentID: d.id, layerID: layer.id, componentSize: 8, applyAlpha: false,
-        ...(s < 1 && { targetSize: { width: Math.max(1, Math.round(bw * s)), height: Math.max(1, Math.round(bh * s)) } }) }), 8000, "getPixels(layer)");
-    }
-  } catch (e) {
-    // only "nothing selected" is a normal error; anything else must surface, not turn into black
-    if (src.kind === "selection" && !/modal/i.test(String(e && e.message))) return { ...base, w: 0, h: 0, c: 1, x: 0, y: 0, data: new Uint8Array(0) };
-    throw e;
+  if (src.kind === "selection") {
+    return src.binding ? await readSavedMask(d, s, base, noSelection, src.binding)
+      : await readSelection(d, s, base, noSelection);
+  } else if (src.kind === "canvas") {
+    res = await withTimeout(imaging.getPixels({ documentID: d.id, componentSize: 8, applyAlpha: false,
+      ...(s < 1 && { targetSize: { width: dw, height: dh } }) }), 8000, "getPixels(canvas)");
+  } else {
+    const layer = resolveBinding(src.binding);
+    if (!layer) return { missing: true };
+    const b = layer.ref.bounds;
+    const bw = b.right - b.left, bh = b.bottom - b.top;
+    if (bw <= 0 || bh <= 0) return { ...base, w: 0, h: 0, c: 4, x: 0, y: 0, data: new Uint8Array(0) };
+    if (layer.kind === "group") return await readGroup(layer.ref, s, base);
+    res = await withTimeout(imaging.getPixels({ documentID: d.id, layerID: layer.id, componentSize: 8, applyAlpha: false,
+      ...(s < 1 && { targetSize: { width: Math.max(1, Math.round(bw * s)), height: Math.max(1, Math.round(bh * s)) } }) }), 8000, "getPixels(layer)");
   }
   return pixelsOf(res, s, base);
+}
+
+let lastSelectionError = "";
+/** getSelection returns the selection's OWN box, so targetSize must be that box scaled, never the
+ *  document (a document-sized target stretches the box over the whole canvas). */
+async function readSelection(d, s, base, none) {
+  let b;
+  try { b = d.selection?.bounds; } catch { b = undefined; }   // PS 27 can throw here (batchPlay)
+  if (b === null) return none;                                // PS 25+: null = nothing selected
+  let box = b && { left: +b.left, top: +b.top, right: +b.right, bottom: +b.bottom };
+  if (box && ![box.left, box.top, box.right, box.bottom].every(Number.isFinite)) box = undefined;
+  const get = (o) => withTimeout(imaging.getSelection({ documentID: d.id, ...o }), 8000, "getSelection");
+  let res;
+  try {
+    if (!box) {                    // no box from the DOM: one native read tells us where it is
+      res = await get({});
+      if (!res?.imageData) return none;                       // PS 27, nothing selected: no imageData
+      if (s >= 1 || !res.sourceBounds) return await pixelsOf(res, s, base);
+      box = res.sourceBounds;
+      res.imageData.dispose();
+    }
+    const size = { width: Math.max(1, Math.round((box.right - box.left) * s)),
+      height: Math.max(1, Math.round((box.bottom - box.top) * s)) };
+    res = await get({ sourceBounds: box, ...(s < 1 && { targetSize: size }) });
+  } catch (e) {
+    if (/modal/i.test(String(e && e.message))) throw e;
+    // usually "nothing selected"; say it once, so a real failure never passes for an empty selection
+    const msg = String(e && e.message || e);
+    if (msg !== lastSelectionError) { lastSelectionError = msg; report("selection", e); }
+    return none;
+  }
+  if (!res?.imageData) return none;
+  lastSelectionError = "";
+  return await pixelsOf(res, s, base);
 }
 
 async function pixelsOf(res, s, base) {
@@ -233,11 +323,38 @@ async function readGroup(group, s, base) {
       ownStateKey = historyKey();           // if the rollback still moved history, the poll ignores it
     }
   };
+  return inModal(work, "NKD Bridge read group");
+}
+
+/** Run `work(ctx)` in a modal scope, reusing the one we're already in (modals don't nest). */
+async function inModal(work, commandName) {
   if (modalCtx) return work(modalCtx);
   let out;
-  await withTimeout(core.executeAsModal(async (ctx) => { out = await work(ctx); }, { commandName: "NKD Bridge read group" }),
-    10000, "read group");
+  await withTimeout(core.executeAsModal(async (ctx) => { out = await work(ctx); }, { commandName }), 10000, commandName);
   return out;
+}
+
+/** A saved channel or path: load it as the selection, read that, then roll it all back, so the user's
+ *  own selection and history are left as they were (same trick as readGroup). */
+async function readSavedMask(d, s, base, none, binding) {
+  const m = /^(channel|path):(.*?)(?:\s*#(\S+))?\s*$/.exec(binding);
+  if (!m) return { missing: true };
+  const [, kind, name, id] = m;
+  const list = kind === "channel" ? listOf(d.channels) : listOf(d.pathItems);
+  const item = (id != null && list.find((x) => String(x.id) === id)) || list.find((x) => x.name === name);
+  if (!item) return { missing: true };
+  return inModal(async (ctx) => {
+    const hc = ctx.hostControl;
+    const sid = await hc.suspendHistory({ documentID: d.id, name: "NKD Bridge read mask" });
+    try {
+      if (kind === "channel") await d.selection.load(item);
+      else await item.makeSelection(0, true);          // no feather, anti-aliased
+      return await readSelection(d, s, base, none);
+    } finally {
+      await hc.resumeHistory(sid, false);              // discard: the selection change never happened
+      ownStateKey = historyKey();
+    }
+  }, "NKD Bridge read mask");
 }
 
 async function upload(key, r, hash) {
@@ -411,6 +528,7 @@ async function writeResult(msg, forceNew) {
   }, { commandName: "NKD Bridge: write result" });
   ownStateKey = historyKey();         // the state our write left is not an edit (no upload loop)
   S.ownWriteUntil = Date.now() + 600;
+  publishDoc();                       // a layer/group we just created must be known, or the panel says "not found"
 }
 
 // ── connection ──────────────────────────────────────────────────────────────────────────────
@@ -538,7 +656,14 @@ const sendParam = debounce((node, widget, value) => {
 }, 120);
 
 let listsKey = "", outputsKey = "";
-const outWhereEl = {};
+const outWhereEl = {}, outSegEls = {};
+const varsOpen = {};                         // per output: is the variable list unfolded
+/** What kind of destination: "panel", "layer" (new or bound) or "group" (new or bound). */
+function destKind(dest) {
+  if (dest === "panel") return "panel";
+  if (dest === "new:group" || /\/\s*(#\d+)?\s*$/.test(dest)) return "group";
+  return "layer";
+}
 const BUILTIN_VARS = ["n", "seed", "date", "time", "doc"];
 /** One line telling where this output will land in the active document, and how. */
 function outWhere(o) {
@@ -602,14 +727,27 @@ function renderListsRaw() {
 
   setKids($("sources"), m.sources.map((s) => {
     const layer = s.kind === "layer" ? resolveBinding(s.binding) : null;
-    const sub = s.kind === "canvas" ? L.canvas : s.kind === "selection" ? L.selection
+    const mask = s.kind === "selection" && s.binding ? findMask(s.binding) : null;
+    const sub = s.kind === "canvas" ? L.canvas
+      : s.kind === "selection" ? (!s.binding ? L.selection : mask ? maskLabel(mask) : `${L.missing}: ${s.binding}`)
       : !s.binding ? L.unbound : layer ? layer.path + (layer.kind === "group" ? ` (${L.group})` : "") : L.missing;
-    const bad = s.kind === "layer" && !layer;
+    const bad = (s.kind === "layer" && !layer) || (s.kind === "selection" && !!s.binding && !mask);
+    if (s.kind === "selection") {             // pick it here, so retouching never needs the ComfyUI tab
+      const st = bad ? "bad" : S.srcState[s.key];
+      return el("div", { class: "selRow" },
+        el("div", { class: "outHead" },
+          el("span", { class: "glyph", title: st || "" }, st === "busy" ? "↑" : st === "bad" ? "!" : st === "ok" ? "✓" : "·"),
+          el("div", { class: "title grow" }, s.title + " · " + L.selLabel)),
+        selectionPicker(s, bad ? sub : null));
+    }
     const st = bad ? "bad" : S.srcState[s.key];
     return el("div", { class: "row" },
       el("span", { class: "glyph", title: st || "" }, st === "busy" ? "↑" : st === "bad" ? "!" : st === "ok" ? "✓" : "·"),
       el("div", { class: "grow" }, el("div", { class: "title" }, s.title), el("div", { class: "sub" + (bad ? " bad" : "") }, sub)),
-      s.kind === "layer" ? el("sp-action-button", { size: "s", onclick: () => bindActive(s) }, L.useActive) : null);
+      // Bridge Input (bindable): switch between the active layer and the whole document
+      s.bindable ? el("sp-action-button", { size: "s", onclick: () => bindActive(s) }, L.useActive) : null,
+      s.bindable && s.kind === "layer" ? el("sp-action-button", { size: "s",
+        onclick: () => send({ type: "set", node: s.id, widget: "source", value: "@document" }) }, L.useDoc) : null);
   }));
   show("secSources", !(!m.sources.length));
 
@@ -629,14 +767,30 @@ function renderListsRaw() {
       } }, `{${v}}`));
       const where = el("div", { class: "sub" }, outWhere(o));
       outWhereEl[o.id] = where;
+      // Layer · Group · Panel: picking another kind starts a new one; "Use active" binds an existing one
+      const setDest = (v) => send({ type: "set", node: o.id, widget: "destination", value: v });
+      const segs = [["layer", L.tLayer, "new:layer"], ["group", L.tGroup, "new:group"], ["panel", L.tPanel, "panel"]]
+        .map(([k, label, v]) => el("div", { class: "seg", "data-kind": k,
+          onclick: () => {           // o is from the last rebuild: read the live destination
+            const cur = S.manifest?.outputs?.find((x) => x.id === o.id)?.dest || "new:layer";
+            if (destKind(cur) !== k) setDest(v);
+          } }, label));
+      outSegEls[o.id] = segs;
+      const chipBox = el("div", { class: "chips" }, ...chips);
+      chipBox.style.display = varsOpen[o.id] ? "" : "none";
+      const fold = el("div", { class: "fold", onclick: () => {
+        varsOpen[o.id] = !varsOpen[o.id];
+        chipBox.style.display = varsOpen[o.id] ? "" : "none";
+        fold.textContent = (varsOpen[o.id] ? "▾ " : "▸ ") + L.addVar;
+      } }, (varsOpen[o.id] ? "▾ " : "▸ ") + L.addVar);
       return el("div", { class: "outRow" },
         el("div", { class: "outHead" }, el("div", { class: "title grow" }, o.title),
           el("sp-action-button", { size: "s", title: L.runThis, onclick: () => run([o.id]) }, "▶")),
+        el("div", { class: "segs" }, ...segs),
         where,
         el("div", { class: "outHead" },
-          el("sp-action-button", { size: "s", onclick: () => bindActive({ id: o.id }, "destination") }, L.useActive),
-          el("sp-action-button", { size: "s", onclick: () => send({ type: "set", node: o.id, widget: "destination", value: "panel" }) }, L.tPanel)),
-        el("sp-detail", {}, L.nameLabel), name, el("div", { class: "chips" }, ...chips));
+          el("sp-action-button", { size: "s", onclick: () => bindActive({ id: o.id }, "destination") }, L.useActive)),
+        el("sp-detail", {}, L.nameLabel), name, fold, chipBox);
     }));
   } else {
     for (const o of m.outputs) {
@@ -645,10 +799,15 @@ function renderListsRaw() {
       if (outWhereEl[o.id]) outWhereEl[o.id].textContent = outWhere(o);
     }
   }
+  for (const o of m.outputs) {
+    const k = destKind(o.dest || "new:layer");
+    for (const sg of outSegEls[o.id] || []) sg.className = "seg" + (sg.getAttribute("data-kind") === k ? " on" : "");
+  }
   show("secOutputs", !(!m.outputs.length));
 
   // the I/O tab carries a "!" when an input needs attention, so you notice it from the Generate tab
-  const problem = m.sources.some((s) => s.kind === "layer" && (!s.binding || !resolveBinding(s.binding)));
+  const problem = m.sources.some((s) => (s.kind === "layer" && (!s.binding || !resolveBinding(s.binding)))
+    || (s.kind === "selection" && s.binding && !findMask(s.binding)));
   $("tabIo").textContent = L.tabIo + (problem ? "  !" : "");
   renderRun();
 }
@@ -659,7 +818,7 @@ function fmt(v, step) {
   return Number.isFinite(n) ? n.toFixed(dec) : "";
 }
 
-function bindActive(src, widgetName = "layer") {
+function bindActive(src, widgetName = "source") {
   const d = app.activeDocument;
   const l = d?.activeLayers?.[0];
   if (!l) return;
