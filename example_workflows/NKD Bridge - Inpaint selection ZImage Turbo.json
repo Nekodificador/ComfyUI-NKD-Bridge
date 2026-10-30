@@ -1,0 +1,1583 @@
+{
+  "id": "25a69008-fd97-43e0-b090-59afe90201c5",
+  "revision": 0,
+  "last_node_id": 41,
+  "last_link_id": 54,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "NKDLoader",
+      "pos": [
+        731.3524059177321,
+        4872.00907815482
+      ],
+      "size": [
+        270,
+        98
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "recipe",
+          "name": "recipe",
+          "type": "STRING",
+          "widget": {
+            "name": "recipe"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "model",
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            54
+          ]
+        },
+        {
+          "label": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            5
+          ]
+        },
+        {
+          "label": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "links": [
+            7,
+            38
+          ]
+        }
+      ],
+      "title": "😺NKD Loader · ZImage Turbo",
+      "properties": {
+        "cnr_id": "comfyui-nkd-basic-tools",
+        "ver": "726d727217a15a469319731d9a17a66159435557",
+        "Node name for S&R": "NKDLoader",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "{\"name\":\"ZImage Turbo\",\"nodes\":[{\"class_type\":\"UNETLoader\",\"inputs\":{\"unet_name\":\"ZImage\\\\z_image_turbo_int8_convrot.safetensors\",\"weight_dtype\":\"default\"}},{\"class_type\":\"CLIPLoader\",\"inputs\":{\"clip_name\":\"qwen_3_4b.safetensors\",\"type\":\"lumina2\",\"device\":\"default\"}},{\"class_type\":\"VAELoader\",\"inputs\":{\"vae_name\":\"ae.safetensors\"}}],\"outputs\":[{\"node\":0,\"out\":0,\"type\":\"MODEL\",\"label\":\"model\"},{\"node\":1,\"out\":0,\"type\":\"CLIP\",\"label\":\"clip\"},{\"node\":2,\"out\":0,\"type\":\"VAE\",\"label\":\"vae\"}]}",
+        "ZImage Turbo"
+      ],
+      "widgets_values_named": {
+        "recipe": "{\"name\":\"ZImage Turbo\",\"nodes\":[{\"class_type\":\"UNETLoader\",\"inputs\":{\"unet_name\":\"ZImage\\\\z_image_turbo_int8_convrot.safetensors\",\"weight_dtype\":\"default\"}},{\"class_type\":\"CLIPLoader\",\"inputs\":{\"clip_name\":\"qwen_3_4b.safetensors\",\"type\":\"lumina2\",\"device\":\"default\"}},{\"class_type\":\"VAELoader\",\"inputs\":{\"vae_name\":\"ae.safetensors\"}}],\"outputs\":[{\"node\":0,\"out\":0,\"type\":\"MODEL\",\"label\":\"model\"},{\"node\":1,\"out\":0,\"type\":\"CLIP\",\"label\":\"clip\"},{\"node\":2,\"out\":0,\"type\":\"VAE\",\"label\":\"vae\"}]}",
+        "preset": "ZImage Turbo"
+      }
+    },
+    {
+      "id": 2,
+      "type": "KSampler",
+      "pos": [
+        1480,
+        5067.024936244286
+      ],
+      "size": [
+        270,
+        550.6781115879828
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 39
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 2
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 4
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 40
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "denoise",
+          "name": "denoise",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "link": 47
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0",
+        "Node name for S&R": "KSampler",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        1,
+        "fixed",
+        12,
+        1,
+        "euler",
+        "simple",
+        0.64
+      ],
+      "widgets_values_named": {
+        "seed": 1,
+        "control_after_generate": "fixed",
+        "steps": 12,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 0.64
+      }
+    },
+    {
+      "id": 3,
+      "type": "CLIPTextEncode",
+      "pos": [
+        530,
+        5590
+      ],
+      "size": [
+        400,
+        200
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 5
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 44
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            2,
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0",
+        "Node name for S&R": "CLIPTextEncode",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "A man with curly hair and trimmed beard"
+      ],
+      "widgets_values_named": {
+        "text": "A man with curly hair and trimmed beard"
+      }
+    },
+    {
+      "id": 4,
+      "type": "ConditioningZeroOut",
+      "pos": [
+        565,
+        5610
+      ],
+      "size": [
+        204.134765625,
+        26
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "conditioning",
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CONDITIONING",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0",
+        "Node name for S&R": "ConditioningZeroOut",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "VAEDecode",
+      "pos": [
+        1814.3338691513961,
+        5096.024936244286
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "samples",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 6
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            42
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0",
+        "Node name for S&R": "VAEDecode",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "NKDBridgeOutput",
+      "pos": [
+        2140,
+        5090
+      ],
+      "size": [
+        253.7479543108766,
+        146
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 43
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": 53
+        },
+        {
+          "localized_name": "destination",
+          "name": "destination",
+          "type": "STRING",
+          "widget": {
+            "name": "destination"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeOutput",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "new:layer",
+        "NKD {n}"
+      ],
+      "widgets_values_named": {
+        "destination": "NKD 1 #4",
+        "name": "NKD {n}"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 22,
+      "type": "PreviewImage",
+      "pos": [
+        510,
+        5065
+      ],
+      "size": [
+        208.08182346227272,
+        260
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 29
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            35
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0",
+        "Node name for S&R": "PreviewImage",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      }
+    },
+    {
+      "id": 23,
+      "type": "NKDBridgeInput",
+      "pos": [
+        125.39112442631898,
+        5065
+      ],
+      "size": [
+        350.5886563097015,
+        122
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "source",
+          "name": "source",
+          "type": "STRING",
+          "widget": {
+            "name": "source"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "selection_source",
+          "name": "selection_source",
+          "type": "STRING",
+          "widget": {
+            "name": "selection_source"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            29
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "selection",
+          "name": "selection",
+          "type": "MASK",
+          "links": [
+            51
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeInput",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "@document",
+        "@selection"
+      ],
+      "widgets_values_named": {
+        "source": "@document",
+        "selection_source": "@selection"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 29,
+      "type": "NKDInpaintCrop",
+      "pos": [
+        1137.5650840230833,
+        5067.024936244286
+      ],
+      "size": [
+        210,
+        330
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 35
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "link": 52
+        },
+        {
+          "localized_name": "model",
+          "name": "model",
+          "shape": 7,
+          "type": "MODEL",
+          "link": 54
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "shape": 7,
+          "type": "VAE",
+          "link": 38
+        },
+        {
+          "localized_name": "Invert Mask",
+          "name": "invert_mask",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "invert_mask"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Fill Mask Holes",
+          "name": "fill_holes",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "fill_holes"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Mask Expand",
+          "name": "mask_expand",
+          "type": "INT",
+          "widget": {
+            "name": "mask_expand"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Mask Blur",
+          "name": "mask_blur",
+          "type": "INT",
+          "widget": {
+            "name": "mask_blur"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Inpaint Blend",
+          "name": "inpaint_blend",
+          "type": "FLOAT",
+          "widget": {
+            "name": "inpaint_blend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Context Padding",
+          "name": "padding",
+          "type": "INT",
+          "widget": {
+            "name": "padding"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Resize Mode",
+          "name": "resize_mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "resize_mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Megapixels",
+          "name": "megapixels",
+          "type": "FLOAT",
+          "widget": {
+            "name": "megapixels"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Longest Side",
+          "name": "longest_side",
+          "type": "INT",
+          "widget": {
+            "name": "longest_side"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Min Resolution",
+          "name": "min_resolution",
+          "type": "INT",
+          "widget": {
+            "name": "min_resolution"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Max Resolution",
+          "name": "max_resolution",
+          "type": "INT",
+          "widget": {
+            "name": "max_resolution"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Separate Regions",
+          "name": "separate_regions",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "separate_regions"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Min Region Area %",
+          "name": "region_min_area",
+          "type": "FLOAT",
+          "widget": {
+            "name": "region_min_area"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Max Regions",
+          "name": "max_regions",
+          "type": "INT",
+          "widget": {
+            "name": "max_regions"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Region Order",
+          "name": "region_order",
+          "type": "COMBO",
+          "widget": {
+            "name": "region_order"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            39
+          ]
+        },
+        {
+          "localized_name": "image",
+          "name": "image",
+          "shape": 6,
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "shape": 6,
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "latent",
+          "name": "latent",
+          "shape": 6,
+          "type": "LATENT",
+          "links": [
+            40
+          ]
+        },
+        {
+          "localized_name": "crop_data",
+          "name": "crop_data",
+          "shape": 6,
+          "type": "NKD_CROPDATA",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-nkd-basic-tools",
+        "ver": "726d727217a15a469319731d9a17a66159435557",
+        "Node name for S&R": "NKDInpaintCrop",
+        "nkdSchema": 1,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        false,
+        true,
+        0,
+        0,
+        1,
+        50,
+        "Megapixels",
+        1,
+        1024,
+        768,
+        2048,
+        false,
+        0.1,
+        8,
+        "Largest First"
+      ],
+      "widgets_values_named": {
+        "invert_mask": false,
+        "fill_holes": true,
+        "mask_expand": 0,
+        "mask_blur": 0,
+        "inpaint_blend": 1,
+        "padding": 50,
+        "resize_mode": "Megapixels",
+        "megapixels": 1,
+        "longest_side": 1024,
+        "min_resolution": 768,
+        "max_resolution": 2048,
+        "separate_regions": false,
+        "region_min_area": 0.1,
+        "max_regions": 8,
+        "region_order": "Largest First"
+      }
+    },
+    {
+      "id": 30,
+      "type": "NKDInpaintStitch",
+      "pos": [
+        1814.3338691513961,
+        5127.024936244286
+      ],
+      "size": [
+        270,
+        150
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 42
+        },
+        {
+          "localized_name": "crop_data",
+          "name": "crop_data",
+          "type": "NKD_CROPDATA",
+          "link": 41
+        },
+        {
+          "localized_name": "Feather",
+          "name": "feather",
+          "type": "INT",
+          "widget": {
+            "name": "feather"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Edge Hardness",
+          "name": "edge_hardness",
+          "type": "FLOAT",
+          "widget": {
+            "name": "edge_hardness"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Match Colors",
+          "name": "match_colors",
+          "type": "FLOAT",
+          "widget": {
+            "name": "match_colors"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Seamless Edges",
+          "name": "seamless_edges",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "seamless_edges"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            43
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-nkd-basic-tools",
+        "ver": "726d727217a15a469319731d9a17a66159435557",
+        "Node name for S&R": "NKDInpaintStitch",
+        "nkdSchema": 1,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        10,
+        0,
+        0.5,
+        false
+      ],
+      "widgets_values_named": {
+        "feather": 10,
+        "edge_hardness": 0,
+        "match_colors": 0.5,
+        "seamless_edges": false
+      }
+    },
+    {
+      "id": 31,
+      "type": "NKDBridgeText",
+      "pos": [
+        140,
+        5545
+      ],
+      "size": [
+        335,
+        145
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            44
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeText",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "prompt",
+        ""
+      ],
+      "widgets_values_named": {
+        "name": "prompt",
+        "text": ""
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 33,
+      "type": "NKDBridgeNumber",
+      "pos": [
+        895,
+        5620
+      ],
+      "size": [
+        270,
+        174
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "FLOAT",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "min",
+          "name": "min",
+          "type": "FLOAT",
+          "widget": {
+            "name": "min"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "max",
+          "name": "max",
+          "type": "FLOAT",
+          "widget": {
+            "name": "max"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "step",
+          "name": "step",
+          "type": "FLOAT",
+          "widget": {
+            "name": "step"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "float",
+          "name": "float",
+          "type": "FLOAT",
+          "links": [
+            47
+          ]
+        },
+        {
+          "localized_name": "int",
+          "name": "int",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeNumber",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "denoise",
+        0.8,
+        0,
+        1,
+        0.01
+      ],
+      "widgets_values_named": {
+        "name": "denoise",
+        "value": 0.8,
+        "min": 0,
+        "max": 1,
+        "step": 0.01
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 35,
+      "type": "NKDMaskOpsLean",
+      "pos": [
+        735,
+        5110
+      ],
+      "size": [
+        270,
+        338
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "link": 51
+        },
+        {
+          "localized_name": "Fill Holes",
+          "name": "fill_holes",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "fill_holes"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Expand / Contract",
+          "name": "expand",
+          "type": "INT",
+          "widget": {
+            "name": "expand"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Feather",
+          "name": "feather",
+          "type": "INT",
+          "widget": {
+            "name": "feather"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "links": [
+            52,
+            53
+          ]
+        },
+        {
+          "localized_name": "mask_inverted",
+          "name": "mask_inverted",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-nkd-basic-tools",
+        "ver": "726d727217a15a469319731d9a17a66159435557",
+        "Node name for S&R": "NKDMaskOpsLean",
+        "nkdSchema": 1,
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        false,
+        30,
+        40
+      ],
+      "widgets_values_named": {
+        "fill_holes": false,
+        "expand": 30,
+        "feather": 40
+      }
+    },
+    {
+      "id": 36,
+      "type": "NKDHint",
+      "pos": [
+        45,
+        5590
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Text\nUse this node to create a text box synced with Photoshop.\n\n### Name\nThe label you'll see in the Photoshop panel, and at the same time the node's ID if you want to use its content to name the layers you send back to Photoshop from Bridge Output, e.g. `{prompt}` or `{negative_prompt}`.\n\n### Text\nA `multiline` field synced with the PS panel: edit it on either side.",
+        "targets": [
+          {
+            "node": "31",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 300,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Text\nUsa este nodo para crear un cuadro de texto sincronizado con Photoshop\n\n### Nombre\nEs la etiqueta que verás en el panel de Photoshop y al mismo tiempo la ID del nodo si quieres invocar su contenido para nombrar las capas que mandes de nuevo a Photoshop desde el nodo de Bridge Output, p.ej. `{prompt}` o `{prompt_negativo}`.\n\n### Texto\nUn `multiline` sincronizado con el panel de PS: edítalo en cualquiera de los dos lados."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 38,
+      "type": "NKDHint",
+      "pos": [
+        45.37456315116847,
+        5097.074384119139
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Photoshop source\nWhere the image comes from: **Whole document** (everything visible, whichever layer is active) or one layer/group. The binding survives renames. You can also set it from the panel with **Use active** / **Document**.\n\n# Selection source\nWhat the `selection` output gives: the **current selection** (or Quick Mask) or a saved channel/path. White = selected, all black if nothing is selected.\n\n# Outputs\n`image` · `alpha` (layer transparency) · `selection` (document-sized mask).",
+        "targets": [
+          {
+            "node": "23",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 300,
+        "min": "",
+        "max": "",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        },
+        "texts": {
+          "es": "# Photoshop source\nDe dónde sale la imagen: **Whole document** (todo lo visible, esté activa la capa que esté) o una capa/grupo concreto. El vínculo sobrevive a renombrar. También se fija desde el panel con **Usar activa** / **Documento**.\n\n# Selection source\nQué da la salida `selection`: la **selección actual** (o Máscara rápida) o un canal/trazado guardado. Blanco = seleccionado; todo negro si no hay selección.\n\n# Salidas\n`image` · `alpha` (transparencia de la capa) · `selection` (máscara del tamaño del documento)."
+        }
+      }
+    },
+    {
+      "id": 39,
+      "type": "NKDHint",
+      "pos": [
+        2470.572697832435,
+        5170.684419047809
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Output\nSends the result back to Photoshop.\n\n## Destination\n- **Panel only**: just shows it in the panel, touches nothing in the document.\n- **+ New layer**: creates a layer and binds the node to it. From then on it's an existing layer.\n- **+ New group**: creates a group and binds the node to it. From then on it's an existing group.\n- **Existing layer** (e.g. `NKD 1 #4`): replaced on every run.\n- **Existing group** (e.g. `Variations/ #7`): a new layer inside it on every run, so you keep the variations (in Live mode the latest is replaced).\n\nThe `#number` is the Photoshop ID: the binding survives renames.\n\n## Name\nName for the layers it creates. Pick variables from **Insert variable**: `{n}` `{seed}` `{date}` `{time}` `{doc}` and any Bridge Text/Number by its name, e.g. `{prompt}`.\n\n## Mask\nTransparency for the written layer (white = keep). Plug in Bridge Input's `selection` to change only the selection.",
+        "targets": [
+          {
+            "node": "9",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 400,
+        "min": "",
+        "max": "",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        },
+        "texts": {
+          "es": "# Bridge Output\nDevuelve el resultado a Photoshop.\n\n## Destination\n- **Panel only**: solo se muestra en el panel, no toca el documento.\n- **+ New layer**: crea una capa y vincula el nodo a ella. A partir de ahí es una capa existente.\n- **+ New group**: crea un grupo y vincula el nodo a él. A partir de ahí es un grupo existente.\n- **Capa existente** (p.ej. `NKD 1 #4`): se reemplaza en cada ejecución.\n- **Grupo existente** (p.ej. `Variaciones/ #7`): una capa nueva dentro en cada ejecución, así conservas las variaciones (en modo Live se reemplaza la última).\n\nEl `#número` es el ID de Photoshop: el vínculo sobrevive a renombrar.\n\n## Name\nNombre de las capas que crea. Elige variables en **Insert variable**: `{n}` `{seed}` `{date}` `{time}` `{doc}` y cualquier Bridge Text/Number por su nombre, p.ej. `{prompt}`.\n\n## Mask\nTransparencia de la capa escrita (blanco = se queda). Conecta la `selection` de Bridge Input para cambiar solo la selección."
+        }
+      }
+    },
+    {
+      "id": 41,
+      "type": "NKDHint",
+      "pos": [
+        812.4420477025984,
+        5677.442102355323
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Number\nTurns any number in the workflow into a **slider in the Photoshop panel**, so you can tweak it without opening ComfyUI.\n\n## Values\n- **name**: the slider's label in the panel (and the `{denoise}` variable for naming layers).\n- **value**: where the slider is now. Move it in PS and it changes here, and the other way round.\n- **min / max**: the slider's ends. Set them to what makes sense. For example: 0–1 for denoise; 0–250 for a mask's padding.\n- **step**: how far each notch moves. `0.01` = fine tuning with decimals, `1` = whole numbers (steps, seed), `0.05` = quick jumps, etc.\n\nConnect the output that matches what the widget takes: `int` for whole numbers (like `steps`) and `float` for values with decimals, like `denoise`.",
+        "targets": [
+          {
+            "node": "33",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        },
+        "texts": {
+          "es": "# Bridge Number\nConvierte cualquier número del workflow en un **slider en el panel de Photoshop**, para retocarlo sin abrir ComfyUI.\n\n## Valores\n- **name**: la etiqueta del slider en el panel (y la variable `{denoise}` para nombrar capas).\n- **value**: dónde está el slider ahora. Si lo mueves en PS cambia aquí, y al revés.\n- **min / max**: los extremos del slider. Ajústalos a lo que tiene sentido. Por ejemplo: 0–1 para denoise; 0–250 para el padding de una máscara.\n- **step**: cuánto avanza cada muesca. `0.01` = ajuste fino con decimales, `1` = números enteros (steps, seed), `0.05` = saltos rápidos, etc\n\nConecta la salida al widget según lo que este reciba: `int` si se trata de números enteros (como `steps`) y `float` si se trata de un valor con decimales, como `denoise`"
+        }
+      }
+    }
+  ],
+  "links": [
+    [
+      2,
+      3,
+      0,
+      2,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      4,
+      4,
+      0,
+      2,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      5,
+      1,
+      1,
+      3,
+      0,
+      "CLIP"
+    ],
+    [
+      6,
+      2,
+      0,
+      5,
+      0,
+      "LATENT"
+    ],
+    [
+      7,
+      1,
+      2,
+      5,
+      1,
+      "VAE"
+    ],
+    [
+      29,
+      23,
+      0,
+      22,
+      0,
+      "IMAGE"
+    ],
+    [
+      35,
+      22,
+      0,
+      29,
+      0,
+      "IMAGE"
+    ],
+    [
+      38,
+      1,
+      2,
+      29,
+      3,
+      "VAE"
+    ],
+    [
+      39,
+      29,
+      0,
+      2,
+      0,
+      "MODEL"
+    ],
+    [
+      40,
+      29,
+      3,
+      2,
+      3,
+      "LATENT"
+    ],
+    [
+      41,
+      29,
+      4,
+      30,
+      1,
+      "NKD_CROPDATA"
+    ],
+    [
+      42,
+      5,
+      0,
+      30,
+      0,
+      "IMAGE"
+    ],
+    [
+      43,
+      30,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      44,
+      31,
+      0,
+      3,
+      1,
+      "STRING"
+    ],
+    [
+      47,
+      33,
+      0,
+      2,
+      9,
+      "FLOAT"
+    ],
+    [
+      51,
+      23,
+      2,
+      35,
+      0,
+      "MASK"
+    ],
+    [
+      52,
+      35,
+      0,
+      29,
+      1,
+      "MASK"
+    ],
+    [
+      53,
+      35,
+      0,
+      9,
+      1,
+      "MASK"
+    ],
+    [
+      54,
+      1,
+      0,
+      29,
+      2,
+      "MODEL"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ue_links": [],
+    "ds": {
+      "scale": 1.1167815779424797,
+      "offset": [
+        84.60856595811536,
+        -4910.739773947239
+      ]
+    },
+    "links_added_by_ue": [],
+    "nkdBuses": [
+      {
+        "id": 1,
+        "rerouteIds": [
+          2,
+          3
+        ]
+      }
+    ],
+    "reroutes": [
+      {
+        "id": 1,
+        "pos": [
+          1373.4450669178934,
+          5634
+        ],
+        "linkIds": [
+          47
+        ]
+      },
+      {
+        "id": 2,
+        "pos": [
+          1245,
+          5574
+        ],
+        "linkIds": [
+          2
+        ]
+      },
+      {
+        "id": 3,
+        "pos": [
+          1245,
+          5594
+        ],
+        "linkIds": [
+          4
+        ]
+      }
+    ],
+    "linkExtensions": [
+      {
+        "id": 2,
+        "parentId": 2
+      },
+      {
+        "id": 4,
+        "parentId": 3
+      },
+      {
+        "id": 47,
+        "parentId": 1
+      }
+    ],
+    "linkPresentation": {
+      "5": {
+        "hidden": true
+      },
+      "7": {
+        "hidden": true
+      },
+      "38": {
+        "hidden": true
+      }
+    }
+  },
+  "version": 0.4
+}

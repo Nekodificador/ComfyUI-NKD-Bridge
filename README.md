@@ -23,7 +23,15 @@ All of them live under `😺NKD Nodes/Bridge`.
 | [Bridge Text](docs/nodes.md#bridge-number-and-bridge-text) | A text box in the Photoshop panel |
 | [Bridge Output](docs/nodes.md#bridge-output) | Sends the image back to a named layer, or to the panel |
 
-More: [Live mode and speed](docs/live.md) · [Protocol, for adding other apps](docs/protocol.md) · [Example workflows](example_workflows/) (the inpaint one also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools))
+More: [Live mode and speed](docs/live.md) · [Protocol, for adding other apps](docs/protocol.md)
+
+### Example workflows
+
+In [example_workflows/](example_workflows/):
+
+- `NKD Bridge - Live SD1.5 LCM.json`: paint and watch it regenerate. The one to start with.
+- `NKD Bridge - Inpaint selection SD1.5 LCM.json`: redoes only the selected area. Also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools).
+- `NKD Bridge - Inpaint selection ZImage Turbo.json`: the same with Z-Image Turbo, a prompt and a denoise slider in the panel, and explained hints on each Bridge node. Also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools), and [NKD Notes](https://github.com/Nekodificador/ComfyUI-NKD-Notes) for the hints.
 
 ## Credits
 

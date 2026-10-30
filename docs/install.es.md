@@ -58,7 +58,7 @@ Con ComfyUI en marcha y su pestaña abierta en el navegador, mira la parte de ar
 3. En Photoshop, crea un documento (1024 × 1024 vale) y pinta unas manchas de color.
 4. En el panel, pulsa **Generar**. Verás el progreso en tu pestaña de ComfyUI, y el resultado aparece en el panel y como una capa nueva llamada `NKD Live 1`.
 5. Marca **Live** y sigue pintando: se regenera cada vez que paras.
-6. Para hacer inpainting, instala también [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools) (desde el ComfyUI Manager), abre `NKD Bridge - Inpaint selection SD1.5 LCM.json`, haz una selección en Photoshop y pulsa **Generar**: solo se rehace la zona seleccionada, y el resultado vuelve a su sitio como la capa `NKD Inpaint 1`.
+6. Para hacer inpainting, instala también [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools) (desde el ComfyUI Manager), abre `NKD Bridge - Inpaint selection SD1.5 LCM.json`, haz una selección en Photoshop y pulsa **Generar**: solo se rehace la zona seleccionada, y el resultado vuelve a su sitio como la capa `NKD Inpaint 1`. Si tienes Z-Image Turbo, `NKD Bridge - Inpaint selection ZImage Turbo.json` hace lo mismo con un prompt y un slider de denoise en el panel.
 
 ## Vincular una capa a un nodo
 

@@ -58,7 +58,7 @@ With ComfyUI running and its tab open in your browser, look at the top of the pa
 3. In Photoshop, create a document (1024 × 1024 is fine) and paint some colour blobs.
 4. In the panel, press **Generate**. You'll see the progress in your ComfyUI tab, and the result appears in the panel and as a new layer called `NKD Live 1`.
 5. Tick **Live** and keep painting: it regenerates each time you pause.
-6. For inpainting, install [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools) too (from the ComfyUI Manager), open `NKD Bridge - Inpaint selection SD1.5 LCM.json` instead, make a selection in Photoshop and press **Generate**: only the selected area is redone, and the result lands back on it as the `NKD Inpaint 1` layer.
+6. For inpainting, install [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools) too (from the ComfyUI Manager), open `NKD Bridge - Inpaint selection SD1.5 LCM.json` instead, make a selection in Photoshop and press **Generate**: only the selected area is redone, and the result lands back on it as the `NKD Inpaint 1` layer. If you have Z-Image Turbo, `NKD Bridge - Inpaint selection ZImage Turbo.json` does the same with a prompt and a denoise slider in the panel.
 
 ## Binding a layer to a node
 
