@@ -1,0 +1,1175 @@
+{
+  "id": "dffddf23-7770-4d5d-8f95-78cdd3eabcff",
+  "revision": 0,
+  "last_node_id": 110,
+  "last_link_id": 3,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "NKDBridgeInput",
+      "pos": [
+        232.3439327376272,
+        158.08969634730255
+      ],
+      "size": [
+        340,
+        180
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "source",
+          "name": "source",
+          "type": "STRING",
+          "widget": {
+            "name": "source"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "selection_source",
+          "name": "selection_source",
+          "type": "STRING",
+          "widget": {
+            "name": "selection_source"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "document",
+          "name": "document",
+          "type": "STRING",
+          "widget": {
+            "name": "document"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "selection",
+          "name": "selection",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "979bd2f067e9c91f85a79ed863a176e29af68812",
+        "Node name for S&R": "NKDBridgeInput",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "@document",
+        "@selection",
+        "@active"
+      ],
+      "widgets_values_named": {
+        "source": "@document",
+        "selection_source": "@selection",
+        "document": "@active"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 2,
+      "type": "NKDBridgeOutput",
+      "pos": [
+        652.3439327376273,
+        158.08969634730255
+      ],
+      "size": [
+        340,
+        420
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "localized_name": "destination",
+          "name": "destination",
+          "type": "STRING",
+          "widget": {
+            "name": "destination"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "document",
+          "name": "document",
+          "type": "STRING",
+          "widget": {
+            "name": "document"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "save_after_write",
+          "name": "save_after_write",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "save_after_write"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "979bd2f067e9c91f85a79ed863a176e29af68812",
+        "Node name for S&R": "NKDBridgeOutput",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "new:layer",
+        "NKD {n}",
+        "@active",
+        false
+      ],
+      "widgets_values_named": {
+        "destination": "new:layer",
+        "name": "NKD {n}",
+        "document": "@active",
+        "save_after_write": false
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 3,
+      "type": "NKDBridgeText",
+      "pos": [
+        25.574543024601596,
+        717.3318573152335
+      ],
+      "size": [
+        340,
+        160
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "979bd2f067e9c91f85a79ed863a176e29af68812",
+        "Node name for S&R": "NKDBridgeText",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Prompt",
+        ""
+      ],
+      "widgets_values_named": {
+        "name": "Prompt",
+        "text": ""
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 4,
+      "type": "NKDBridgeNumber",
+      "pos": [
+        445.5745430246017,
+        717.3318573152335
+      ],
+      "size": [
+        300,
+        180
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "FLOAT",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "min",
+          "name": "min",
+          "type": "FLOAT",
+          "widget": {
+            "name": "min"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "max",
+          "name": "max",
+          "type": "FLOAT",
+          "widget": {
+            "name": "max"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "step",
+          "name": "step",
+          "type": "FLOAT",
+          "widget": {
+            "name": "step"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "float",
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "localized_name": "int",
+          "name": "int",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "979bd2f067e9c91f85a79ed863a176e29af68812",
+        "Node name for S&R": "NKDBridgeNumber",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Denoise",
+        0.5,
+        0,
+        1,
+        0.05
+      ],
+      "widgets_values_named": {
+        "name": "Denoise",
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 5,
+      "type": "NKDBridgeSeed",
+      "pos": [
+        825.5745430246011,
+        717.3318573152335
+      ],
+      "size": [
+        300,
+        110
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "979bd2f067e9c91f85a79ed863a176e29af68812",
+        "Node name for S&R": "NKDBridgeSeed",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Seed",
+        0,
+        "fixed"
+      ],
+      "widgets_values_named": {
+        "name": "Seed",
+        "seed": 0,
+        "control_after_generate": "fixed"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 6,
+      "type": "NKDBridgeChoice",
+      "pos": [
+        268.6784168683248,
+        1221.1533402147195
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "STRING",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "options",
+          "name": "options",
+          "type": "STRING",
+          "widget": {
+            "name": "options"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "*",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "979bd2f067e9c91f85a79ed863a176e29af68812",
+        "Node name for S&R": "NKDBridgeChoice",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Sampler",
+        "euler",
+        "euler\neuler_cfg_pp\neuler_ancestral\neuler_ancestral_cfg_pp\nheun\nheunpp2\nexp_heun_2_x0\nexp_heun_2_x0_sde\ndpm_2\ndpm_2_ancestral\nlms\ndpm_fast\ndpm_adaptive\ndpmpp_2s_ancestral\ndpmpp_2s_ancestral_cfg_pp\ndpmpp_sde\ndpmpp_sde_gpu\ndpmpp_2m\ndpmpp_2m_cfg_pp\ndpmpp_2m_sde\ndpmpp_2m_sde_gpu\ndpmpp_2m_sde_heun\ndpmpp_2m_sde_heun_gpu\ndpmpp_3m_sde\ndpmpp_3m_sde_gpu\nddpm\nlcm\nipndm\nipndm_v\ndeis\ncfgpp_ud10_ab\nres_multistep\nres_multistep_cfg_pp\nres_multistep_ancestral\nres_multistep_ancestral_cfg_pp\ngradient_estimation\ngradient_estimation_cfg_pp\ner_sde\nseeds_2\nseeds_3\nsa_solver\nsa_solver_pece\nddim\nuni_pc\nuni_pc_bh2\nlegacy_rk\nrk\nrk_beta\ndeis_3m_ode\ndeis_2m_ode\ndeis_3m\ndeis_2m\nres_6s_ode\nres_5s_ode\nres_3s_ode\nres_2s_ode\nres_3m_ode\nres_2m_ode\nres_6s\nres_5s\nres_3s\nres_2s\nres_3m\nres_2m"
+      ],
+      "widgets_values_named": {
+        "name": "Sampler",
+        "value": "euler",
+        "options": "euler\neuler_cfg_pp\neuler_ancestral\neuler_ancestral_cfg_pp\nheun\nheunpp2\nexp_heun_2_x0\nexp_heun_2_x0_sde\ndpm_2\ndpm_2_ancestral\nlms\ndpm_fast\ndpm_adaptive\ndpmpp_2s_ancestral\ndpmpp_2s_ancestral_cfg_pp\ndpmpp_sde\ndpmpp_sde_gpu\ndpmpp_2m\ndpmpp_2m_cfg_pp\ndpmpp_2m_sde\ndpmpp_2m_sde_gpu\ndpmpp_2m_sde_heun\ndpmpp_2m_sde_heun_gpu\ndpmpp_3m_sde\ndpmpp_3m_sde_gpu\nddpm\nlcm\nipndm\nipndm_v\ndeis\ncfgpp_ud10_ab\nres_multistep\nres_multistep_cfg_pp\nres_multistep_ancestral\nres_multistep_ancestral_cfg_pp\ngradient_estimation\ngradient_estimation_cfg_pp\ner_sde\nseeds_2\nseeds_3\nsa_solver\nsa_solver_pece\nddim\nuni_pc\nuni_pc_bh2\nlegacy_rk\nrk\nrk_beta\ndeis_3m_ode\ndeis_2m_ode\ndeis_3m\ndeis_2m\nres_6s_ode\nres_5s_ode\nres_3s_ode\nres_2s_ode\nres_3m_ode\nres_2m_ode\nres_6s\nres_5s\nres_3s\nres_2s\nres_3m\nres_2m"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 7,
+      "type": "NKDBridgeChoice",
+      "pos": [
+        268.6784168683248,
+        1420.1533402147197
+      ],
+      "size": [
+        300,
+        90
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "STRING",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "options",
+          "name": "options",
+          "type": "STRING",
+          "widget": {
+            "name": "options"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "*",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "979bd2f067e9c91f85a79ed863a176e29af68812",
+        "Node name for S&R": "NKDBridgeChoice",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Detailer",
+        "false",
+        "@boolean"
+      ],
+      "widgets_values_named": {
+        "name": "Detailer",
+        "value": "false",
+        "options": "@boolean"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 8,
+      "type": "KSampler",
+      "pos": [
+        668.6784168683232,
+        1043.1533402147193
+      ],
+      "size": [
+        320,
+        262
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": null
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": null
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": null
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": 1
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "denoise",
+          "name": "denoise",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENT",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.43.0",
+        "Node name for S&R": "KSampler",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "seed": true,
+            "steps": true,
+            "cfg": true,
+            "sampler_name": true,
+            "scheduler": true,
+            "denoise": true
+          },
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        0,
+        "fixed",
+        20,
+        8,
+        "euler",
+        "normal",
+        1
+      ],
+      "widgets_values_named": {
+        "seed": 0,
+        "control_after_generate": "fixed",
+        "steps": 20,
+        "cfg": 8,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "denoise": 1
+      }
+    },
+    {
+      "id": 101,
+      "type": "NKDHint",
+      "pos": [
+        192.3439327376272,
+        118.08969634730252
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Input\nBrings pixels from Photoshop into the workflow.\n\n### Document\nWhich document to read. **Active document** follows whichever one is active; pick one from the list to always read that one, even while you work in another.\n\n### Photoshop source\n- Bring in the whole document at once, or pick specific layers or groups. That way a group can be your input without being affected by new layers you import or adjustments you make on top.\n\n### Selection source\n- Bring in as a mask the active selection in Photoshop, a quick mask, or any selection or path you've saved.\n\n### Outputs\n- `image` and `alpha`: the pixels and their transparency (if the layer or group has a mask in Photoshop), at document size.\n- `selection`: white where there's a selection and black everywhere else; with nothing selected it's all black. Photoshop only sends it while this output is connected.",
+        "targets": [
+          {
+            "node": "1",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 1,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Input\nTrae píxeles de Photoshop al workflow.\n\n### Document\nQué documento leer. **Active document** sigue al que tengas activo; elige uno de la lista para leer siempre ese, aunque estés trabajando en otro.\n\n### Photoshop source\n- Puedes importar todo el documento a la vez o elegir capas o grupos específicos. Esto te permite tener un grupo como input que no se vea afectado por las nuevas capas que se importen o ajustes que hagas por encima.\n\n### Selection source\n- Puedes importar como máscara la selección activa en Photoshop, una máscara rápida o cualquier selección o trazo que tengas guardado.\n\n### Salidas\n- `image` y `alpha`: los píxeles y su transparencia (si la capa o grupo tiene una máscara en Photoshop) a tamaño de documento.\n- `selection`: blanco donde hay selección y negro en el resto; sin nada seleccionado sale entera en negro. Photoshop solo la envía si esta salida está conectada."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 102,
+      "type": "NKDHint",
+      "pos": [
+        612.3439327376273,
+        118.08969634730252
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Output\nSends the result back to Photoshop. It runs every time you generate, even if nothing before it changed.\n\n### Document\n**Active document** sends it back to the document the pixels came from. Pick another one to receive it there, for example a smart object's contents.\n\n### Destination\n- **Panel only**: shown only in the panel, so you can check it before bringing it in as a layer. That keeps the document from filling up with iterations.\n- **+ New layer** / **+ New group**: creates the layer or group the first time and stays bound to it.\n- An existing layer: replaced on every generation.\n- An existing group (`Name/`): a new layer inside each time. With Live, the latest one is replaced.\n\n### name\nThe name of the layers it creates. It takes variables: `{n}`, `{seed}`, `{date}`, `{time}`, `{doc}` and any Bridge Text, Number, Choice or Seed by its name, e.g. `{Prompt}`.\n\n### mask\nOptional. The layer's transparency: white stays, black disappears. Connect Bridge Input's `selection` to change only what's selected. If it arrives all black (nothing selected) it's ignored and the whole image is written. If you connect an image that already has transparency, it keeps it.\n\n### save_after_write\nSaves the document after writing. Turn it on when the destination is a smart object's contents, so it updates by itself.",
+        "targets": [
+          {
+            "node": "2",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 2,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Output\nDevuelve el resultado a Photoshop. Se ejecuta cada vez que generas, aunque nada haya cambiado antes.\n\n### Document\n**Active document** lo devuelve al documento del que salieron los píxeles. Elige otro para recibirlo allí, por ejemplo el contenido de un objeto inteligente.\n\n### Destination\n- **Panel only**: solo se ve en el panel, para que puedas revisar el contenido antes de importarlo como capa. Así puedes evitar que se sature el documento con iteraciones.\n- **+ New layer** / **+ New group**: crea la capa o el grupo la primera vez y se queda vinculado a él.\n- Una capa existente: se sustituye en cada generación.\n- Un grupo existente (`Nombre/`): una capa nueva dentro cada vez. Con Live se reemplaza la última.\n\n### name\nNombre de las capas que crea. Admite variables: `{n}`, `{seed}`, `{date}`, `{time}`, `{doc}` y cualquier Bridge Text, Number, Choice o Seed por su nombre, p.ej. `{Prompt}`.\n\n### mask\nOpcional. Transparencia de la capa: el blanco se queda y el negro desaparece. Conéctale la `selection` del Bridge Input para cambiar solo lo seleccionado. Si llega entera en negro (nada seleccionado) se ignora y se escribe la imagen completa. Si le conectas una imagen que ya tenga transparencia, la conserva.\n\n### save_after_write\nGuarda el documento después de escribir. Actívalo si el destino es el contenido de un objeto inteligente, para que se actualice solo."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 103,
+      "type": "NKDHint",
+      "pos": [
+        -14.425456975398363,
+        677.3318573152335
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Text\nA text box in the Photoshop panel, for prompts or any text in the workflow.\n\n### name\nThe label in the panel, and the variable for naming layers: `{Prompt}`.\n\n### text\nThe text. It's synced with the panel: edit it on either side.",
+        "targets": [
+          {
+            "node": "3",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 3,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Text\nUn cuadro de texto en el panel de Photoshop, para prompts o cualquier texto del workflow.\n\n### name\nLa etiqueta en el panel, y la variable para nombrar capas: `{Prompt}`.\n\n### text\nEl texto. Está sincronizado con el panel: edítalo en cualquiera de los dos lados."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 104,
+      "type": "NKDHint",
+      "pos": [
+        405.5745430246017,
+        677.3318573152335
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Number\nA slider in the Photoshop panel for any number in the workflow: denoise, steps, the strength of a reference…\n\n### name\nThe slider's label and its variable for naming layers: `{Denoise}`.\n\n### value · min · max · step\nWhere the slider is, its limits and how far each step goes. The panel's ◀ ▶ arrows move it one `step` down or up.\n\n### Outputs\n`float` with decimals, and `int` rounded for steps or any whole number.",
+        "targets": [
+          {
+            "node": "4",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 4,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Number\nUn slider en el panel de Photoshop para cualquier número del workflow: denoise, pasos, la fuerza de una referencia…\n\n### name\nLa etiqueta del slider y su variable para nombrar capas: `{Denoise}`.\n\n### value · min · max · step\nDónde está el slider, sus límites y cuánto avanza en cada paso. Las flechas ◀ ▶ del panel suben o bajan un `step`.\n\n### Salidas\n`float` con decimales, e `int` redondeado para pasos o cualquier entero."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 105,
+      "type": "NKDHint",
+      "pos": [
+        785.5745430246011,
+        677.3318573152335
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Seed\nThe seed, controlled from the panel. Connect its output to the sampler's `seed`.\n\n### name\nThe label in the panel and the `{Seed}` variable for naming layers (`{seed}` works too).\n\n### seed\nThe number. In the panel you can type one or press 🎲 to roll a random one.\n\n### control after generate\nWhat happens after each generation: **fixed** keeps it (best for Live), **randomize** rolls a new one, **increment** and **decrement** add or subtract 1. With randomize every Generate runs again, even if you haven't touched anything.",
+        "targets": [
+          {
+            "node": "5",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 5,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Seed\nLa seed, controlada desde el panel. Conecta su salida a la `seed` del sampler.\n\n### name\nLa etiqueta en el panel y la variable `{Seed}` para nombrar capas (`{seed}` también vale).\n\n### seed\nEl número. En el panel puedes escribir uno o pulsar 🎲 para sacar otro al azar.\n\n### control after generate\nQué pasa después de cada generación: **fixed** la mantiene (lo mejor para Live), **randomize** saca una nueva, **increment** y **decrement** suben o bajan 1. Con randomize cada Generar vuelve a ejecutar, aunque no hayas tocado nada."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 106,
+      "type": "NKDHint",
+      "pos": [
+        160.67841686832455,
+        1221.1533402147195
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Choice\nBrings any dropdown in the workflow to the panel: sampler, scheduler, a switch's options…\n\n### How to use it\nConnect its output to a dropdown input, here the KSampler's `sampler_name`. It copies its options and current value, and shows up in the panel as a list.\n\n### name\nThe label in the panel and its variable for naming layers.\n\n### Value\nThe chosen option. Changing it in the panel changes it here. Connect it to another input and it takes that input's options.",
+        "targets": [
+          {
+            "node": "6",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 6,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Choice\nLleva al panel cualquier desplegable del workflow: sampler, scheduler, las opciones de un switch…\n\n### Cómo se usa\nConecta su salida a la entrada de un desplegable, aquí el `sampler_name` del KSampler. Copia sus opciones y su valor actual, y en el panel aparece como una lista.\n\n### name\nLa etiqueta en el panel y su variable para nombrar capas.\n\n### Value\nLa opción elegida. Cambiarla en el panel la cambia aquí. Si lo conectas a otra entrada, toma las opciones de esa."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 107,
+      "type": "NKDHint",
+      "pos": [
+        163.67841686832458,
+        1433.1533402147197
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Choice as a switch\nConnected to a yes/no input, like this IfElse's `condition`, it shows up in the panel as a checkbox.\n\nUse it to turn on and off parts of the workflow that have their own switch, for example a detailer.",
+        "targets": [
+          {
+            "node": "7",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 7,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Choice como interruptor\nConectado a una entrada de sí/no, como el `condition` de este IfElse, en el panel aparece como una casilla.\n\nSirve para encender y apagar partes del workflow que tengan su propio interruptor, por ejemplo un detailer."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 108,
+      "type": "NKDHint",
+      "pos": [
+        1084.6553594467655,
+        1240.1863568855085
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Groups in the panel\nEvery group in the workflow shows up in the panel's **Groups** section with a checkbox. Untick it and all its nodes are bypassed; tick it and they come back. Nodes you muted yourself are left alone.\n\nUse it for optional stages: a detailer, an upscaler, a second pass.",
+        "targets": [
+          {
+            "group": 2
+          }
+        ],
+        "style": "info",
+        "step": 8,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Grupos en el panel\nCada grupo del workflow sale en la sección **Grupos** del panel con una casilla. Al desmarcarla se hace bypass de todos sus nodos; al marcarla vuelven. Los nodos que hayas silenciado a mano no se tocan.\n\nÚsalo para etapas opcionales: un detailer, un upscaler, una segunda pasada."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 109,
+      "type": "NKDGuide",
+      "pos": [
+        453.87274971547356,
+        -149.5779863286655
+      ],
+      "size": [
+        240,
+        130
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "autoStart": true
+      },
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 110,
+      "type": "Basic data handling: IfElse",
+      "pos": [
+        688.6784168683232,
+        1378.1533402147195
+      ],
+      "size": [
+        270,
+        78
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "if_true",
+          "name": "if_true",
+          "type": "*",
+          "link": null
+        },
+        {
+          "localized_name": "if_false",
+          "name": "if_false",
+          "type": "*",
+          "link": null
+        },
+        {
+          "localized_name": "condition",
+          "name": "condition",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "condition"
+          },
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "result",
+          "name": "result",
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "basic_data_handling",
+        "ver": "2.2.0",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "Node name for S&R": "Basic data handling: IfElse"
+      },
+      "widgets_values": [
+        false
+      ],
+      "widgets_values_named": {
+        "condition": false
+      }
+    }
+  ],
+  "links": [
+    [
+      1,
+      6,
+      0,
+      8,
+      7,
+      "*"
+    ],
+    [
+      3,
+      7,
+      0,
+      110,
+      2,
+      "BOOLEAN"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 2,
+      "title": "Combos, dropdowns and booleans",
+      "bounding": [
+        150.67841686832455,
+        973.1533402147194,
+        848,
+        547
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "Primitives",
+      "bounding": [
+        -24.42545697539837,
+        637.3318573152335,
+        1160,
+        270
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "Inputs and outputs",
+      "bounding": [
+        182.3439327376272,
+        78.08969634730252,
+        820,
+        510
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.5184501391267631,
+      "offset": [
+        1379.1626381144981,
+        597.2735658876957
+      ]
+    },
+    "ue_links": []
+  },
+  "version": 0.4
+}

@@ -31,7 +31,8 @@ More: [Live mode and speed](docs/live.md) · [Protocol, for adding other apps](d
 
 In [example_workflows/](example_workflows/):
 
-- `NKD Bridge - Live SD1.5 LCM.json`: paint and watch it regenerate. The one to start with.
+- `NKD Bridge - Node Explanation.json`: every Bridge node with a guided tour that explains what each one does, in English and Spanish. Needs [NKD Notes](https://github.com/Nekodificador/ComfyUI-NKD-Notes) for the hints and [Basic data handling](https://github.com/StableLlama/ComfyUI-basic_data_handling) for the switch example. Start here.
+- `NKD Bridge - Live SD1.5 LCM.json`: paint and watch it regenerate.
 - `NKD Bridge - Inpaint selection SD1.5 LCM.json`: redoes only the selected area. Also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools).
 - `NKD Bridge - ZImage Turbo Inpaint.json`: the same with Z-Image Turbo, a prompt and a denoise slider in the panel, and explained hints on each Bridge node. Also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools), and [NKD Notes](https://github.com/Nekodificador/ComfyUI-NKD-Notes) for the hints.
 - `NKD Bridge - Klein Tools.json`: edits the document or just the selection with FLUX.2 [klein] 9B, with the prompt, Reference Strength, sampler, scheduler and a detailer switch in the panel. Needs [NKD Klein Tools](https://github.com/Nekodificador/ComfyUI-NKD-Klein-Tools), [RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) for the sampler, and [NKD Notes](https://github.com/Nekodificador/ComfyUI-NKD-Notes) for the hints.
