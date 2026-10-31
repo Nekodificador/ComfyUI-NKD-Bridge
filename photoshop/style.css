@@ -1,107 +1,154 @@
-/* Theme comes from Photoshop: --uxp-host-* follow the user's interface brightness.
-   States are told apart by SHAPE + text, never by hue alone (colour-blind safe). */
+/* One system for the whole panel. Theme comes from Photoshop: --uxp-host-* follow the user's
+   interface brightness. States are told apart by SHAPE + text, never by hue alone (colour-blind safe).
+   UXP ignores flex `gap`: spacing is done with margins.
+
+   Scale:   space 4 · 8 · 12 · 16      control height 24      radius 4
+   Type:    12 body · 11 labels/meta · 10 section headings (uppercase) */
+:root {
+  --fg: var(--uxp-host-text-color);
+  --fg2: var(--uxp-host-text-color-secondary, #8e8e8e);
+  --line: var(--uxp-host-border-color, #4a4a4a);
+  --fill: rgba(127, 127, 127, 0.10);
+  --fill-hi: rgba(127, 127, 127, 0.22);
+  --accent: #1473e6;
+  --h: 24px;
+  --r: 4px;
+}
+
 body {
-  margin: 0; padding: 8px 10px 16px;
-  color: var(--uxp-host-text-color);
+  margin: 0; padding: 12px;
+  color: var(--fg);
   background: var(--uxp-host-background-color);
-  font-size: var(--uxp-host-font-size, 12px);
+  font-size: 12px;
 }
 [hidden] { display: none !important; }
+section { margin-top: 16px; }
 
-.bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.status { display: flex; align-items: center; gap: 6px; min-width: 0; }
+/* ── type ─────────────────────────────────────────────────────────────────────────────── */
+.section { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--fg2); margin: 0 0 8px; }
+.label { font-size: 11px; color: var(--fg2); margin-bottom: 4px; }
+.hint, .sub { font-size: 11px; color: var(--fg2); }
+.sub.bad { color: var(--fg); font-weight: bold; }
+.empty { margin-top: 16px; font-size: 11px; color: var(--fg2); line-height: 1.5; }
+
+/* ── controls ─────────────────────────────────────────────────────────────────────────── */
+.btn { display: flex; align-items: center; justify-content: center; height: var(--h); padding: 0 12px;
+  box-sizing: border-box; border: 1px solid var(--line); border-radius: var(--r); background: var(--fill);
+  font-size: 12px; color: var(--fg); white-space: nowrap; cursor: pointer; }
+.btn:hover { background: var(--fill-hi); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: bold; }
+.btn.quiet { background: transparent; border-color: transparent; color: var(--fg2); padding: 0 4px; }
+.btn.quiet:hover { color: var(--fg); text-decoration: underline; }
+.btn.small { height: 20px; padding: 0 8px; font-size: 11px; }
+.btn.on { border-color: var(--fg); font-weight: bold; }           /* a toggle that is on */
+.btn.off { opacity: 0.4; cursor: default; }                       /* disabled */
+.btn.off:hover { background: var(--fill); }
+.btn.primary.off:hover { background: var(--accent); }
+.btn.quiet.off:hover { color: var(--fg2); text-decoration: none; }
+
+.iconBtn { width: var(--h); height: var(--h); display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r); color: var(--fg2); cursor: pointer; font-size: 14px; }
+.iconBtn:hover { background: var(--fill-hi); color: var(--fg); }
+
+sp-textfield, sp-picker, sp-slider, sp-textarea { width: 100%; }
+sp-textarea { height: 64px; }
+
+/* ── header ───────────────────────────────────────────────────────────────────────────── */
+.bar { display: flex; align-items: center; justify-content: space-between; height: var(--h); margin-bottom: 12px; }
+.status { display: flex; align-items: center; min-width: 0; }
 .status span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* ● ready   ◐ waiting for the ComfyUI tab   ○ disconnected */
-.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; box-sizing: border-box; }
-.status.ok   .dot { background: var(--uxp-host-text-color); }
-.status.warn .dot { border: 2px solid var(--uxp-host-text-color); background: transparent; border-left-color: transparent; }
-.status.off  .dot { border: 1.5px solid var(--uxp-host-text-color-secondary, #888); background: transparent; }
-.status.off { color: var(--uxp-host-text-color-secondary, #888); }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; box-sizing: border-box; margin-right: 8px; }
+.status.ok   .dot { background: var(--fg); }
+.status.warn .dot { border: 2px solid var(--fg); background: transparent; border-left-color: transparent; }
+.status.off  .dot { border: 1.5px solid var(--fg2); background: transparent; }
+.status.off { color: var(--fg2); }
 
-.settings { display: flex; flex-direction: column; gap: 4px; padding: 8px; margin-bottom: 8px;
-  border: 1px solid var(--uxp-host-border-color); border-radius: 4px; }
-.settings sp-textfield, .settings sp-picker { width: 100%; }
-.settings sp-button { margin-top: 6px; align-self: flex-start; }
-.hint { color: var(--uxp-host-text-color-secondary, #888); }
+.settings { display: flex; flex-direction: column; padding: 12px; margin-bottom: 12px;
+  border: 1px solid var(--line); border-radius: var(--r); }
+.settings .label { margin-top: 8px; }
+.settings .label:first-child { margin-top: 0; }
+.settings .hint { margin-top: 4px; }
+.settingsActions { display: flex; margin-top: 12px; }
 
-.preview { position: relative; width: 100%; height: 220px; border-radius: 4px; overflow: hidden;
-  border: 1px solid var(--uxp-host-border-color); background: rgba(127,127,127,0.12);
+/* ── workflow picker ──────────────────────────────────────────────────────────────────── */
+.wfBox { display: flex; flex-direction: column; margin-bottom: 12px; }
+.wfHead { display: flex; align-items: center; height: var(--h); padding: 0 8px; box-sizing: border-box;
+  border: 1px solid var(--line); border-radius: var(--r); background: var(--fill); cursor: pointer; }
+.wfHead:hover { background: var(--fill-hi); }
+.wfName { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wfChevron { color: var(--fg2); margin-left: 8px; font-size: 10px; }
+.wfBrowser { display: flex; flex-direction: column; margin-top: 4px; padding: 4px;
+  border: 1px solid var(--line); border-radius: var(--r); }
+.wfList { max-height: 220px; overflow-y: auto; margin-top: 4px; }
+.wfItem, .wfFolder { height: 22px; line-height: 22px; padding: 0 4px; border-radius: var(--r); cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wfFolder { color: var(--fg2); }
+.wfItem:hover, .wfFolder:hover { background: var(--fill-hi); color: var(--fg); }
+/* the open workflow: bold with a bar on its left (shape, not colour) */
+.wfItem.on { font-weight: bold; border-left: 2px solid var(--fg); }
+
+/* ── tabs: the active one is bold with a bar under it ─────────────────────────────────── */
+.tabs { display: flex; margin-bottom: 12px; border-bottom: 1px solid var(--line); }
+.tab { height: var(--h); line-height: var(--h); margin-right: 16px; cursor: pointer; color: var(--fg2);
+  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tab:hover { color: var(--fg); }
+.tab.on { color: var(--fg); font-weight: bold; border-bottom-color: var(--fg); }
+
+/* ── generate page ────────────────────────────────────────────────────────────────────── */
+.preview { position: relative; width: 100%; height: 220px; border-radius: var(--r); overflow: hidden;
+  border: 1px solid var(--line); background: var(--fill);
   display: flex; align-items: center; justify-content: center; }
 .preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.previewEmpty { position: absolute; padding: 0 16px; text-align: center;
-  color: var(--uxp-host-text-color-secondary, #888); }
-.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: transparent; }
-.progress > div { height: 100%; width: 0; background: var(--uxp-host-text-color); }
+.previewEmpty { position: absolute; padding: 0 16px; text-align: center; font-size: 11px; color: var(--fg2); }
+/* LIVE · 3/8 while sampling, CANCELLED when a run stops mid-way (same badge as NKD Popup Preview) */
+.liveBadge { position: absolute; top: 8px; left: 8px; padding: 2px 10px;
+  border-radius: 10px; font-size: 10px; font-weight: bold; letter-spacing: 0.08em; color: #fff;
+  background: rgba(180, 32, 48, 0.92); white-space: nowrap; }
+.liveBadge.cancelled { background: rgba(120, 120, 120, 0.92); }
+.progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; }
+.progress > div { height: 100%; width: 0; background: var(--fg); }
 
-.actions { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
-.actions #btnRun { flex: 1; }
-.actions.secondary { margin-top: 4px; }
+.actions { display: flex; align-items: center; margin-top: 8px; }
+.actions .btn { margin-left: 8px; }
+.actions .btn:first-child { margin-left: 0; }
+.actions + .actions { margin-top: 4px; }
+.grow { flex: 1; min-width: 0; }
 
-.empty { margin-top: 14px; color: var(--uxp-host-text-color-secondary, #888); line-height: 1.4; }
+.param { margin-bottom: 12px; }
+.paramHead { display: flex; justify-content: space-between; align-items: baseline; }
+.paramHead .val { font-size: 11px; font-variant-numeric: tabular-nums; }
 
-section { margin-top: 14px; }
-sp-heading { margin: 0 0 4px; text-transform: uppercase; letter-spacing: 0.06em;
-  color: var(--uxp-host-text-color-secondary, #888); }
-
-.row { display: flex; align-items: center; gap: 6px; padding: 5px 0;
-  border-top: 1px solid var(--uxp-host-border-color); }
-.row:first-child { border-top: none; }
-.row .grow { flex: 1; min-width: 0; }
-.row .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.row .sub { color: var(--uxp-host-text-color-secondary, #888); font-size: 11px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.row .sub.bad { color: var(--uxp-host-text-color); font-weight: bold; }
+/* ── inputs & outputs ─────────────────────────────────────────────────────────────────── */
+.row { display: flex; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+.row:first-child { border-top: none; padding-top: 0; }
+.row .btn { margin-left: 4px; }
+.title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
 /* sync glyph: ✓ synced · ↑ sending · ! problem */
-.glyph { width: 14px; text-align: center; flex: none; }
+.glyph { width: 16px; margin-right: 4px; text-align: center; flex: none; color: var(--fg2); }
 
-.param { padding: 4px 0; }
-.param sp-slider, .param sp-textarea { width: 100%; }
-.param sp-textarea { min-height: 60px; }
-.paramHead { display: flex; justify-content: space-between; }
-.paramHead .val { font-variant-numeric: tabular-nums; }
-
-/* Tabs: the active one is bold with a bar under it (shape, not colour). */
-.tabs { display: flex; gap: 14px; margin: 2px 0 10px; border-bottom: 1px solid var(--uxp-host-border-color); }
-.tab { padding: 4px 0 6px; cursor: pointer; color: var(--uxp-host-text-color-secondary, #888);
-  border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
-.tab.on { color: var(--uxp-host-text-color); font-weight: bold; border-bottom-color: var(--uxp-host-text-color); }
-
-.outRow { display: flex; flex-direction: column; gap: 4px; padding: 6px 0;
-  border-top: 1px solid var(--uxp-host-border-color); }
-.outRow:first-child { border-top: none; }
-.outHead { display: flex; align-items: center; gap: 6px; }
-.outRow sp-textfield { width: 100%; }
-
-/* Output target: Layer · Group · Panel. Active = bold, underlined and framed. */
-.segs { display: flex; gap: 4px; }
-.seg { flex: 1; text-align: center; padding: 3px 0; cursor: pointer; border-radius: 3px;
-  border: 1px solid transparent; color: var(--uxp-host-text-color-secondary, #888); }
-.seg.on { border-color: var(--uxp-host-text-color); color: var(--uxp-host-text-color);
-  font-weight: bold; text-decoration: underline; }
-
-/* the input's selection: title, then its dropdown on its own line */
-.selRow { display: flex; flex-direction: column; gap: 4px; padding: 5px 0; border-top: 1px solid var(--uxp-host-border-color); }
+.selRow, .outRow { display: flex; flex-direction: column; padding: 8px 0; border-top: 1px solid var(--line); }
+.selRow:first-child, .outRow:first-child { border-top: none; padding-top: 0; }
+.selRow > * + *, .outRow > * + * { margin-top: 4px; }
+.outRow .label { margin: 8px 0 0; }
+.outHead { display: flex; align-items: center; }
+.outHead .btn { margin-left: 4px; }
 .selPick { width: 100%; }
 
+/* Output target: Layer · Group · Panel, one joined control. Active = bold and framed. */
+.segs { display: flex; height: var(--h); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.seg { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  color: var(--fg2); border-left: 1px solid var(--line); }
+.seg:first-child { border-left: none; }
+.seg:hover { background: var(--fill-hi); color: var(--fg); }
+.seg.on { background: var(--fill-hi); color: var(--fg); font-weight: bold; }
+
 /* "▸ Add a variable" folds the chips away */
-.fold { cursor: pointer; font-size: 11px; color: var(--uxp-host-text-color-secondary, #888); }
-.fold:hover { color: var(--uxp-host-text-color); }
-
-/* Variable chips under the name field */
-.chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.chip { padding: 1px 6px; border-radius: 9px; cursor: pointer; font-size: 11px;
-  border: 1px solid var(--uxp-host-border-color); color: var(--uxp-host-text-color-secondary, #888); }
-.chip:hover { color: var(--uxp-host-text-color); border-color: var(--uxp-host-text-color); }
-
-/* workflow picker above the tabs */
-.wfBox { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
-.wfHead { cursor: pointer; padding: 3px 6px; border: 1px solid var(--uxp-host-border-color); border-radius: 3px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wfBrowser { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; }
-.wfSearch { width: 100%; }
-.wfList { max-height: 220px; overflow-y: auto; }
-.wfItem, .wfFolder { cursor: pointer; padding: 2px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wfFolder { color: var(--uxp-host-text-color-secondary, #888); }
-.wfItem:hover, .wfFolder:hover { color: var(--uxp-host-text-color); text-decoration: underline; }
-/* the open workflow: bold with a bar on its left (shape, not colour) */
-.wfItem.on { font-weight: bold; border-left: 2px solid var(--uxp-host-text-color); }
+.fold { cursor: pointer; font-size: 11px; color: var(--fg2); }
+.fold:hover { color: var(--fg); }
+.chips { display: flex; flex-wrap: wrap; }
+.chip { height: 18px; line-height: 18px; padding: 0 8px; margin: 0 4px 4px 0; border-radius: 9px; cursor: pointer;
+  font-size: 11px; border: 1px solid var(--line); color: var(--fg2); }
+.chip:hover { color: var(--fg); border-color: var(--fg); }

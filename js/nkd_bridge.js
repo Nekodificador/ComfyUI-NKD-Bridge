@@ -5,7 +5,7 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const REV = "0.6.2";   // the server compares it with this file: a tab not reloaded since is stale
+const REV = "0.7.1";   // the server compares it with this file: a tab not reloaded since is stale
 const SOURCES = { NKDBridgeInput: "layer" };
 const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text", NKDBridgeChoice: "choice" };
 const OUTPUT = "NKDBridgeOutput";
@@ -340,8 +340,16 @@ app.registerExtension({
     api.addEventListener("nkd_bridge.doc", (e) => { doc = e.detail; app.graph?.setDirtyCanvas(true, true); });
     api.addEventListener("nkd_bridge.set", (e) => setWidget(e.detail));
     api.addEventListener("nkd_bridge.open", (e) => openWorkflow(e.detail).catch((x) => status("error", { message: `ComfyUI: ${x?.message || x}` })));
+    // Same graph, same pixels as the last run that finished: nothing would change, so don't queue it
+    // (a "randomize" seed still changes the graph every run, as in ComfyUI).
+    let lastRun = "", queuedRun = "";
+    api.addEventListener("execution_success", () => { lastRun = queuedRun; });
     api.addEventListener("nkd_bridge.run", async (e) => {
       const outputs = (e.detail?.outputs ?? []).map(String);
+      let key = "";
+      try { key = JSON.stringify([(await app.graphToPrompt()).output, e.detail?.sources ?? null, outputs]); } catch {}
+      if (key && key === lastRun) { status("idle", { unchanged: true }); return; }
+      queuedRun = key; lastRun = "";
       // a workflow ComfyUI refuses never starts, so no execution event would tell the host: say it here
       let ok, err;
       try { ok = await app.queuePrompt(0, 1, outputs.length ? { queueNodeIds: outputs } : {}); } catch (x) { ok = false; err = x; }
@@ -371,6 +379,26 @@ app.registerExtension({
     api.addEventListener("execution_success", () => status("idle"));
     api.addEventListener("execution_interrupted", () => status("idle", { interrupted: true }));
     api.addEventListener("execution_error", (e) => status("error", { message: e.detail?.exception_message }));
-    api.addEventListener("b_preview", (e) => { if (hosts) post("/nkd_bridge/preview", e.detail, true); });
+    // Live sampling frames → panel. The frontend no longer hands them to extensions, so they're read
+    // off ComfyUI's own socket (binary types 1 and 4 carry an image, after a short header).
+    let tapped = null;
+    const tapPreviews = () => {
+      const sock = api.socket;
+      if (!sock || sock === tapped) return;
+      tapped = sock;
+      sock.addEventListener("message", (e) => {
+        if (!hosts || !(e.data instanceof ArrayBuffer) || e.data.byteLength < 8) return;
+        const type = new DataView(e.data).getUint32(0);
+        if (type !== 1 && type !== 4) return;
+        const b = new Uint8Array(e.data);
+        for (let i = 4; i < Math.min(b.length - 4, 512); i++) {
+          const jpg = b[i] === 0xff && b[i + 1] === 0xd8 && b[i + 2] === 0xff;
+          const png = b[i] === 0x89 && b[i + 1] === 0x50 && b[i + 2] === 0x4e && b[i + 3] === 0x47;
+          if (jpg || png) { post("/nkd_bridge/preview", b.subarray(i), true); return; }
+        }
+      });
+    };
+    // ponytail: 1 s check catches the first socket and the new one ComfyUI makes on every reconnect
+    setInterval(tapPreviews, 1000);
   },
 });

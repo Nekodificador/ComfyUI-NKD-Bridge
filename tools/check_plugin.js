@@ -296,6 +296,22 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   if (String(nTop()) !== "Toma 4,Toma 5,Toma 6") fail(`Add as layer should number on, got ${nTop()}`);
   console.log("OK  {n} numbers on from the siblings (Toma 5, Toma 6); a Live result racing the re-bind reuses the new layer");
 
+  // 17. live sampling frames: LIVE badge with the step, gone on the result, CANCELADO when stopped
+  const badge = () => els.liveBadge.style.display === "none" ? "" : els.liveBadge.textContent;
+  const frame = () => ws.onmessage({ data: new Uint8Array([0xff, 0xd8, 0xff, 0]).buffer });
+  const st = (o) => ws.onmessage({ data: JSON.stringify({ type: "run_status", ...o }) });
+  st({ state: "running" }); frame(); st({ state: "progress", value: 3, max: 8 });
+  if (badge() !== "LIVE · 3/8") fail(`badge while sampling: "${badge()}"`);
+  ws.onmessage({ data: JSON.stringify({ type: "result", id: "lv", w: 4, h: 4, x: 0, y: 0, dest: "panel", name: "x", node: "1", doc: 1 }) });
+  await sleep(50); frame();
+  if (badge() !== "" || !String(els.preview.src).startsWith("data:image/jpeg")) fail(`after the result: badge "${badge()}"`);
+  st({ state: "idle" });
+  st({ state: "running" }); frame(); st({ state: "idle", interrupted: true });
+  if (badge() !== "CANCELADO") fail(`stopped mid-sampling: "${badge()}"`);
+  st({ state: "idle", unchanged: true });
+  if (!/No ha cambiado nada/.test(els.previewEmpty.textContent)) fail("an unchanged run should say so");
+  console.log("OK  live frames: LIVE · 3/8 while sampling, hidden once the result lands, CANCELADO when stopped");
+
   // 15. workflow picker opens another workflow; Bridge Choice shows as a list, a boolean one as a checkbox
   const find = (e, tag) => e?.tag === tag ? [e] : (e?.children || []).flatMap((c) => find(c, tag));
   const byClass = (e, c) => (e?.className || "").split(" ").includes(c) ? [e] : (e?.children || []).flatMap((x) => byClass(x, c));
@@ -322,6 +338,11 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   const sets = ws.sent.filter((m) => m.type === "set" && (m.node === 20 || m.node === 21)).map((m) => `${m.node}=${m.value}`);
   if (String(sets) !== "20=dpmpp_2m,21=true") fail(`choice/toggle sent ${sets}`);
   console.log("OK  workflow picker opens the chosen workflow; Choice as a list, boolean Choice as a checkbox");
+
+  await vm.runInContext("run", ctx)();
+  const runMsg = ws.sent.filter((m) => m.type === "run").pop();
+  if (!Array.isArray(runMsg?.sources)) fail(`a run should carry the uploaded hashes: ${JSON.stringify(runMsg)}`);
+  console.log("OK  a run carries what was uploaded; an unchanged run is reported, not re-generated");
 
   const errors = ws.sent.filter((m) => m.type === "log" && !/connected|cerr/.test(m.message));
   if (errors.length) fail(`plugin reported errors: ${JSON.stringify(errors)}`);

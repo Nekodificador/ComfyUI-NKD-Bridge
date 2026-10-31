@@ -11,7 +11,7 @@ const $ = (id) => document.getElementById(id);
 // ── i18n ────────────────────────────────────────────────────────────────────────────────────
 const T = {
   en: {
-    off: "Not connected, retrying…", noTab: "Connected · open ComfyUI in your browser",
+    liveCancelled: "CANCELLED", unchanged: "Nothing changed since the last generation.", off: "Not connected, retrying…", noTab: "Connected · open ComfyUI in your browser",
     ok: "Connected to ComfyUI", run: "Generate", cancel: "Stop", live: "Live",
     addLayer: "Add preview as layer", server: "ComfyUI address", res: "Send resolution (longest side)",
     resFull: "Full document", resHint: "Lower = faster. 512–768 is plenty for live SD1.5 + LCM.",
@@ -32,7 +32,7 @@ const T = {
     wfNone: "No workflow matches.", wfEmpty: "No saved workflow has Bridge Input or Output nodes yet.",
   },
   es: {
-    off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
+    liveCancelled: "CANCELADO", unchanged: "No ha cambiado nada desde la última generación.", off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
     ok: "Conectado a ComfyUI", run: "Generar", cancel: "Parar", live: "Live",
     addLayer: "Añadir preview como capa", server: "Dirección de ComfyUI", res: "Resolución de envío (lado largo)",
     resFull: "Documento completo", resHint: "Menos = más rápido. Para live con SD1.5 + LCM bastan 512–768.",
@@ -72,6 +72,8 @@ const S = {
   ownWriteUntil: 0,    // ignore Photoshop events caused by our own layer writes
   lastResult: null,
   runStart: 0, runAvg: 0,
+  runDone: false,      // this run's result arrived: later sampling frames must not cover it
+  step: "",            // "3/8" for the LIVE badge
 };
 
 // ── utils ───────────────────────────────────────────────────────────────────────────────────
@@ -436,12 +438,23 @@ async function run(outputs) {
   S.busy = true; S.pending = false; renderRun();
   await syncSources();
   S.runStart = Date.now();
-  send({ type: "run", outputs: outputs || null });
+  // what Photoshop sent, so the tab can tell "nothing changed" (the graph alone doesn't show pixels)
+  const sources = (S.manifest?.sources || []).map((s) => S.sent[s.key] || "");
+  send({ type: "run", outputs: outputs || null, sources });
 }
 
 function requestRun() {                    // live: never more than one job in flight
   if (S.busy) S.pending = true;
   else run();
+}
+
+/** "live" (sampling frame on screen) | "cancelled" (the run stopped on a sampling frame) | null */
+function setLive(state) {
+  const b = $("liveBadge");
+  b.style.display = state ? "" : "none";
+  b.className = "liveBadge" + (state === "cancelled" ? " cancelled" : "");
+  b.textContent = state === "cancelled" ? L.liveCancelled : "LIVE" + (S.step ? ` · ${S.step}` : "");
+  S.liveState = state;
 }
 
 function onIdle() {
@@ -462,9 +475,10 @@ function showImage(buf, mime) {
 
 async function onResult(msg) {
   S.lastResult = msg;
+  S.runDone = true; setLive(null);
   const jpg = await (await fetch(`${S.url}/nkd_bridge/result/${msg.id}?fmt=jpg`)).arrayBuffer();
   showImage(jpg, "image/jpeg");
-  $("btnAddLayer").disabled = false;
+  setOff($("btnAddLayer"), false);
   if (msg.dest && msg.dest !== "panel") await writeResult(msg);
 }
 
@@ -599,7 +613,12 @@ function connect() {
   };
   ws.onerror = () => {};
   ws.onmessage = (e) => {
-    if (typeof e.data !== "string") { showImage(e.data, "image/jpeg"); return; }   // live latent preview
+    if (typeof e.data !== "string") {                                             // live sampling frame
+      if (S.runDone) return;
+      showImage(e.data, new Uint8Array(e.data, 0, 1)[0] === 0x89 ? "image/png" : "image/jpeg");
+      setLive("live");
+      return;
+    }
     const msg = JSON.parse(e.data);
     switch (msg.type) {
       case "status":
@@ -608,9 +627,19 @@ function connect() {
       case "need": syncSources(msg.keys || []); break;
       case "result": onResult(msg).catch((err) => report("result", err)); break;
       case "run_status":
-        if (msg.state === "progress") setProgress(msg.value / msg.max);
-        else if (msg.state === "running") { S.busy = true; renderRun(); }
-        else { if (msg.state === "error") flash(msg.message || "Error"); onIdle(); }
+        if (msg.state === "progress") {
+          setProgress(msg.value / msg.max);
+          S.step = `${msg.value}/${msg.max}`;
+          if (S.liveState === "live") setLive("live");
+        } else if (msg.state === "running") { S.busy = true; S.runDone = false; S.step = ""; renderRun(); }
+        else {
+          // stopped on a sampling frame: say so, so it isn't mistaken for a result
+          const stopped = msg.interrupted || msg.state === "error";
+          if (S.liveState === "live") setLive(stopped ? "cancelled" : null);
+          if (msg.state === "error") flash(msg.message || "Error");
+          if (msg.unchanged) flash(L.unchanged);
+          onIdle();
+        }
         break;
       case "error":
         if (msg.code === "no_tab") { S.tab = false; renderStatus(); onIdle(); }
@@ -676,6 +705,15 @@ function el(tag, props = {}, ...kids) {
   return e;
 }
 
+/** Buttons are plain divs styled as .btn (Spectrum's own come in mismatched sizes). "off" = disabled. */
+const isOff = (e) => /\boff\b/.test(e.className || "");
+function setOff(e, off) { e.className = (e.className || "").replace(/\s*\boff\b/g, "") + (off ? " off" : ""); }
+function btn(label, onclick, cls = "small", title) {
+  return el("div", { class: "btn " + cls, title, onclick: (e) => { if (!isOff(e.currentTarget || e.target)) onclick(e); } }, label);
+}
+/** Wire a static button from index.html the same way. */
+function tap(id, fn) { $(id).onclick = () => { if (!isOff($(id))) fn(); }; }
+
 function renderStatus() {
   const stale = S.connected && S.tab && S.manifest?.stale;
   const st = !S.connected ? "off" : S.tab && !stale ? "ok" : "warn";
@@ -686,9 +724,11 @@ function renderStatus() {
 }
 
 function renderRun() {
-  $("btnRun").disabled = !S.connected || !S.manifest?.outputs?.length;
+  setOff($("btnRun"), !S.connected || !S.manifest?.outputs?.length);
   $("btnRun").textContent = S.busy ? L.running : L.run;
-  $("btnCancel").disabled = !S.busy;
+  setOff($("btnCancel"), !S.busy);
+  $("chkLive").className = "btn toggle" + (S.live ? " on" : "");
+  $("chkLive").textContent = (S.live ? "● " : "○ ") + L.live;
 }
 
 function setProgress(f) { $("progressFill").style.width = Math.round(Math.max(0, Math.min(1, f)) * 100) + "%"; }
@@ -778,7 +818,7 @@ function buildWorkflowBox() {
     oninput: (e) => { WF.query = String(e.target.value || ""); drawWorkflows(); } });
   WF.list = el("div", { class: "wfList" });
   WF.browser = el("div", { class: "wfBrowser" }, search, WF.list);
-  setKids($("wfBox"), [el("sp-detail", {}, L.workflow), WF.head, WF.browser]);
+  setKids($("wfBox"), [el("div", { class: "section" }, L.workflow), WF.head, WF.browser]);
 }
 
 function renderWorkflows() {
@@ -789,7 +829,8 @@ function renderWorkflows() {
 function drawWorkflows() {
   if (!WF.head) buildWorkflowBox();
   const list = S.manifest?.workflows || [], cur = S.manifest?.workflow || "";
-  WF.head.textContent = `${WF.open ? "▾" : "▸"} ${cur ? wfLabel(cur).split("/").pop() : "—"}`;
+  setKids(WF.head, [el("div", { class: "wfName" }, cur ? wfLabel(cur).split("/").pop() : "—"),
+    el("div", { class: "wfChevron" }, WF.open ? "▲" : "▼")]);
   WF.browser.style.display = WF.open ? "" : "none";
   const key = JSON.stringify([list, cur, WF.query, wfFolders, WF.open]);
   if (key === WF.key) return;                         // typing keeps the search box as it is
@@ -855,7 +896,7 @@ function renderListsRaw() {
       if (p.kind === "text") {
         const ta = el("sp-textarea", { value: p.value ?? "", "data-id": p.id,
           oninput: (e) => sendParam(p.id, "text", e.target.value) });
-        return el("div", { class: "param" }, el("sp-detail", {}, p.name), ta);
+        return el("div", { class: "param" }, el("div", { class: "label" }, p.name), ta);
       }
       if (p.kind === "toggle") {
         return el("div", { class: "param" }, el("sp-checkbox", { checked: !!p.value,
@@ -865,13 +906,13 @@ function renderListsRaw() {
         const opts = p.options || [];
         const menu = el("sp-menu", { slot: "options" }, ...opts.map((o) =>
           el("sp-menu-item", { value: o, selected: o === p.value }, o)));
-        return el("div", { class: "param" }, el("sp-detail", {}, p.name), el("sp-picker", { size: "s", class: "selPick",
+        return el("div", { class: "param" }, el("div", { class: "label" }, p.name), el("sp-picker", { size: "s", class: "selPick",
           onchange: (e) => sendParam(p.id, "value", e.target.value) }, menu));
       }
       const val = el("span", { class: "val" }, fmt(p.value, p.step));
       const sl = el("sp-slider", { min: p.min, max: p.max, step: p.step || 0.01, value: p.value, "data-id": p.id,
         oninput: (e) => { val.textContent = fmt(e.target.value, p.step); sendParam(p.id, "value", Number(e.target.value)); } });
-      return el("div", { class: "param" }, el("div", { class: "paramHead" }, el("sp-detail", {}, p.name), val), sl);
+      return el("div", { class: "param" }, el("div", { class: "paramHead" }, el("div", { class: "label" }, p.name), val), sl);
     }));
   } else {                                   // just refresh values the user isn't touching
     for (const p of m.params) {
@@ -903,9 +944,8 @@ function renderListsRaw() {
       el("span", { class: "glyph", title: st || "" }, st === "busy" ? "↑" : st === "bad" ? "!" : st === "ok" ? "✓" : "·"),
       el("div", { class: "grow" }, el("div", { class: "title" }, s.title), el("div", { class: "sub" + (bad ? " bad" : "") }, sub)),
       // Bridge Input (bindable): switch between the active layer and the whole document
-      s.bindable ? el("sp-action-button", { size: "s", onclick: () => bindActive(s) }, L.useActive) : null,
-      s.bindable && s.kind === "layer" ? el("sp-action-button", { size: "s",
-        onclick: () => send({ type: "set", node: s.id, widget: "source", value: "@document" }) }, L.useDoc) : null);
+      s.bindable ? btn(L.useActive, () => bindActive(s)) : null,
+      s.bindable && s.kind === "layer" ? btn(L.useDoc, () => send({ type: "set", node: s.id, widget: "source", value: "@document" })) : null);
   }));
   show("secSources", !(!m.sources.length));
 
@@ -943,12 +983,12 @@ function renderListsRaw() {
       } }, (varsOpen[o.id] ? "▾ " : "▸ ") + L.addVar);
       return el("div", { class: "outRow" },
         el("div", { class: "outHead" }, el("div", { class: "title grow" }, o.title),
-          el("sp-action-button", { size: "s", title: L.runThis, onclick: () => run([o.id]) }, "▶")),
+          btn("▶", () => run([o.id]), "small", L.runThis)),
         el("div", { class: "segs" }, ...segs),
         where,
-        el("div", { class: "outHead" },
-          el("sp-action-button", { size: "s", onclick: () => bindActive({ id: o.id }, "destination") }, L.useActive)),
-        el("sp-detail", {}, L.nameLabel), name, fold, chipBox);
+        el("div", { class: "outHead" }, el("div", { class: "grow" }),
+          btn(L.useActive, () => bindActive({ id: o.id }, "destination"))),
+        el("div", { class: "label" }, L.nameLabel), name, fold, chipBox);
     }));
   } else {
     for (const o of m.outputs) {
@@ -998,9 +1038,8 @@ function init() {
   setTab(store.get("tab", "gen"));
   $("btnCancel").textContent = L.cancel;
   $("btnCancel").title = L.cancel;
-  $("chkLive").textContent = L.live;
   $("btnAddLayer").textContent = L.addLayer;
-  $("btnAddLayer").disabled = true;
+  setOff($("btnAddLayer"), true);
   $("lblServer").textContent = L.server;
   $("lblRes").textContent = L.res;
   $("resFull").textContent = L.resFull;
@@ -1016,22 +1055,22 @@ function init() {
     if (item.getAttribute("value") === String(S.maxSide)) item.setAttribute("selected", "");
 
   $("btnSettings").onclick = () => show("settings", !isShown("settings"));
-  $("btnConnect").onclick = () => {
+  tap("btnConnect", () => {
     S.url = String($("inServer").value || "").trim().replace(/\/$/, "") || "http://127.0.0.1:8188";
     store.set("url", S.url);
     show("settings", !(true));
     connect();
-  };
+  });
   $("inRes").addEventListener("change", (e) => {
     S.maxSide = Number(e.target.value) || 0;
     store.set("maxSide", S.maxSide);
     S.sent = {};                           // new scale → everything must be re-sent
     syncSources();
   });
-  $("btnRun").onclick = () => run();
-  $("btnCancel").onclick = () => { S.pending = false; send({ type: "cancel" }); };
-  $("chkLive").addEventListener("change", (e) => { S.live = !!e.target.checked; if (S.live) requestRun(); });
-  $("btnAddLayer").onclick = () => { if (S.lastResult) writeResult(S.lastResult, true).catch((e) => report("add layer", e)); };
+  tap("btnRun", () => run());
+  tap("btnCancel", () => { S.pending = false; send({ type: "cancel" }); });
+  tap("chkLive", () => { S.live = !S.live; renderRun(); if (S.live) requestRun(); });
+  tap("btnAddLayer", () => { if (S.lastResult) writeResult(S.lastResult, true).catch((e) => report("add layer", e)); });
 
   renderStatus(); renderLists(); connect();
 }

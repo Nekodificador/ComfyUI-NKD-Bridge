@@ -9,13 +9,13 @@
     <div id="status" class="status off" title="">
       <span id="statusIcon" class="dot"></span><span id="statusText"></span>
     </div>
-    <sp-action-button id="btnSettings" quiet title="Settings">⚙</sp-action-button>
+    <div id="btnSettings" class="iconBtn" title="Settings">⚙</div>
   </header>
 
   <section id="settings" class="settings" style="display:none">
-    <sp-detail id="lblServer"></sp-detail>
-    <sp-textfield id="inServer" placeholder="http://127.0.0.1:8188"></sp-textfield>
-    <sp-detail id="lblRes"></sp-detail>
+    <div id="lblServer" class="label"></div>
+    <sp-textfield id="inServer" size="s" placeholder="http://127.0.0.1:8188"></sp-textfield>
+    <div id="lblRes" class="label"></div>
     <sp-picker id="inRes" size="s">
       <sp-menu slot="options">
         <sp-menu-item value="512">512 px</sp-menu-item>
@@ -26,8 +26,8 @@
         <sp-menu-item value="0" id="resFull"></sp-menu-item>
       </sp-menu>
     </sp-picker>
-    <sp-body size="XS" id="hintRes" class="hint"></sp-body>
-    <sp-button id="btnConnect" variant="secondary" size="s"></sp-button>
+    <div id="hintRes" class="hint"></div>
+    <div class="settingsActions"><div id="btnConnect" class="btn"></div></div>
   </section>
 
   <div id="wfBox" class="wfBox" style="display:none"></div>
@@ -41,26 +41,27 @@
     <div id="previewBox" class="preview">
       <img id="preview" alt="">
       <div id="previewEmpty" class="previewEmpty"></div>
+      <div id="liveBadge" class="liveBadge" style="display:none"></div>
       <div id="progress" class="progress"><div id="progressFill"></div></div>
     </div>
 
     <div class="actions">
-      <sp-button id="btnRun" variant="cta"></sp-button>
-      <sp-action-button id="btnCancel" title=""></sp-action-button>
-      <sp-checkbox id="chkLive"></sp-checkbox>
+      <div id="btnRun" class="btn primary grow"></div>
+      <div id="btnCancel" class="btn"></div>
+      <div id="chkLive" class="btn toggle"></div>
     </div>
-    <div class="actions secondary">
-      <sp-action-button id="btnAddLayer" size="s"></sp-action-button>
+    <div class="actions">
+      <div id="btnAddLayer" class="btn quiet"></div>
     </div>
 
     <div id="empty" class="empty"></div>
-    <section id="secParams" style="display:none"><sp-heading size="XXS" id="hParams"></sp-heading><div id="params"></div></section>
+    <section id="secParams" style="display:none"><div id="hParams" class="section"></div><div id="params"></div></section>
   </div>
 
   <div id="pageIo" style="display:none">
     <div id="emptyIo" class="empty"></div>
-    <section id="secSources" style="display:none"><sp-heading size="XXS" id="hSources"></sp-heading><div id="sources"></div></section>
-    <section id="secOutputs" style="display:none"><sp-heading size="XXS" id="hOutputs"></sp-heading><div id="outputs"></div></section>
+    <section id="secSources" style="display:none"><div id="hSources" class="section"></div><div id="sources"></div></section>
+    <section id="secOutputs" style="display:none"><div id="hOutputs" class="section"></div><div id="outputs"></div></section>
   </div>
 
   <script src="main.js"></script>
