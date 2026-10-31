@@ -5,7 +5,7 @@
 const { app, core, action, imaging } = require("photoshop");
 const uxp = require("uxp");
 
-const VERSION = "0.4.0";
+const VERSION = "0.5.0";
 const $ = (id) => document.getElementById(id);
 
 // ── i18n ────────────────────────────────────────────────────────────────────────────────────
@@ -28,6 +28,7 @@ const T = {
     nameLabel: "Name for new layers", insertVar: "Add to the name",
     docClosed: "The document this result belongs to was closed", layerName: "Layer or group name",
     useDoc: "Document", addVar: "Add a variable", channel: "Channel", path: "Path", selLabel: "selection",
+    docMissing: "document not open", inDoc: "in",
   },
   es: {
     off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
@@ -47,6 +48,7 @@ const T = {
     nameLabel: "Nombre de las capas nuevas", insertVar: "Añadir al nombre",
     docClosed: "Se cerró el documento al que pertenece este resultado", layerName: "Nombre de capa o grupo",
     useDoc: "Documento", addVar: "Añadir variable", channel: "Canal", path: "Trazado", selLabel: "selección",
+    docMissing: "documento no abierto", inDoc: "en",
   },
 };
 const L = T[String(uxp.host?.uiLocale || "en").slice(0, 2)] || T.en;
@@ -60,7 +62,7 @@ const S = {
   url: store.get("url", "http://127.0.0.1:8188"),
   maxSide: store.get("maxSide", 1024),
   ws: null, connected: false, tab: false, manifest: null,
-  doc: null, docJson: "",
+  doc: null, docs: [], docJson: "",   // active document info, and every open one
   sent: {},            // key -> hash last uploaded (only re-send on change)
   srcState: {},        // key -> "ok" | "busy" | "bad"
   syncing: null, resync: false,
@@ -148,23 +150,40 @@ function savedMasks(d) {
   return out.map((m) => ({ ...m, binding: `${m.kind}:${m.name}${m.id != null ? ` #${m.id}` : ""}` }));
 }
 
-function readDoc() {
-  const d = app.activeDocument;
-  if (!d) return null;
+function docInfo(d) {
   const layers = flatLayers(d.layers);
   return { id: d.id, name: d.name, w: Math.round(d.width), h: Math.round(d.height), layers, masks: savedMasks(d) };
 }
 
+/** Every open document is published, so nodes can read from one and write to another. */
 function publishDoc() {
-  try { S.doc = readDoc(); } catch (e) { report("document", e); return; }
-  const wire = S.doc && { ...S.doc, layers: S.doc.layers.map(({ ref, ...l }) => l) };
+  try {
+    const active = app.activeDocument;
+    S.docs = listOf(app.documents).map(docInfo);
+    S.doc = active ? S.docs.find((x) => x.id === active.id) || null : null;
+  } catch (e) { report("document", e); return; }
+  const strip = (x) => ({ ...x, layers: x.layers.map(({ ref, ...l }) => l) });
+  const wire = S.doc && { ...strip(S.doc), docs: S.docs.map(strip) };
   const json = JSON.stringify(wire);
   if (json !== S.docJson) { S.docJson = json; send({ type: "doc", doc: wire }); renderLists(); }
 }
 
+/** A node's document: "" = the active one, else "Name #id" (id first, then name: ids change on reopen).
+ *  Returns { d: the Photoshop document, info } or {} when it isn't open. */
+function docFor(binding) {
+  const b = String(binding || "").trim();
+  let info = S.doc;
+  if (b) {
+    const id = /#(\d+)\s*$/.exec(b)?.[1], name = b.replace(/\s*#\d+\s*$/, "");
+    info = S.docs.find((x) => id && String(x.id) === id) || S.docs.find((x) => x.name === name);
+  }
+  const d = info && listOf(app.documents).find((x) => x.id === info.id);
+  return d ? { d, info } : {};
+}
+
 /** "channel:Cara #12" -> the saved mask, by id first, then by kind + name. */
-function findMask(binding) {
-  const masks = S.doc?.masks || [];
+function findMask(binding, info = S.doc) {
+  const masks = info?.masks || [];
   const m = /^(channel|path):(.*?)(?:\s*#(\S+))?\s*$/.exec(binding || "");
   if (!m) return null;
   return masks.find((x) => x.kind === m[1] && m[3] != null && String(x.id) === m[3])
@@ -172,16 +191,16 @@ function findMask(binding) {
 }
 const maskLabel = (x) => `${x.kind === "channel" ? L.channel : L.path}: ${x.name}`;
 /** What the selection dropdown offers: the live selection, then every saved channel and path. */
-function selectionOptions(current) {
+function selectionOptions(current, info = S.doc) {
   const opts = [{ value: "@selection", label: L.selection },
-    ...(S.doc?.masks || []).map((x) => ({ value: x.binding, label: maskLabel(x) }))];
+    ...(info?.masks || []).map((x) => ({ value: x.binding, label: maskLabel(x) }))];
   if (current && !opts.some((o) => o.value === current)) opts.push({ value: current, label: `${L.missing}: ${current}` });
   return opts;
 }
 // Rebuilt only when its options or value change: a re-render mid-click would close an open dropdown.
 const pickers = {};
 function selectionPicker(s, problem) {
-  const value = s.binding || "@selection", opts = selectionOptions(s.binding);
+  const value = s.binding || "@selection", opts = selectionOptions(s.binding, docFor(s.doc).info);
   const key = JSON.stringify([value, opts, problem]);
   if (pickers[s.id]?.key === key) return pickers[s.id].el;
   const menu = el("sp-menu", { slot: "options" }, ...opts.map((o) =>
@@ -203,13 +222,13 @@ function findBinding(layers, binding) {
 }
 const bindingName = (b) => String(b || "").replace(/\s*#\d+\s*$/, "").replace(/\/$/, "").split("/").pop() || "NKD Result";
 
-function resolveBinding(binding) {
-  return S.doc ? findBinding(S.doc.layers, binding) : null;
+function resolveBinding(binding, info = S.doc) {
+  return info ? findBinding(info.layers, binding) : null;
 }
 
-const scale = () => {
-  if (!S.doc || !S.maxSide) return 1;
-  return Math.min(1, S.maxSide / Math.max(S.doc.w, S.doc.h));
+const scale = (info = S.doc) => {
+  if (!info || !S.maxSide) return 1;
+  return Math.min(1, S.maxSide / Math.max(info.w, info.h));
 };
 
 // ── reading pixels ──────────────────────────────────────────────────────────────────────────
@@ -232,8 +251,10 @@ async function readSource(src) {
 }
 
 async function readSourceRaw(src) {
-  const d = app.activeDocument, s = scale();
-  const dw = Math.max(1, Math.round(S.doc.w * s)), dh = Math.max(1, Math.round(S.doc.h * s));
+  const { d, info } = docFor(src.doc);
+  if (!d) return { missing: true };
+  const s = scale(info);
+  const dw = Math.max(1, Math.round(info.w * s)), dh = Math.max(1, Math.round(info.h * s));
   const base = { dw, dh };
   const noSelection = { ...base, w: 0, h: 0, c: 1, x: 0, y: 0, data: new Uint8Array(0) };
   let res;
@@ -244,12 +265,12 @@ async function readSourceRaw(src) {
     res = await withTimeout(imaging.getPixels({ documentID: d.id, componentSize: 8, applyAlpha: false,
       ...(s < 1 && { targetSize: { width: dw, height: dh } }) }), 8000, "getPixels(canvas)");
   } else {
-    const layer = resolveBinding(src.binding);
+    const layer = resolveBinding(src.binding, info);
     if (!layer) return { missing: true };
     const b = layer.ref.bounds;
     const bw = b.right - b.left, bh = b.bottom - b.top;
     if (bw <= 0 || bh <= 0) return { ...base, w: 0, h: 0, c: 4, x: 0, y: 0, data: new Uint8Array(0) };
-    if (layer.kind === "group") return await readGroup(layer.ref, s, base);
+    if (layer.kind === "group") return await readGroup(d, layer.ref, s, base);
     res = await withTimeout(imaging.getPixels({ documentID: d.id, layerID: layer.id, componentSize: 8, applyAlpha: false,
       ...(s < 1 && { targetSize: { width: Math.max(1, Math.round(bw * s)), height: Math.max(1, Math.round(bh * s)) } }) }), 8000, "getPixels(layer)");
   }
@@ -304,8 +325,7 @@ async function pixelsOf(res, s, base) {
  *  applies the children's visibility, opacity and blend modes), read it, then roll the document back:
  *  the history suspension is resumed WITHOUT committing, so nothing shows in the user's history. */
 let modalCtx = null;
-async function readGroup(group, s, base) {
-  const d = app.activeDocument;
+async function readGroup(d, group, s, base) {
   const work = async (ctx) => {
     const hc = ctx.hostControl;
     const sid = await hc.suspendHistory({ documentID: d.id, name: "NKD Bridge read" });
@@ -382,7 +402,8 @@ function syncSources(force = []) {
         try {
           const r = await readSource(src);
           if (r.missing) {
-            if (S.srcState[src.key] !== "bad") report(src.title, new Error(`${L.missing}: ${src.binding}`));
+            if (S.srcState[src.key] !== "bad")
+              report(src.title, new Error(src.doc && !docFor(src.doc).d ? `${L.docMissing}: ${src.doc}` : `${L.missing}: ${src.binding}`));
             S.srcState[src.key] = "bad"; continue;
           }
           const h = fnv(r.data) + `@${r.x},${r.y},${r.dw}x${r.dh}`;
@@ -525,6 +546,7 @@ async function writeResult(msg, forceNew) {
       await imaging.putPixels({ documentID: d.id, layerID: layer.id, imageData: img, replace: true,
         targetBounds: { left: msg.x, top: msg.y }, commandName: "NKD Bridge result" });
     } finally { img.dispose(); }
+    if (msg.save && !forceNew) await d.save();    // a smart object's contents: saving updates its parent
   }, { commandName: "NKD Bridge: write result" });
   ownStateKey = historyKey();         // the state our write left is not an edit (no upload loop)
   S.ownWriteUntil = Date.now() + 600;
@@ -669,9 +691,15 @@ const BUILTIN_VARS = ["n", "seed", "date", "time", "doc"];
 function outWhere(o) {
   const dest = o.dest || "new:layer";
   if (dest === "panel") return L.toPanel;
+  const { info } = docFor(o.doc);
+  if (o.doc && !info) return `${L.docMissing}: ${o.doc}`;
+  const where = whereIn(o, dest, info);
+  return o.doc ? `${where} · ${L.inDoc} ${info.name}` : where;
+}
+function whereIn(o, dest, info) {
   if (dest === "new:layer") return `${L.willCreate} “${fillN(o.name, 1)}”`;
   if (dest === "new:group") return `${L.willCreateGroup} “${groupName(o.name)}”`;
-  const hit = resolveBinding(dest);
+  const hit = resolveBinding(dest, info);
   if (!hit) return `${L.missing}: ${bindingName(dest)} · ${L.recreate}`;
   return hit.kind === "group" ? `${L.intoGroup} ${hit.path}/ · ${L.perRun}` : `${L.toLayer} ${hit.path} · ${L.replaced}`;
 }
@@ -726,12 +754,14 @@ function renderListsRaw() {
   show("secParams", !(!m.params.length));
 
   setKids($("sources"), m.sources.map((s) => {
-    const layer = s.kind === "layer" ? resolveBinding(s.binding) : null;
-    const mask = s.kind === "selection" && s.binding ? findMask(s.binding) : null;
-    const sub = s.kind === "canvas" ? L.canvas
+    const { info } = docFor(s.doc);
+    const layer = s.kind === "layer" ? resolveBinding(s.binding, info) : null;
+    const mask = s.kind === "selection" && s.binding ? findMask(s.binding, info) : null;
+    const what = s.kind === "canvas" ? L.canvas
       : s.kind === "selection" ? (!s.binding ? L.selection : mask ? maskLabel(mask) : `${L.missing}: ${s.binding}`)
       : !s.binding ? L.unbound : layer ? layer.path + (layer.kind === "group" ? ` (${L.group})` : "") : L.missing;
-    const bad = (s.kind === "layer" && !layer) || (s.kind === "selection" && !!s.binding && !mask);
+    const sub = s.doc && !info ? `${L.docMissing}: ${s.doc}` : s.doc ? `${info.name} · ${what}` : what;
+    const bad = (!!s.doc && !info) || (s.kind === "layer" && !layer) || (s.kind === "selection" && !!s.binding && !mask);
     if (s.kind === "selection") {             // pick it here, so retouching never needs the ComfyUI tab
       const st = bad ? "bad" : S.srcState[s.key];
       return el("div", { class: "selRow" },
@@ -806,8 +836,11 @@ function renderListsRaw() {
   show("secOutputs", !(!m.outputs.length));
 
   // the I/O tab carries a "!" when an input needs attention, so you notice it from the Generate tab
-  const problem = m.sources.some((s) => (s.kind === "layer" && (!s.binding || !resolveBinding(s.binding)))
-    || (s.kind === "selection" && s.binding && !findMask(s.binding)));
+  const problem = m.sources.some((s) => {
+    const { info } = docFor(s.doc);
+    return (!!s.doc && !info) || (s.kind === "layer" && (!s.binding || !resolveBinding(s.binding, info)))
+      || (s.kind === "selection" && s.binding && !findMask(s.binding, info));
+  });
   $("tabIo").textContent = L.tabIo + (problem ? "  !" : "");
   renderRun();
 }
@@ -824,6 +857,7 @@ function bindActive(src, widgetName = "source") {
   if (!l) return;
   publishDoc();
   const info = S.doc.layers.find((x) => x.id === l.id);
+  send({ type: "set", node: src.id, widget: "document", value: `${d.name} #${d.id}` });   // the layer lives in this document
   send({ type: "set", node: src.id, widget: widgetName, value: `${info.path}${info.kind === "group" ? "/" : ""} #${info.id}` });
 }
 

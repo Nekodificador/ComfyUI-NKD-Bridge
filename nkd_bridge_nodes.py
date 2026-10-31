@@ -5,6 +5,8 @@ hash, so an unchanged layer keeps every downstream node cached: drawing on anoth
 re-runs this branch. Params are plain widgets the host edits through the browser tab, so ComfyUI
 caches them like any literal.
 """
+import re
+
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -18,16 +20,42 @@ CAT = "😺NKD Nodes/Bridge"
 
 DOCUMENT = "@document"                # Bridge Input value for the whole document
 SELECTION = "@selection"              # Bridge Input selection_source: the live selection
+ACTIVE = "@active"                    # document: whichever one is active in Photoshop
 
 
-def _sel_key(selection_source):
+def _doc(document):
+    """'' / '@active' -> '' (the active document), else the 'Name #id' binding."""
+    b = (document or "").strip()
+    return "" if b in ("", ACTIVE) else b
+
+
+def _dk(document):
+    """Source keys carry their document, so two documents' layers never share a cache slot."""
+    b = _doc(document)
+    return f"doc:{b}|" if b else ""
+
+
+def _find_doc(document):
+    """The host's info for a bound document: by id first (this session), then by name."""
+    active = bridge.S.doc or {}
+    b = _doc(document)
+    if not b:
+        return active
+    docs = active.get("docs") or []
+    m = re.search(r"#(\d+)\s*$", b)
+    name = re.sub(r"\s*#\d+\s*$", "", b)
+    return (next((d for d in docs if m and d.get("id") == int(m.group(1))), None)
+            or next((d for d in docs if d.get("name") == name), None) or {})
+
+
+def _sel_key(selection_source, document=""):
     b = (selection_source or SELECTION).strip()
-    return "selection" if b in ("", SELECTION) else "selection:" + b
+    return _dk(document) + ("selection" if b in ("", SELECTION) else "selection:" + b)
 
 
-def _key(source):
+def _key(source, document=""):
     b = source.strip()
-    return "canvas" if b == DOCUMENT else "layer:" + b
+    return _dk(document) + ("canvas" if b == DOCUMENT else "layer:" + b)
 
 
 def _need(key, what):
@@ -77,26 +105,33 @@ class NKDBridgeInput(io.ComfyNode):
                     io.String.Input("selection_source", default=SELECTION, socketless=True,
                                     tooltip=f"What 'selection' outputs: '{SELECTION}' for the live "
                                             "selection, or a saved one as 'channel:Name #id' / "
-                                            "'path:Name #id'. Use the 'Selection source' list.")],
+                                            "'path:Name #id'. Use the 'Selection source' list."),
+                    io.String.Input("document", default=ACTIVE, socketless=True,
+                                    tooltip=f"Which Photoshop document to read: '{ACTIVE}' for the "
+                                            "active one, or 'Name #id' to always read that one, "
+                                            "even while you work in another. Use the 'Document' list.")],
             outputs=[io.Image.Output("image"), io.Mask.Output("alpha"),
                      io.Mask.Output("selection", tooltip="Document-sized: white where selected. All "
                                                          "black with nothing selected.")])
 
     @classmethod
-    def fingerprint_inputs(cls, source, selection_source=SELECTION):
+    def fingerprint_inputs(cls, source, selection_source=SELECTION, document=ACTIVE):
         # Photoshop only sends the selection while the 'selection' output is connected (the tab's
         # manifest), so an unused selection never changes this hash.
-        return f"{bridge.source_hash(_key(source))}|{bridge.source_hash(_sel_key(selection_source))}"
+        return (f"{bridge.source_hash(_key(source, document))}|"
+                f"{bridge.source_hash(_sel_key(selection_source, document))}")
 
     @classmethod
-    def validate_inputs(cls, source, selection_source=SELECTION):
+    def validate_inputs(cls, source, selection_source=SELECTION, document=ACTIVE):
         return True if source.strip() else "NKD Bridge Input: pick the document or a layer first."
 
     @classmethod
-    def execute(cls, source, selection_source=SELECTION):
+    def execute(cls, source, selection_source=SELECTION, document=ACTIVE):
         what = "the document" if source.strip() == DOCUMENT else f"layer '{source}'"
-        img, alpha = _place(_need(_key(source), what))
-        sk = _sel_key(selection_source)
+        if _doc(document):
+            what += f" in '{_doc(document)}'"
+        img, alpha = _place(_need(_key(source, document), what))
+        sk = _sel_key(selection_source, document)
         wanted = any(x.get("key") == sk for x in (bridge.S.manifest or {}).get("sources", []))
         sel = bridge.get_source(sk) if wanted else None   # don't make Photoshop read it for nothing
         mask = _place(sel)[0][..., 0] if sel is not None else torch.zeros(img.shape[:3])
@@ -167,7 +202,15 @@ class NKDBridgeOutput(io.ComfyNode):
                                             "e.g. {Prompt}."),
                     io.Mask.Input("mask", optional=True,
                                   tooltip="Transparency for the written layer (white = keep). Give "
-                                          "it Bridge Input's selection to change only the selection.")],
+                                          "it Bridge Input's selection to change only the selection."),
+                    io.String.Input("document", default=ACTIVE, socketless=True,
+                                    tooltip=f"Which document gets the result: '{ACTIVE}' for the one "
+                                            "the pixels came from, or 'Name #id' to send it to another "
+                                            "open document (e.g. a smart object's contents). The "
+                                            "result is scaled to fit that document."),
+                    io.Boolean.Input("save_after_write", default=False,
+                                     tooltip="Save the document after writing. Turn it on when it's a "
+                                             "smart object's contents, so the parent updates by itself.")],
             outputs=[])
 
     @classmethod
@@ -177,19 +220,22 @@ class NKDBridgeOutput(io.ComfyNode):
         return float("nan")
 
     @classmethod
-    def execute(cls, images, destination, name, mask=None):
+    def execute(cls, images, destination, name, mask=None, document=ACTIVE, save_after_write=False):
         # ponytail: first image of the batch only; batches → panel gallery when someone needs it
         img = images[:1, ..., :3]
         a = mask.reshape(-1, *mask.shape[-2:])[:1, ..., None] if mask is not None             else torch.ones((*img.shape[:3], 1))
         rgba = torch.cat([img, _resize(a.to(img), img.shape[1:3])], dim=-1)
-        doc = bridge.S.doc or {}
+        doc = _find_doc(document)
+        if _doc(document) and not doc:
+            raise RuntimeError(f"NKD Bridge Output: the document '{_doc(document)}' isn't open in Photoshop.")
         w, h = doc.get("w") or img.shape[2], doc.get("h") or img.shape[1]
         rgba = _resize(rgba, (h, w))                 # transfer scale → document pixels
         arr = (rgba[0].clamp(0, 1) * 255).round().to(torch.uint8).cpu().numpy()
         layer_name = names.resolve(name, names.variables(cls.hidden.prompt, doc.get("name", "")))
         bridge.publish_result(arr, {"node": cls.hidden.unique_id, "dest": destination or DEST_DEFAULT,
                                     "name": layer_name or "NKD {n}",
-                                    "x": 0, "y": 0, "doc": doc.get("id")})
+                                    "x": 0, "y": 0, "doc": doc.get("id"),
+                                    "save": bool(save_after_write)})
         return io.NodeOutput(ui=ui.PreviewImage(img, cls=cls))
 
 

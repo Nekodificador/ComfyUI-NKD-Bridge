@@ -29,6 +29,7 @@ flowchart LR
 
 What to read from Photoshop: the whole document, or one layer or group that stays the same no matter which layer is active while you paint.
 
+- **Document**: which Photoshop document to read. **Active document** (the default) follows whatever you're working in. Pick an open document from the list to always read that one, even while another is active. It's bound by id and, when you reopen it in another session, by name. **Use active** in the panel sets it too.
 - **Photoshop source**: **Whole document** (the default) is every visible layer merged, the way you see it. Or pick a layer or group from the list (groups end in `/`), or select it in Photoshop and press **Use active** in the panel; **Document** in the panel goes back to the whole document. A layer is bound by id, so renaming it keeps the binding; if the id is gone (another document), the layer's path is used instead.
 - `image`, `alpha`: the pixels and transparency, placed where they sit in the document, so a layer lines up with the whole document and with the selection.
 - `selection`: a mask at document size, white where selected and black everywhere else. It doesn't depend on **Photoshop source**. Photoshop only sends it while this output is connected, so a workflow that doesn't use it isn't re-run when you select something.
@@ -61,6 +62,8 @@ Text:
 Sends the image back to Photoshop. It runs on every execution, even when nothing upstream changed, so pressing Generate always delivers. Whatever the destination, the result also shows up in the panel.
 
 - `images`: what to send. Only the first image of a batch is used.
+- **Document**: where the result goes. **Active document** (the default) sends it back to the document its pixels came from. Pick another open document to paint in one and get the result in the other, for example a smart object's contents. The result is scaled to fit that document's canvas.
+- `save_after_write`: saves that document after writing. Turn it on when it's a smart object's contents (the `.psb` that opens when you edit it), so the smart object in the parent document updates by itself.
 - **Destination**: one list that decides where the result goes. What you pick sets the behaviour:
   - **Panel only**: shown in the panel, the document isn't touched. **Add preview as layer** can keep it.
   - **+ New layer**: creates a layer on the first run, and from then on the node is bound to that layer.
@@ -75,7 +78,11 @@ Sends the image back to Photoshop. It runs on every execution, even when nothing
   - Any Bridge Text or Bridge Number by its name, such as `{Prompt}` or `{Denoise}`. Long values are cut to 40 characters.
 - `mask` (optional): transparency for the written layer. Give it Bridge Input's `selection` and only the selected area changes.
 
-The destination is bound by id, like Bridge Input, so renaming the layer or group doesn't break it. If it gets deleted, the next run creates it again. The result always goes back to the document its pixels came from, even if you've switched to another one while it was generating; if that document has been closed, nothing is written and the panel tells you.
+The destination is bound by id, like Bridge Input, so renaming the layer or group doesn't break it. If it gets deleted, the next run creates it again. With **Active document**, the result goes back to the document its pixels came from, even if you've switched to another one while it was generating. If the target document has been closed, nothing is written and the panel tells you.
+
+### Painting in one document, results in another
+
+Set Bridge Input's **Document** to the one you paint in and Bridge Output's **Document** to the one that should receive the result. A smart object works well as the target: edit its contents once so its `.psb` is open, pick it in the Output, and tick `save_after_write`. Live only re-runs when you change the document an Input reads, so working on the target never triggers a run.
 
 In the panel's **Inputs & outputs** tab every Output has its own ▶ to run just that branch, a line saying where the result will land, **Use active** to send it to the layer or group selected in Photoshop, **Panel only**, and the name field with the variables as clickable chips.
 

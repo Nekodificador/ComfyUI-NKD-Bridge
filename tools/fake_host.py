@@ -42,6 +42,8 @@ async def main(url, runs, check_cache=True):
     doc = {"id": 1, "name": "fake.psd", "w": W, "h": H,
            "layers": [{"id": 1, "name": "Background", "path": "Background", "kind": "layer"},
                       {"id": 2, "name": "Sketch", "path": "Sketch", "kind": "layer"}]}
+    # a second open document (e.g. a smart object's contents) an Output can be bound to as "obj.psb #5"
+    doc["docs"] = [dict(doc), {"id": 5, "name": "obj.psb", "w": W // 2, "h": H // 4, "layers": []}]
     async with aiohttp.ClientSession() as http:
         async with http.ws_connect(f"{url}/nkd_bridge/ws?host=fake") as ws:
             await ws.send_json({"type": "doc", "doc": doc})
@@ -63,7 +65,7 @@ async def main(url, runs, check_cache=True):
             times, prompts = [], []
             for i, seed in enumerate(seeds):
                 for k in keys:
-                    await upload(http, url, k, layer_pixels(seed if "Sketch" in k or k == "canvas" else 99))
+                    await upload(http, url, k, layer_pixels(seed if "Sketch" in k or k.endswith("canvas") else 99))
                 t0 = time.perf_counter()
                 await ws.send_json({"type": "run"})
                 while True:
@@ -80,7 +82,7 @@ async def main(url, runs, check_cache=True):
                         assert len(raw) == msg["w"] * msg["h"] * 4, "result size mismatch"
                         dt = (time.perf_counter() - t0) * 1000
                         times.append(dt)
-                        print(f"run {i}: result {msg['w']}x{msg['h']} -> {msg['dest']} as '{msg['name']}' in {dt:.0f} ms")
+                        print(f"run {i}: result {msg['w']}x{msg['h']} -> {msg['dest']} as '{msg['name']}' in doc {msg.get('doc')} save={msg.get('save')} in {dt:.0f} ms")
                         break
                     if msg["type"] == "run_status" and msg.get("state") == "running":
                         prompts.append(msg.get("prompt"))

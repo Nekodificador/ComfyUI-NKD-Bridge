@@ -36,7 +36,7 @@ class _State:
     def __init__(self):
         self.hosts = set()                 # live host websockets
         self.runner = None                 # client_id of the tab that queues runs
-        self.doc = None                    # last document info from the host
+        self.doc = None                    # active document info from the host, plus "docs": every open one
         self.manifest = None               # last manifest from the runner tab
         self.sources = OrderedDict()       # key -> dict(hash, arr HxWxC uint8, x, y, dw, dh)
         self.results = OrderedDict()       # id -> dict(rgba bytes, w, h, jpg)
@@ -247,7 +247,9 @@ async def debug(request):
     """What the bridge currently knows. Paste this when reporting a problem."""
     return web.json_response({
         "hosts": len(S.hosts), "runner": S.runner,
-        "doc": S.doc and {k: v for k, v in S.doc.items() if k != "layers"} | {"layers": len(S.doc.get("layers", []))},
+        "doc": S.doc and {k: v for k, v in S.doc.items() if k not in ("layers", "docs")}
+               | {"layers": len(S.doc.get("layers", [])),
+                  "docs": [f"{d.get('name')} #{d.get('id')}" for d in S.doc.get("docs") or []]},
         "manifest": S.manifest,
         "sources": {k: {"hash": v["hash"], "shape": None if v["arr"] is None else list(v["arr"].shape),
                         "x": v["x"], "y": v["y"], "dw": v["dw"], "dh": v["dh"]} for k, v in S.sources.items()},

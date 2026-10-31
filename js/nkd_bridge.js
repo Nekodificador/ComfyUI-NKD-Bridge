@@ -5,7 +5,7 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const REV = "0.3.0";
+const REV = "0.4.0";
 const SOURCES = { NKDBridgeInput: "layer" };
 const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text" };
 const OUTPUT = "NKDBridgeOutput";
@@ -14,14 +14,35 @@ const DOCUMENT = "@document";          // Bridge Input reading the whole documen
 const DOC_LABEL = "Whole document";
 const SELECTION = "@selection";        // selection_source: the live selection
 const SEL_LABEL = "Current selection";
+const ACTIVE = "@active";              // document: whichever one is active in Photoshop
+const ACTIVE_LABEL = "Active document";
+
+let doc = null;        // active document info from the host; doc.docs = every open document
+
+// Which document a node works on: its "document" widget ("Name #id", id first then name), else the active one
+const docBinding = (d) => `${d.name} #${d.id}`;
+const boundDoc = (v) => { const b = String(v ?? "").trim(); return b === ACTIVE ? "" : b; };
+function docOf(node) {
+  const b = boundDoc(widget(node, "document")?.value);
+  if (!b) return doc;
+  const id = /#(\d+)\s*$/.exec(b)?.[1], name = b.replace(/\s*#\d+\s*$/, "");
+  const docs = doc?.docs ?? [];
+  return docs.find((d) => id && String(d.id) === id) || docs.find((d) => d.name === name) || null;
+}
+const docLabelsAll = () => [ACTIVE_LABEL, ...(doc?.docs ?? []).map(docBinding)];
+const docToLabel = (v) => (boundDoc(v) || ACTIVE_LABEL);
+const labelToDoc = (l) => (l === ACTIVE_LABEL ? ACTIVE : l);
+
 // saved channels/paths: "Channel: Cara" in the list, "channel:Cara #12" stored
 const maskLabelOf = (m) => `${m.kind === "channel" ? "Channel" : "Path"}: ${m.name}${m.id != null ? ` #${m.id}` : ""}`;
-const maskLabels = () => [SEL_LABEL, ...(doc?.masks ?? []).map(maskLabelOf)];
-const maskToLabel = (v) => (!v || v === SELECTION ? SEL_LABEL : (doc?.masks ?? []).find((m) => m.binding === v)
-  ? maskLabelOf(doc.masks.find((m) => m.binding === v)) : v);
-const labelToMask = (l) => (l === SEL_LABEL ? SELECTION : (doc?.masks ?? []).find((m) => maskLabelOf(m) === l)?.binding ?? l);
-
-let doc = null;        // last document info from the host
+const masksOf = (n) => docOf(n)?.masks ?? [];
+const maskLabels = (n) => [SEL_LABEL, ...masksOf(n).map(maskLabelOf)];
+const maskToLabel = (n, v) => {
+  if (!v || v === SELECTION) return SEL_LABEL;
+  const m = masksOf(n).find((x) => x.binding === v);
+  return m ? maskLabelOf(m) : v;
+};
+const labelToMask = (n, l) => (l === SEL_LABEL ? SELECTION : masksOf(n).find((m) => maskLabelOf(m) === l)?.binding ?? l);
 let hosts = 0;         // connected hosts, as last reported by the server
 let lastManifest = "";
 
@@ -37,12 +58,12 @@ const active = (n) => !n.mode;  // 0 = always; muted (2) and bypassed (4) don't 
 
 // Groups end in "/" like folders, so they read as groups in every list
 const labelOf = (l) => `${l.path}${l.kind === "group" ? "/" : ""} #${l.id}`;
-const docLabels = () => (doc?.layers ?? []).map(labelOf);
-function sourceLabels() { return [DOC_LABEL, ...docLabels()]; }
+const docLabels = (n) => (docOf(n)?.layers ?? []).map(labelOf);
+const sourceLabels = (n) => [DOC_LABEL, ...docLabels(n)];
 
 // Output destination: friendly label <-> stored value
 const DEST_SPECIAL = [["Panel only", "panel"], ["+ New layer", "new:layer"], ["+ New group", "new:group"]];
-const destLabels = () => [...DEST_SPECIAL.map((d) => d[0]), ...docLabels()];
+const destLabels = (n) => [...DEST_SPECIAL.map((d) => d[0]), ...docLabels(n)];
 const destToLabel = (v) => DEST_SPECIAL.find((d) => d[1] === v)?.[0] ?? (v || DEST_SPECIAL[1][0]);
 const labelToDest = (l) => DEST_SPECIAL.find((d) => d[0] === l)?.[1] ?? l;
 
@@ -66,14 +87,16 @@ function manifest() {
       let binding = kind === "layer" ? String(v("source") ?? "").trim() : "";
       const bindable = kind === "layer";           // Bridge Input: the panel can rebind it
       if (binding === DOCUMENT) { kind = "canvas"; binding = ""; }
-      m.sources.push({ id: n.id, kind, title: n.title, binding, bindable,
-        key: kind === "layer" ? "layer:" + binding : kind });
+      // same key the node computes (nkd_bridge_nodes._key): a bound document prefixes it
+      const d = boundDoc(v("document")), dk = d ? `doc:${d}|` : "";
+      m.sources.push({ id: n.id, kind, title: n.title, binding, bindable, doc: d,
+        key: dk + (kind === "layer" ? "layer:" + binding : kind) });
       // the selection is read only while its output is wired, so selecting never re-runs for nothing
       if (n.outputs?.find((o) => o.name === "selection")?.links?.length) {
         const sb = String(v("selection_source") ?? "").trim();
         const saved = sb && sb !== SELECTION;
-        m.sources.push({ id: n.id, kind: "selection", title: n.title, binding: saved ? sb : "", bindable: true,
-          key: saved ? "selection:" + sb : "selection" });
+        m.sources.push({ id: n.id, kind: "selection", title: n.title, binding: saved ? sb : "", bindable: true, doc: d,
+          key: dk + (saved ? "selection:" + sb : "selection") });
       }
     } else if (n.type in PARAMS) {
       const p = { id: n.id, kind: PARAMS[n.type], name: v("name") || n.title };
@@ -81,7 +104,8 @@ function manifest() {
       else p.value = v("text");
       m.params.push(p);
     } else {
-      m.outputs.push({ id: n.id, title: n.title, dest: v("destination") || "new:layer", name: v("name") });
+      m.outputs.push({ id: n.id, title: n.title, dest: v("destination") || "new:layer", name: v("name"),
+        doc: boundDoc(v("document")), save: !!v("save_after_write") });
     }
   }
   return m;
@@ -140,16 +164,26 @@ function addPicker(node, rawName, title, labels, toLabel, fromLabel) {
   const raw = widget(node, rawName);
   if (!raw || widget(node, title)) return;
   hideWidget(raw);
-  const pick = addCombo(node, raw, title, toLabel(raw.value), (v) => {
-    const val = fromLabel(v);
+  const pick = addCombo(node, raw, title, toLabel(node, raw.value), (v) => {
+    const val = fromLabel(node, v);
     if (val == null) return;
     raw.value = val;
     raw.callback?.(val);
     publish();
-  }, labels);
+  }, () => labels(node));
   const origCb = raw.callback;             // keep the list showing what's bound
-  raw.callback = function (v) { origCb?.apply(this, arguments); pick.value = toLabel(v); };
-  (node.__nkdPickers ||= []).push(() => { hideWidget(raw); pick.value = toLabel(raw.value); });
+  raw.callback = function (v) { origCb?.apply(this, arguments); pick.value = toLabel(node, v); };
+  (node.__nkdPickers ||= []).push(() => { hideWidget(raw); pick.value = toLabel(node, raw.value); });
+  return pick;
+}
+
+/** "Document" goes first: it decides what the layer and selection lists below it offer. */
+function addDocPicker(node) {
+  const pick = addPicker(node, "document", "Document", docLabelsAll, (_, v) => docToLabel(v), (_, l) => labelToDoc(l));
+  if (!pick) return;
+  const ws = node.widgets;
+  ws.splice(ws.indexOf(pick), 1);
+  ws.unshift(pick);
 }
 
 /** "Insert variable": picking one appends it to the name, then the list goes back to its prompt. */
@@ -174,11 +208,13 @@ function paintPhotoshop(node) { node.color = PS_TITLE; node.bgcolor = PS_BODY; }
 const SETUP = {
   NKDBridgeInput: (n) => {
     addPicker(n, "source", "Photoshop source", sourceLabels,
-      (v) => (v === DOCUMENT ? DOC_LABEL : v || NONE), (l) => (l === DOC_LABEL ? DOCUMENT : l === NONE ? null : l));
+      (_, v) => (v === DOCUMENT ? DOC_LABEL : v || NONE), (_, l) => (l === DOC_LABEL ? DOCUMENT : l === NONE ? null : l));
     addPicker(n, "selection_source", "Selection source", maskLabels, maskToLabel, labelToMask);
+    addDocPicker(n);
   },
   NKDBridgeOutput: (n) => {
-    addPicker(n, "destination", "Destination", destLabels, destToLabel, labelToDest);
+    addPicker(n, "destination", "Destination", destLabels, (_, v) => destToLabel(v), (_, l) => labelToDest(l));
+    addDocPicker(n);
     addVariablePicker(n);
   },
 };

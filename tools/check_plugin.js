@@ -260,6 +260,30 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   delete doc.selection; delete doc.channels; delete doc.pathItems;
   console.log("OK  saved channel and path listed, read in place and rolled back; a deleted one is missing; the dropdown offers them all");
 
+  // 14. other documents: an Input bound to one reads it while another is active; an Output saves its own
+  const big = { id: 5, name: "obj.psb", width: W * 2, height: H, layers: [{ id: 9, name: "Pinta", kind: "pixel", bounds: { left: 0, top: 0, right: W, bottom: H } }],
+    activeHistoryState: { id: 1 }, historyStates: [1], bitsPerChannel: "bitDepth8", saved: 0,
+    async save() { this.saved++; }, async createPixelLayer({ name }) { const l = { id: 77, name, kind: "pixel", bounds: {} }; this.layers.push(l); return l; } };
+  photoshop.app.documents = [doc, big]; photoshop.app.activeDocument = doc;
+  vm.runInContext("publishDoc()", ctx);
+  const sentDocs = ws.sent.filter((m) => m.type === "doc").pop()?.doc?.docs?.map((x) => x.name);
+  if (String(sentDocs) !== "t.psd,obj.psb") fail(`every open document should be published, got ${sentDocs}`);
+  const read = [];
+  const gp = photoshop.imaging.getPixels;
+  photoshop.imaging.getPixels = async (o) => { read.push(o.documentID); return gp(o); };
+  const r1 = await vm.runInContext("readSourceRaw", ctx)({ kind: "layer", binding: "Pinta #9", doc: "obj.psb #5" });
+  const r2 = await vm.runInContext("readSourceRaw", ctx)({ kind: "canvas", doc: "obj.psb #999" });   // reopened: id changed, name still matches
+  const r3 = await vm.runInContext("readSourceRaw", ctx)({ kind: "canvas", doc: "cerrado.psd #42" });
+  photoshop.imaging.getPixels = gp;
+  if (read.join() !== "5,5" || r1.dw !== W * 2 || r2.dw !== W * 2) fail(`bound document read wrong: docs ${read} sizes ${r1.dw},${r2.dw}`);
+  if (!r3.missing) fail("a closed bound document should read as missing");
+  const nW = writes.length;
+  ws.onmessage({ data: JSON.stringify({ type: "result", id: "s2", w: 4, h: 4, x: 0, y: 0, node: 3, dest: "new:layer", name: "R", doc: 5, save: true }) });
+  await sleep(200);
+  if (writes.slice(nW).pop()?.doc !== 5 || big.saved !== 1) fail(`output to another document: wrote to ${writes.slice(nW).pop()?.doc}, saved ${big.saved}`);
+  photoshop.app.documents = [doc];
+  console.log("OK  other documents: all published, bound Input reads its own (id, then name), closed one missing, Output writes there and saves");
+
   const errors = ws.sent.filter((m) => m.type === "log" && !/connected|cerr/.test(m.message));
   if (errors.length) fail(`plugin reported errors: ${JSON.stringify(errors)}`);
   console.log("OK  no errors reported");
