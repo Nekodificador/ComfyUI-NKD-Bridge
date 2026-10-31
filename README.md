@@ -33,6 +33,7 @@ In [example_workflows/](example_workflows/):
 - `NKD Bridge - Live SD1.5 LCM.json`: paint and watch it regenerate. The one to start with.
 - `NKD Bridge - Inpaint selection SD1.5 LCM.json`: redoes only the selected area. Also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools).
 - `NKD Bridge - Inpaint selection ZImage Turbo.json`: the same with Z-Image Turbo, a prompt and a denoise slider in the panel, and explained hints on each Bridge node. Also needs [NKD Basic Tools](https://github.com/Nekodificador/ComfyUI-NKD-Basic-Tools), and [NKD Notes](https://github.com/Nekodificador/ComfyUI-NKD-Notes) for the hints.
+- `NKD Bridge - Klein Tools.json`: edits the document or just the selection with FLUX.2 [klein] 9B, from a prompt in the panel and a Reference Strength slider. Needs [NKD Klein Tools](https://github.com/Nekodificador/ComfyUI-NKD-Klein-Tools), [RES4LYF](https://github.com/ClownsharkBatwing/RES4LYF) for the sampler, and [NKD Notes](https://github.com/Nekodificador/ComfyUI-NKD-Notes) for the hints.
 
 ## Credits
 

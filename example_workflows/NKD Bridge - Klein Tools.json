@@ -1,0 +1,2159 @@
+{
+  "id": "6218c4b9-b858-4c0d-a259-c5e133647365",
+  "revision": 0,
+  "last_node_id": 1565,
+  "last_link_id": 22979,
+  "nodes": [
+    {
+      "id": 9,
+      "type": "NKDBridgeOutput",
+      "pos": [
+        1719.2884118638956,
+        5399
+      ],
+      "size": [
+        253.7479543108766,
+        406
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 22950
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": 22956
+        },
+        {
+          "localized_name": "destination",
+          "name": "destination",
+          "type": "STRING",
+          "widget": {
+            "name": "destination"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "document",
+          "name": "document",
+          "type": "STRING",
+          "widget": {
+            "name": "document"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "save_after_write",
+          "name": "save_after_write",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "save_after_write"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "region",
+          "name": "region",
+          "shape": 7,
+          "type": "NKD_REGION",
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeOutput",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "new:layer",
+        "NKD {n}",
+        "@active",
+        false
+      ],
+      "widgets_values_named": {
+        "destination": "new:layer",
+        "name": "NKD {n}",
+        "document": "@active",
+        "save_after_write": false
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 23,
+      "type": "NKDBridgeInput",
+      "pos": [
+        245.6163573312056,
+        5359
+      ],
+      "size": [
+        323.64555131137445,
+        146
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "source",
+          "name": "source",
+          "type": "STRING",
+          "widget": {
+            "name": "source"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "selection_source",
+          "name": "selection_source",
+          "type": "STRING",
+          "widget": {
+            "name": "selection_source"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "document",
+          "name": "document",
+          "type": "STRING",
+          "widget": {
+            "name": "document"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            22958
+          ]
+        },
+        {
+          "localized_name": "alpha",
+          "name": "alpha",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "localized_name": "selection",
+          "name": "selection",
+          "type": "MASK",
+          "links": [
+            22956,
+            22959
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeInput",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "@document",
+        "@selection",
+        "@active"
+      ],
+      "widgets_values_named": {
+        "source": "@document",
+        "selection_source": "@selection",
+        "document": "@active"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 31,
+      "type": "NKDBridgeText",
+      "pos": [
+        245.6163573312056,
+        5545
+      ],
+      "size": [
+        323.64555131137445,
+        115
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            22951
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeText",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "prompt",
+        ""
+      ],
+      "widgets_values_named": {
+        "name": "prompt",
+        "text": ""
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 36,
+      "type": "NKDHint",
+      "pos": [
+        51.268022633331604,
+        5572.09138966962
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Text\nUse this node to create a text box synced with Photoshop.\n\n### Name\nThe label you'll see in the Photoshop panel, and at the same time the node's ID if you want to use its content to name the layers you send back to Photoshop from Bridge Output, e.g. `{prompt}` or `{negative_prompt}`.\n\n### Text\nA `multiline` field synced with the PS panel: edit it on either side.",
+        "targets": [
+          {
+            "node": "31",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 300,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Text\nUsa este nodo para crear un cuadro de texto sincronizado con Photoshop\n\n### Nombre\nEs la etiqueta que verás en el panel de Photoshop y al mismo tiempo la ID del nodo si quieres invocar su contenido para nombrar las capas que mandes de nuevo a Photoshop desde el nodo de Bridge Output, p.ej. `{prompt}` o `{prompt_negativo}`.\n\n### Texto\nUn `multiline` sincronizado con el panel de PS: edítalo en cualquiera de los dos lados."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 38,
+      "type": "NKDHint",
+      "pos": [
+        48.06084568302546,
+        5400.625211988942
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Document\nWhich document to read: **Active document** follows the one you're working in, or pick an open document to always read that one.\n\n# Photoshop source\nWhere the image comes from: **Whole document** (everything visible, whichever layer is active) or one layer/group. The binding survives renames. You can also set it from the panel with **Use active** / **Document**.\n\n# Selection source\nWhat the `selection` output gives: the **current selection** (or Quick Mask) or a saved channel/path. White = selected, all black if nothing is selected.\n\n# Outputs\n`image` · `alpha` (layer transparency) · `selection` (document-sized mask).",
+        "targets": [
+          {
+            "node": "23",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 300,
+        "min": "",
+        "max": "",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        },
+        "texts": {
+          "es": "# Document\nDe qué documento leer: **Active document** sigue al que tengas activo, o elige un documento abierto para leer siempre ese.\n\n# Photoshop source\nDe dónde sale la imagen: **Whole document** (todo lo visible, esté activa la capa que esté) o una capa/grupo concreto. El vínculo sobrevive a renombrar. También se fija desde el panel con **Usar activa** / **Documento**.\n\n# Selection source\nQué da la salida `selection`: la **selección actual** (o Máscara rápida) o un canal/trazado guardado. Blanco = seleccionado; todo negro si no hay selección.\n\n# Salidas\n`image` · `alpha` (transparencia de la capa) · `selection` (máscara del tamaño del documento)."
+        }
+      }
+    },
+    {
+      "id": 39,
+      "type": "NKDHint",
+      "pos": [
+        2470.572697832435,
+        5170.684419047809
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Output\nSends the result back to Photoshop.\n\n## Document\nWhere the result goes: **Active document** sends it back to where the pixels came from, or pick another open document (e.g. a smart object's contents). It's scaled to fit. Tick `save_after_write` so a smart object updates by itself.\n\n## Destination\n- **Panel only**: just shows it in the panel, touches nothing in the document.\n- **+ New layer**: creates a layer and binds the node to it. From then on it's an existing layer.\n- **+ New group**: creates a group and binds the node to it. From then on it's an existing group.\n- **Existing layer** (e.g. `NKD 1 #4`): replaced on every run.\n- **Existing group** (e.g. `Variations/ #7`): a new layer inside it on every run, so you keep the variations (in Live mode the latest is replaced).\n\nThe `#number` is the Photoshop ID: the binding survives renames.\n\n## Name\nName for the layers it creates. Pick variables from **Insert variable**: `{n}` `{seed}` `{date}` `{time}` `{doc}` and any Bridge Text/Number by its name, e.g. `{prompt}`.\n\n## Mask\nTransparency for the written layer (white = keep). Plug in Bridge Input's `selection` to change only the selection.",
+        "targets": [
+          {
+            "node": "9",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 400,
+        "min": "",
+        "max": "",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        },
+        "texts": {
+          "es": "# Bridge Output\nDevuelve el resultado a Photoshop.\n\n## Document\nA dónde va el resultado: **Active document** lo devuelve a su documento de origen, o elige otro documento abierto (p.ej. el contenido de un objeto inteligente). Se escala para encajar. Marca `save_after_write` para que el objeto inteligente se actualice solo.\n\n## Destination\n- **Panel only**: solo se muestra en el panel, no toca el documento.\n- **+ New layer**: crea una capa y vincula el nodo a ella. A partir de ahí es una capa existente.\n- **+ New group**: crea un grupo y vincula el nodo a él. A partir de ahí es un grupo existente.\n- **Capa existente** (p.ej. `NKD 1 #4`): se reemplaza en cada ejecución.\n- **Grupo existente** (p.ej. `Variaciones/ #7`): una capa nueva dentro en cada ejecución, así conservas las variaciones (en modo Live se reemplaza la última).\n\nEl `#número` es el ID de Photoshop: el vínculo sobrevive a renombrar.\n\n## Name\nNombre de las capas que crea. Elige variables en **Insert variable**: `{n}` `{seed}` `{date}` `{time}` `{doc}` y cualquier Bridge Text/Number por su nombre, p.ej. `{prompt}`.\n\n## Mask\nTransparencia de la capa escrita (blanco = se queda). Conecta la `selection` de Bridge Input para cambiar solo la selección."
+        }
+      }
+    },
+    {
+      "id": 41,
+      "type": "NKDHint",
+      "pos": [
+        427.4069556584851,
+        5745.494773516375
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Number\nTurns any number in the workflow into a **slider in the Photoshop panel**, so you can tweak it without opening ComfyUI.\n\n## Values\n- **name**: the slider's label in the panel (and the `{denoise}` variable for naming layers).\n- **value**: where the slider is now. Move it in PS and it changes here, and the other way round.\n- **min / max**: the slider's ends. Set them to what makes sense. For example: 0–1 for denoise; 0–250 for a mask's padding.\n- **step**: how far each notch moves. `0.01` = fine tuning with decimals, `1` = whole numbers (steps, seed), `0.05` = quick jumps, etc.\n\nConnect the output that matches what the widget takes: `int` for whole numbers (like `steps`) and `float` for values with decimals, like `denoise`.",
+        "targets": [
+          {
+            "node": "1557",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 500,
+        "min": "",
+        "max": "",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        },
+        "texts": {
+          "es": "# Bridge Number\nConvierte cualquier número del workflow en un **slider en el panel de Photoshop**, para retocarlo sin abrir ComfyUI.\n\n## Valores\n- **name**: es la etiqueta del slider que verás en el panel (y, además, la variable que puedes invocar en en Bridge output para nombrar capas).\n- **value**: dónde está el slider ahora. Si lo mueves en PS cambia aquí, y al revés.\n- **min / max**: los extremos del slider. Ajústalos a lo que tiene sentido. Por ejemplo: 0–1 para denoise; 0–250 para el padding de una máscara.\n- **step**: cuánto avanza cada muesca. `0.01` = ajuste fino con decimales, `1` = números enteros (steps, seed), `0.05` = saltos rápidos, etc\n\nConecta la salida al widget según lo que este reciba: `int` si se trata de números enteros (como `steps`) y `float` si se trata de un valor con decimales, como `denoise`"
+        }
+      }
+    },
+    {
+      "id": 1552,
+      "type": "VAEDecode",
+      "pos": [
+        1378.3661321016489,
+        5369
+      ],
+      "size": [
+        225,
+        50
+      ],
+      "flags": {
+        "collapsed": true
+      },
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "samples",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 22939
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 22960
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGE",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            22941
+          ]
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "VAEDecode",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      }
+    },
+    {
+      "id": 1553,
+      "type": "NKDKleinPostsampling",
+      "pos": [
+        1378.3661321016489,
+        5399
+      ],
+      "size": [
+        243.822265625,
+        174
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 22941
+        },
+        {
+          "localized_name": "bundle",
+          "name": "bundle",
+          "type": "NKD_KLEIN_BUNDLE",
+          "link": 22942
+        },
+        {
+          "localized_name": "Uncrop Feather",
+          "name": "uncrop_feather",
+          "type": "INT",
+          "widget": {
+            "name": "uncrop_feather"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Match Original Colors",
+          "name": "match_original_colors",
+          "type": "FLOAT",
+          "widget": {
+            "name": "match_original_colors"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Seamless Edges",
+          "name": "seamless_edges",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "seamless_edges"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Auto-Detect Edit Region",
+          "name": "auto_detect_edit_region",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "auto_detect_edit_region"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Edge Softness",
+          "name": "edge_softness",
+          "type": "FLOAT",
+          "widget": {
+            "name": "edge_softness"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Region Padding",
+          "name": "region_padding",
+          "type": "FLOAT",
+          "widget": {
+            "name": "region_padding"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Fill Inner Gaps",
+          "name": "fill_inner_gaps",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "fill_inner_gaps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Remove Specks",
+          "name": "remove_specks",
+          "type": "FLOAT",
+          "widget": {
+            "name": "remove_specks"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Extend To Borders",
+          "name": "extend_to_borders",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "extend_to_borders"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Transparent Background",
+          "name": "transparent_background",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "transparent_background"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            22950
+          ]
+        },
+        {
+          "localized_name": "debug_difference",
+          "name": "debug_difference",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfyui-nkd-klein-tools",
+        "ver": "047a9e69e0b106dff3be4c40c1ebb33017c8b90e",
+        "Node name for S&R": "NKDKleinPostsampling",
+        "nkdSchema": 1,
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        10,
+        0,
+        false,
+        false,
+        2,
+        0,
+        true,
+        false,
+        true,
+        false
+      ],
+      "widgets_values_named": {
+        "uncrop_feather": 10,
+        "match_original_colors": 0,
+        "seamless_edges": false,
+        "auto_detect_edit_region": false,
+        "edge_softness": 2,
+        "region_padding": 0,
+        "fill_inner_gaps": true,
+        "remove_specks": false,
+        "extend_to_borders": true,
+        "transparent_background": false
+      }
+    },
+    {
+      "id": 1554,
+      "type": "ClownsharKSampler_Beta",
+      "pos": [
+        1118.3661321016489,
+        5339
+      ],
+      "size": [
+        240.46636915695308,
+        705.536324530496
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "shape": 7,
+          "type": "MODEL",
+          "link": 22943
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "shape": 7,
+          "type": "CONDITIONING",
+          "link": 22944
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "shape": 7,
+          "type": "CONDITIONING",
+          "link": 22945
+        },
+        {
+          "localized_name": "latent_image",
+          "name": "latent_image",
+          "shape": 7,
+          "type": "LATENT",
+          "link": 22946
+        },
+        {
+          "localized_name": "sigmas",
+          "name": "sigmas",
+          "shape": 7,
+          "type": "SIGMAS",
+          "link": null
+        },
+        {
+          "localized_name": "guides",
+          "name": "guides",
+          "shape": 7,
+          "type": "GUIDES",
+          "link": null
+        },
+        {
+          "localized_name": "options0",
+          "name": "options_group.options0",
+          "shape": 7,
+          "type": "OPTIONS",
+          "link": null
+        },
+        {
+          "localized_name": "eta",
+          "name": "eta",
+          "type": "FLOAT",
+          "widget": {
+            "name": "eta"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_name",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "scheduler",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps_to_run",
+          "name": "steps_to_run",
+          "type": "INT",
+          "widget": {
+            "name": "steps_to_run"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "denoise",
+          "name": "denoise",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sampler_mode",
+          "name": "sampler_mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "bongmath",
+          "name": "bongmath",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "bongmath"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "options1",
+          "name": "options_group.options1",
+          "shape": 7,
+          "type": "OPTIONS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "output",
+          "name": "output",
+          "type": "LATENT",
+          "links": [
+            22939
+          ]
+        },
+        {
+          "localized_name": "denoised",
+          "name": "denoised",
+          "type": "LATENT",
+          "links": []
+        },
+        {
+          "localized_name": "options",
+          "name": "options",
+          "type": "OPTIONS",
+          "links": []
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "aux_id": "drozbay/RES4LYF",
+        "ver": "3802390deff0d508e56a72dd21be4be99a52ff74",
+        "Node name for S&R": "ClownsharKSampler_Beta"
+      },
+      "widgets_values": [
+        0.5,
+        "linear/euler",
+        "simple",
+        8,
+        -1,
+        1,
+        1,
+        1,
+        "fixed",
+        "standard",
+        true
+      ],
+      "widgets_values_named": {
+        "eta": 0.5,
+        "sampler_name": "linear/euler",
+        "scheduler": "simple",
+        "steps": 8,
+        "steps_to_run": -1,
+        "denoise": 1,
+        "cfg": 1,
+        "seed": 1,
+        "control_after_generate": "fixed",
+        "sampler_mode": "standard",
+        "bongmath": true
+      }
+    },
+    {
+      "id": 1555,
+      "type": "NKDKleinPresampling",
+      "pos": [
+        873.3661321016489,
+        5339
+      ],
+      "size": [
+        213.669921875,
+        566
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 22978
+        },
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 22948
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 22949
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": 22959
+        },
+        {
+          "localized_name": "boxes",
+          "name": "boxes",
+          "shape": 7,
+          "type": "NKD_KLEIN_BOXES",
+          "link": null
+        },
+        {
+          "localized_name": "upsampler",
+          "name": "upsampler",
+          "shape": 7,
+          "type": "CLIP",
+          "link": null
+        },
+        {
+          "label": "ref_0",
+          "localized_name": "ref_0",
+          "name": "ref_images.ref_0",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 22958
+        },
+        {
+          "label": "ref_1",
+          "localized_name": "ref_1",
+          "name": "ref_images.ref_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "Model",
+          "name": "model_family",
+          "type": "COMBO",
+          "widget": {
+            "name": "model_family"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "STRING",
+          "widget": {
+            "name": "positive"
+          },
+          "link": 22951
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "STRING",
+          "widget": {
+            "name": "negative"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "boxes_json",
+          "name": "boxes_json",
+          "type": "STRING",
+          "widget": {
+            "name": "boxes_json"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Pin Model",
+          "name": "pin_model",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "pin_model"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Resize",
+          "name": "resize",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "resize"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Aspect Ratio",
+          "name": "aspect_ratio",
+          "type": "COMBO",
+          "widget": {
+            "name": "aspect_ratio"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Megapixels",
+          "name": "megapixels",
+          "type": "FLOAT",
+          "widget": {
+            "name": "megapixels"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Custom Width",
+          "name": "custom_width",
+          "type": "INT",
+          "widget": {
+            "name": "custom_width"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Custom Height",
+          "name": "custom_height",
+          "type": "INT",
+          "widget": {
+            "name": "custom_height"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Image Fit",
+          "name": "image_fit",
+          "type": "COMBO",
+          "widget": {
+            "name": "image_fit"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Outpaint Fill",
+          "name": "outpaint_fill",
+          "type": "COMBO",
+          "widget": {
+            "name": "outpaint_fill"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Slide",
+          "name": "slide",
+          "type": "FLOAT",
+          "widget": {
+            "name": "slide"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Bypass Reference",
+          "name": "bypass_reference",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "bypass_reference"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Reference Strength",
+          "name": "reference_strength",
+          "type": "INT",
+          "widget": {
+            "name": "reference_strength"
+          },
+          "link": 22963
+        },
+        {
+          "localized_name": "Mask Expand",
+          "name": "mask_expand",
+          "type": "INT",
+          "widget": {
+            "name": "mask_expand"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Mask Blur",
+          "name": "mask_blur",
+          "type": "INT",
+          "widget": {
+            "name": "mask_blur"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Inpaint Blend",
+          "name": "inpaint_blend",
+          "type": "FLOAT",
+          "widget": {
+            "name": "inpaint_blend"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Use Detailing",
+          "name": "use_detailing",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "use_detailing"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Detail Padding",
+          "name": "detail_padding",
+          "type": "INT",
+          "widget": {
+            "name": "detail_padding"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Upsample Prompt",
+          "name": "upsample_prompt",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "upsample_prompt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "Upsample Style",
+          "name": "upsample_style",
+          "type": "COMBO",
+          "widget": {
+            "name": "upsample_style"
+          },
+          "link": null
+        },
+        {
+          "label": "ref_2",
+          "localized_name": "ref_images.ref_2",
+          "name": "ref_images.ref_2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            22943
+          ]
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            22944
+          ]
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            22945
+          ]
+        },
+        {
+          "localized_name": "latent",
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            22946
+          ]
+        },
+        {
+          "localized_name": "bundle",
+          "name": "bundle",
+          "type": "NKD_KLEIN_BUNDLE",
+          "links": [
+            22942
+          ]
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "localized_name": "ref_0",
+          "name": "ref_0",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfyui-nkd-klein-tools",
+        "ver": "e02f203d42acad2b28e30194537124f8329ad9e7",
+        "Node name for S&R": "NKDKleinPresampling",
+        "nkdSchema": 2,
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "Klein 2",
+        "",
+        "",
+        "",
+        false,
+        true,
+        "As Reference",
+        1,
+        1024,
+        1024,
+        "Native",
+        "Gray",
+        0.5,
+        false,
+        10,
+        0,
+        0,
+        1,
+        false,
+        50,
+        true,
+        "Faithful"
+      ],
+      "widgets_values_named": {
+        "model_family": "Klein 2",
+        "positive": "",
+        "negative": "",
+        "boxes_json": "",
+        "pin_model": false,
+        "resize": true,
+        "aspect_ratio": "As Reference",
+        "megapixels": 1,
+        "custom_width": 1024,
+        "custom_height": 1024,
+        "image_fit": "Native",
+        "outpaint_fill": "Gray",
+        "slide": 0.5,
+        "bypass_reference": false,
+        "reference_strength": 10,
+        "mask_expand": 0,
+        "mask_blur": 0,
+        "inpaint_blend": 1,
+        "use_detailing": false,
+        "detail_padding": 50,
+        "upsample_prompt": true,
+        "upsample_style": "Faithful"
+      }
+    },
+    {
+      "id": 1556,
+      "type": "7fe91af8-f6f2-4c46-b33b-c4531023a0d6",
+      "pos": [
+        2.9547504784919028,
+        5125.664650886106
+      ],
+      "size": [
+        260,
+        150
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "unet_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "unet_name"
+          },
+          "link": null
+        },
+        {
+          "name": "clip_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "clip_name"
+          },
+          "link": null
+        },
+        {
+          "name": "vae_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "vae_name"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "model",
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            22978
+          ]
+        },
+        {
+          "label": "clip",
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            22948
+          ]
+        },
+        {
+          "label": "vae",
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            22949,
+            22960
+          ]
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "cnr_id": "comfy-core",
+        "ver": "0.17.0",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65,
+        "previewExposures": []
+      },
+      "widgets_values": [
+        "flux-2-klein-9b-fp8.safetensors",
+        "qwen_3_8b_fp8mixed.safetensors",
+        "flux2-vae.safetensors"
+      ],
+      "widgets_values_named": {
+        "unet_name": "flux-2-klein-9b-fp8.safetensors",
+        "clip_name": "qwen_3_8b_fp8mixed.safetensors",
+        "vae_name": "flux2-vae.safetensors"
+      }
+    },
+    {
+      "id": 1557,
+      "type": "NKDBridgeNumber",
+      "pos": [
+        496.00193869771505,
+        5761
+      ],
+      "size": [
+        270,
+        174
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "value",
+          "name": "value",
+          "type": "FLOAT",
+          "widget": {
+            "name": "value"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "min",
+          "name": "min",
+          "type": "FLOAT",
+          "widget": {
+            "name": "min"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "max",
+          "name": "max",
+          "type": "FLOAT",
+          "widget": {
+            "name": "max"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "step",
+          "name": "step",
+          "type": "FLOAT",
+          "widget": {
+            "name": "step"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "float",
+          "name": "float",
+          "type": "FLOAT",
+          "links": null
+        },
+        {
+          "localized_name": "int",
+          "name": "int",
+          "type": "INT",
+          "links": [
+            22963
+          ]
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {}
+        },
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "d8d8885336e22fbde6800bc97553ede856aff8e5",
+        "Node name for S&R": "NKDBridgeNumber"
+      },
+      "widgets_values": [
+        "Reference Strength",
+        0,
+        -2,
+        10,
+        1
+      ],
+      "widgets_values_named": {
+        "name": "Reference Strength",
+        "value": 0,
+        "min": -2,
+        "max": 10,
+        "step": 1
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 1564,
+      "type": "NKDHint",
+      "pos": [
+        1141.1904498360918,
+        5959.771354356693
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "If you need to blur the mask, you can connect a Bridge Number to these parameters or add a blur to it directly from Photoshop, using the quick mask or any other method.",
+        "targets": [
+          {
+            "node": "1555",
+            "widget": "mask_expand"
+          },
+          {
+            "node": "1555",
+            "widget": "mask_blur"
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 300,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "Si necesitas desenfocar la máscara, puedes conectar un Bridge Number a estos parámetros o añadirle un blur directamente desde Photoshop, usando la máscara rápida o cualquier otro método."
+        }
+      }
+    }
+  ],
+  "links": [
+    [
+      22939,
+      1554,
+      0,
+      1552,
+      0,
+      "LATENT"
+    ],
+    [
+      22941,
+      1552,
+      0,
+      1553,
+      0,
+      "IMAGE"
+    ],
+    [
+      22942,
+      1555,
+      4,
+      1553,
+      1,
+      "NKD_KLEIN_BUNDLE"
+    ],
+    [
+      22943,
+      1555,
+      0,
+      1554,
+      0,
+      "MODEL"
+    ],
+    [
+      22944,
+      1555,
+      1,
+      1554,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      22945,
+      1555,
+      2,
+      1554,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      22946,
+      1555,
+      3,
+      1554,
+      3,
+      "LATENT"
+    ],
+    [
+      22948,
+      1556,
+      1,
+      1555,
+      1,
+      "CLIP"
+    ],
+    [
+      22949,
+      1556,
+      2,
+      1555,
+      2,
+      "VAE"
+    ],
+    [
+      22950,
+      1553,
+      0,
+      9,
+      0,
+      "IMAGE"
+    ],
+    [
+      22951,
+      31,
+      0,
+      1555,
+      9,
+      "STRING"
+    ],
+    [
+      22956,
+      23,
+      2,
+      9,
+      1,
+      "MASK"
+    ],
+    [
+      22958,
+      23,
+      0,
+      1555,
+      6,
+      "IMAGE"
+    ],
+    [
+      22959,
+      23,
+      2,
+      1555,
+      3,
+      "MASK"
+    ],
+    [
+      22960,
+      1556,
+      2,
+      1552,
+      1,
+      "VAE"
+    ],
+    [
+      22963,
+      1557,
+      1,
+      1555,
+      22,
+      "INT"
+    ],
+    [
+      22978,
+      1556,
+      0,
+      1555,
+      0,
+      "MODEL"
+    ]
+  ],
+  "groups": [],
+  "definitions": {
+    "subgraphs": [
+      {
+        "id": "7fe91af8-f6f2-4c46-b33b-c4531023a0d6",
+        "version": 1,
+        "state": {
+          "lastGroupId": 60,
+          "lastNodeId": 1565,
+          "lastLinkId": 22979,
+          "lastRerouteId": 77
+        },
+        "revision": 0,
+        "config": {},
+        "name": "NKD Flux Klein Loader",
+        "inputNode": {
+          "id": -10,
+          "bounding": [
+            -1313.3332812576464,
+            1881.1067733360478,
+            128,
+            48
+          ]
+        },
+        "outputNode": {
+          "id": -20,
+          "bounding": [
+            -613.3333148790458,
+            1846.6666363961306,
+            128,
+            108
+          ]
+        },
+        "inputs": [
+          {
+            "id": "8ceddb3c-5ca9-4d9c-8901-9cd1ed8572a2",
+            "name": "unet_name",
+            "type": "COMBO",
+            "linkIds": [
+              22835
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "9de8a2f9-5bb9-4a10-9bd2-1a83302189c7",
+            "name": "clip_name",
+            "type": "COMBO",
+            "linkIds": [
+              22836
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          },
+          {
+            "id": "ba40a555-30a5-4bf9-8d5e-1510ed6ed06d",
+            "name": "vae_name",
+            "type": "COMBO",
+            "linkIds": [
+              22837
+            ],
+            "pos": [
+              0,
+              0
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "id": "6288fcd6-1f4e-4b6d-ab5b-ea9aea113972",
+            "name": "MODEL",
+            "type": "MODEL",
+            "linkIds": [
+              18684
+            ],
+            "label": "model",
+            "pos": [
+              -589.3333148790458,
+              1870.6666363961306
+            ]
+          },
+          {
+            "id": "23665389-ec31-4671-8315-ee557d4b8462",
+            "name": "CLIP",
+            "type": "CLIP",
+            "linkIds": [
+              18685
+            ],
+            "label": "clip",
+            "pos": [
+              -589.3333148790458,
+              1890.6666363961306
+            ]
+          },
+          {
+            "id": "c621b5cf-a577-4cf5-963f-6826ed770c19",
+            "name": "VAE",
+            "type": "VAE",
+            "linkIds": [
+              18686
+            ],
+            "label": "vae",
+            "pos": [
+              -589.3333148790458,
+              1910.6666363961306
+            ]
+          }
+        ],
+        "widgets": [],
+        "nodes": [
+          {
+            "id": 757,
+            "type": "UNETLoader",
+            "pos": [
+              -1135,
+              1735
+            ],
+            "size": [
+              225,
+              135
+            ],
+            "flags": {
+              "collapsed": false
+            },
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "unet_name",
+                "name": "unet_name",
+                "type": "COMBO",
+                "widget": {
+                  "name": "unet_name"
+                },
+                "link": 22835
+              },
+              {
+                "localized_name": "weight_dtype",
+                "name": "weight_dtype",
+                "type": "COMBO",
+                "widget": {
+                  "name": "weight_dtype"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "MODEL",
+                "name": "MODEL",
+                "type": "MODEL",
+                "links": [
+                  18684
+                ]
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.6.2",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.8.2",
+              "Node name for S&R": "UNETLoader",
+              "enableTabs": false,
+              "tabWidth": 65,
+              "tabXOffset": 10,
+              "hasSecondTab": false,
+              "secondTabText": "Send Back",
+              "secondTabOffset": 80,
+              "secondTabWidth": 65,
+              "models": [
+                {
+                  "name": "flux-2-klein-9b-fp8.safetensors",
+                  "directory": "diffusion_models",
+                  "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors"
+                }
+              ]
+            },
+            "widgets_values": [
+              "flux-2-klein-9b-fp8.safetensors",
+              "default"
+            ],
+            "widgets_values_named": {
+              "unet_name": "flux-2-klein-9b-fp8.safetensors",
+              "weight_dtype": "default"
+            },
+            "color": "#130d2b",
+            "bgcolor": "#121b26"
+          },
+          {
+            "id": 755,
+            "type": "CLIPLoader",
+            "pos": [
+              -1135,
+              1875
+            ],
+            "size": [
+              225,
+              165
+            ],
+            "flags": {
+              "collapsed": false
+            },
+            "order": 0,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "clip_name",
+                "name": "clip_name",
+                "type": "COMBO",
+                "widget": {
+                  "name": "clip_name"
+                },
+                "link": 22836
+              },
+              {
+                "localized_name": "type",
+                "name": "type",
+                "type": "COMBO",
+                "widget": {
+                  "name": "type"
+                },
+                "link": null
+              },
+              {
+                "localized_name": "device",
+                "name": "device",
+                "shape": 7,
+                "type": "COMBO",
+                "widget": {
+                  "name": "device"
+                },
+                "link": null
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "CLIP",
+                "name": "CLIP",
+                "type": "CLIP",
+                "links": [
+                  18685
+                ]
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.6.2",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.8.2",
+              "Node name for S&R": "CLIPLoader",
+              "enableTabs": false,
+              "tabWidth": 65,
+              "tabXOffset": 10,
+              "hasSecondTab": false,
+              "secondTabText": "Send Back",
+              "secondTabOffset": 80,
+              "secondTabWidth": 65,
+              "models": [
+                {
+                  "name": "qwen_3_8b_fp8mixed.safetensors",
+                  "url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+                  "directory": "text_encoders"
+                }
+              ]
+            },
+            "widgets_values": [
+              "qwen_3_8b_fp8mixed.safetensors",
+              "flux2",
+              "default"
+            ],
+            "widgets_values_named": {
+              "clip_name": "qwen_3_8b_fp8mixed.safetensors",
+              "type": "flux2",
+              "device": "default"
+            },
+            "color": "#130d2b",
+            "bgcolor": "#121b26"
+          },
+          {
+            "id": 756,
+            "type": "VAELoader",
+            "pos": [
+              -1135,
+              2025
+            ],
+            "size": [
+              225,
+              105
+            ],
+            "flags": {
+              "collapsed": false
+            },
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+              {
+                "localized_name": "vae_name",
+                "name": "vae_name",
+                "type": "COMBO",
+                "widget": {
+                  "name": "vae_name"
+                },
+                "link": 22837
+              }
+            ],
+            "outputs": [
+              {
+                "localized_name": "VAE",
+                "name": "VAE",
+                "type": "VAE",
+                "links": [
+                  18686
+                ]
+              }
+            ],
+            "properties": {
+              "ue_properties": {
+                "widget_ue_connectable": {},
+                "version": "7.6.2",
+                "input_ue_unconnectable": {}
+              },
+              "cnr_id": "comfy-core",
+              "ver": "0.8.2",
+              "Node name for S&R": "VAELoader",
+              "enableTabs": false,
+              "tabWidth": 65,
+              "tabXOffset": 10,
+              "hasSecondTab": false,
+              "secondTabText": "Send Back",
+              "secondTabOffset": 80,
+              "secondTabWidth": 65,
+              "models": [
+                {
+                  "name": "flux2-vae.safetensors",
+                  "url": "https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors",
+                  "directory": "vae"
+                }
+              ]
+            },
+            "widgets_values": [
+              "flux2-vae.safetensors"
+            ],
+            "widgets_values_named": {
+              "vae_name": "flux2-vae.safetensors"
+            },
+            "color": "#130d2b",
+            "bgcolor": "#121b26"
+          }
+        ],
+        "groups": [],
+        "links": [
+          {
+            "id": 18684,
+            "origin_id": 757,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 0,
+            "type": "MODEL"
+          },
+          {
+            "id": 18685,
+            "origin_id": 755,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 1,
+            "type": "CLIP"
+          },
+          {
+            "id": 18686,
+            "origin_id": 756,
+            "origin_slot": 0,
+            "target_id": -20,
+            "target_slot": 2,
+            "type": "VAE"
+          },
+          {
+            "id": 22835,
+            "origin_id": -10,
+            "origin_slot": 0,
+            "target_id": 757,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 22836,
+            "origin_id": -10,
+            "origin_slot": 1,
+            "target_id": 755,
+            "target_slot": 0,
+            "type": "COMBO"
+          },
+          {
+            "id": 22837,
+            "origin_id": -10,
+            "origin_slot": 2,
+            "target_id": 756,
+            "target_slot": 0,
+            "type": "COMBO"
+          }
+        ],
+        "extra": {
+          "workflowRendererVersion": "LG",
+          "ue_links": [],
+          "links_added_by_ue": []
+        }
+      }
+    ]
+  },
+  "config": {},
+  "extra": {
+    "ue_links": [],
+    "ds": {
+      "scale": 0.8390545288824038,
+      "offset": [
+        303.8709588825217,
+        -4818.855926069146
+      ]
+    },
+    "links_added_by_ue": [],
+    "nkdBuses": [
+      {
+        "id": 1,
+        "rerouteIds": [
+          77,
+          74,
+          75
+        ]
+      }
+    ],
+    "reroutes": [
+      {
+        "id": 74,
+        "pos": [
+          782.8225586653153,
+          5159.664650886106
+        ],
+        "linkIds": [
+          22948
+        ]
+      },
+      {
+        "id": 75,
+        "pos": [
+          782.8225586653153,
+          5179.664650886106
+        ],
+        "linkIds": [
+          22949,
+          22960
+        ]
+      },
+      {
+        "id": 76,
+        "parentId": 75,
+        "pos": [
+          1272.9630003006268,
+          5179.664650886106
+        ],
+        "linkIds": [
+          22960
+        ]
+      },
+      {
+        "id": 77,
+        "pos": [
+          782.8225586653153,
+          5139.664650886106
+        ],
+        "linkIds": [
+          22978
+        ]
+      }
+    ],
+    "linkExtensions": [
+      {
+        "id": 22948,
+        "parentId": 74
+      },
+      {
+        "id": 22949,
+        "parentId": 75
+      },
+      {
+        "id": 22960,
+        "parentId": 76
+      },
+      {
+        "id": 22978,
+        "parentId": 77
+      }
+    ]
+  },
+  "version": 0.4
+}
