@@ -46,7 +46,7 @@ Use **😺NKD Inpaint Crop** and **😺NKD Inpaint Stitch** from [NKD Basic Tool
 
 ## Bridge Number and Bridge Text
 
-Each one shows up in the Photoshop panel as a control named after `name`: a slider for Number, a text box for Text. Moving the slider writes the value into the node in your ComfyUI tab, so what you see in both places is always the same value, and it's saved with the workflow.
+Each one shows up in the Photoshop panel as a control named after `name`: a slider for Number, a text box for Text. Drag a control by its ⋮⋮ grip to put the panel in the order you want; the order is saved with the workflow. Moving the slider writes the value into the node in your ComfyUI tab, so what you see in both places is always the same value, and it's saved with the workflow.
 
 Number:
 - `name`: the label in the panel.

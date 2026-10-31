@@ -1,113 +1,15 @@
 {
   "id": "6218c4b9-b858-4c0d-a259-c5e133647365",
   "revision": 0,
-  "last_node_id": 1565,
-  "last_link_id": 22979,
+  "last_node_id": 1571,
+  "last_link_id": 22985,
   "nodes": [
-    {
-      "id": 9,
-      "type": "NKDBridgeOutput",
-      "pos": [
-        1719.2884118638956,
-        5399
-      ],
-      "size": [
-        253.7479543108766,
-        406
-      ],
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "link": 22950
-        },
-        {
-          "localized_name": "mask",
-          "name": "mask",
-          "shape": 7,
-          "type": "MASK",
-          "link": 22956
-        },
-        {
-          "localized_name": "destination",
-          "name": "destination",
-          "type": "STRING",
-          "widget": {
-            "name": "destination"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "name",
-          "name": "name",
-          "type": "STRING",
-          "widget": {
-            "name": "name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "document",
-          "name": "document",
-          "type": "STRING",
-          "widget": {
-            "name": "document"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "save_after_write",
-          "name": "save_after_write",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "save_after_write"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "region",
-          "name": "region",
-          "shape": 7,
-          "type": "NKD_REGION",
-          "link": null
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
-        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
-        "Node name for S&R": "NKDBridgeOutput",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "new:layer",
-        "NKD {n}",
-        "@active",
-        false
-      ],
-      "widgets_values_named": {
-        "destination": "new:layer",
-        "name": "NKD {n}",
-        "document": "@active",
-        "save_after_write": false
-      },
-      "color": "#0a3a66",
-      "bgcolor": "#001e36"
-    },
     {
       "id": 23,
       "type": "NKDBridgeInput",
       "pos": [
-        245.6163573312056,
-        5359
+        19.423555093683916,
+        5460.73786930013
       ],
       "size": [
         323.64555131137445,
@@ -116,38 +18,9 @@
       "flags": {},
       "order": 0,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "source",
-          "name": "source",
-          "type": "STRING",
-          "widget": {
-            "name": "source"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "selection_source",
-          "name": "selection_source",
-          "type": "STRING",
-          "widget": {
-            "name": "selection_source"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "document",
-          "name": "document",
-          "type": "STRING",
-          "widget": {
-            "name": "document"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "links": [
@@ -155,18 +28,16 @@
           ]
         },
         {
-          "localized_name": "alpha",
           "name": "alpha",
           "type": "MASK",
           "links": null
         },
         {
-          "localized_name": "selection",
           "name": "selection",
           "type": "MASK",
           "links": [
-            22956,
-            22959
+            22959,
+            22981
           ]
         }
       ],
@@ -197,8 +68,8 @@
       "id": 31,
       "type": "NKDBridgeText",
       "pos": [
-        245.6163573312056,
-        5545
+        19.423555093683916,
+        5645.73786930013
       ],
       "size": [
         323.64555131137445,
@@ -207,29 +78,9 @@
       "flags": {},
       "order": 1,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "name",
-          "name": "name",
-          "type": "STRING",
-          "widget": {
-            "name": "name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "text",
-          "name": "text",
-          "type": "STRING",
-          "widget": {
-            "name": "text"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "text",
           "name": "text",
           "type": "STRING",
           "links": [
@@ -245,7 +96,8 @@
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {},
           "version": "7.8"
-        }
+        },
+        "nkd_order": 0
       },
       "widgets_values": [
         "prompt",
@@ -262,8 +114,8 @@
       "id": 36,
       "type": "NKDHint",
       "pos": [
-        51.268022633331604,
-        5572.09138966962
+        -89.79993471832074,
+        5673.952572075531
       ],
       "size": [
         28,
@@ -302,8 +154,8 @@
       "id": 38,
       "type": "NKDHint",
       "pos": [
-        48.06084568302546,
-        5400.625211988942
+        -94.56719078485631,
+        5502.993542000888
       ],
       "size": [
         28,
@@ -342,8 +194,8 @@
       "id": 39,
       "type": "NKDHint",
       "pos": [
-        2470.572697832435,
-        5170.684419047809
+        2058.203687787186,
+        5444.802483052672
       ],
       "size": [
         28,
@@ -358,7 +210,7 @@
         "text": "# Bridge Output\nSends the result back to Photoshop.\n\n## Document\nWhere the result goes: **Active document** sends it back to where the pixels came from, or pick another open document (e.g. a smart object's contents). It's scaled to fit. Tick `save_after_write` so a smart object updates by itself.\n\n## Destination\n- **Panel only**: just shows it in the panel, touches nothing in the document.\n- **+ New layer**: creates a layer and binds the node to it. From then on it's an existing layer.\n- **+ New group**: creates a group and binds the node to it. From then on it's an existing group.\n- **Existing layer** (e.g. `NKD 1 #4`): replaced on every run.\n- **Existing group** (e.g. `Variations/ #7`): a new layer inside it on every run, so you keep the variations (in Live mode the latest is replaced).\n\nThe `#number` is the Photoshop ID: the binding survives renames.\n\n## Name\nName for the layers it creates. Pick variables from **Insert variable**: `{n}` `{seed}` `{date}` `{time}` `{doc}` and any Bridge Text/Number by its name, e.g. `{prompt}`.\n\n## Mask\nTransparency for the written layer (white = keep). Plug in Bridge Input's `selection` to change only the selection.",
         "targets": [
           {
-            "node": "9",
+            "node": "1566",
             "widget": null
           }
         ],
@@ -382,8 +234,8 @@
       "id": 41,
       "type": "NKDHint",
       "pos": [
-        427.4069556584851,
-        5745.494773516375
+        574.8645705666252,
+        5326.604507419693
       ],
       "size": [
         28,
@@ -432,17 +284,15 @@
       "flags": {
         "collapsed": true
       },
-      "order": 11,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "samples",
           "name": "samples",
           "type": "LATENT",
           "link": 22939
         },
         {
-          "localized_name": "vae",
           "name": "vae",
           "type": "VAE",
           "link": 22960
@@ -450,7 +300,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -459,14 +308,14 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.19.3",
+        "Node name for S&R": "VAEDecode",
         "ue_properties": {
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {},
           "version": "7.8"
         },
-        "cnr_id": "comfy-core",
-        "ver": "0.19.3",
-        "Node name for S&R": "VAEDecode",
         "enableTabs": false,
         "tabWidth": 65,
         "tabXOffset": 10,
@@ -488,138 +337,44 @@
         174
       ],
       "flags": {},
-      "order": 12,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "link": 22941
         },
         {
-          "localized_name": "bundle",
           "name": "bundle",
           "type": "NKD_KLEIN_BUNDLE",
           "link": 22942
-        },
-        {
-          "localized_name": "Uncrop Feather",
-          "name": "uncrop_feather",
-          "type": "INT",
-          "widget": {
-            "name": "uncrop_feather"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Match Original Colors",
-          "name": "match_original_colors",
-          "type": "FLOAT",
-          "widget": {
-            "name": "match_original_colors"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Seamless Edges",
-          "name": "seamless_edges",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "seamless_edges"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Auto-Detect Edit Region",
-          "name": "auto_detect_edit_region",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "auto_detect_edit_region"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Edge Softness",
-          "name": "edge_softness",
-          "type": "FLOAT",
-          "widget": {
-            "name": "edge_softness"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Region Padding",
-          "name": "region_padding",
-          "type": "FLOAT",
-          "widget": {
-            "name": "region_padding"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Fill Inner Gaps",
-          "name": "fill_inner_gaps",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "fill_inner_gaps"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Remove Specks",
-          "name": "remove_specks",
-          "type": "FLOAT",
-          "widget": {
-            "name": "remove_specks"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Extend To Borders",
-          "name": "extend_to_borders",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "extend_to_borders"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Transparent Background",
-          "name": "transparent_background",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "transparent_background"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "links": [
-            22950
+            22980
           ]
         },
         {
-          "localized_name": "debug_difference",
           "name": "debug_difference",
           "type": "IMAGE",
           "links": []
         }
       ],
       "properties": {
+        "cnr_id": "comfyui-nkd-klein-tools",
+        "ver": "047a9e69e0b106dff3be4c40c1ebb33017c8b90e",
+        "Node name for S&R": "NKDKleinPostsampling",
+        "nkdSchema": 1,
         "ue_properties": {
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {},
           "version": "7.8"
         },
-        "cnr_id": "comfyui-nkd-klein-tools",
-        "ver": "047a9e69e0b106dff3be4c40c1ebb33017c8b90e",
-        "Node name for S&R": "NKDKleinPostsampling",
-        "nkdSchema": 1,
         "enableTabs": false,
         "tabWidth": 65,
         "tabXOffset": 10,
@@ -633,10 +388,10 @@
         0,
         false,
         false,
-        2,
-        0,
+        10,
+        3,
         true,
-        false,
+        0.1,
         true,
         false
       ],
@@ -645,10 +400,10 @@
         "match_original_colors": 0,
         "seamless_edges": false,
         "auto_detect_edit_region": false,
-        "edge_softness": 2,
-        "region_padding": 0,
+        "edge_softness": 10,
+        "region_padding": 3,
         "fill_inner_gaps": true,
-        "remove_specks": false,
+        "remove_specks": 0.1,
         "extend_to_borders": true,
         "transparent_background": false
       }
@@ -665,150 +420,68 @@
         705.536324530496
       ],
       "flags": {},
-      "order": 10,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "model",
           "name": "model",
           "shape": 7,
           "type": "MODEL",
           "link": 22943
         },
         {
-          "localized_name": "positive",
           "name": "positive",
           "shape": 7,
           "type": "CONDITIONING",
           "link": 22944
         },
         {
-          "localized_name": "negative",
           "name": "negative",
           "shape": 7,
           "type": "CONDITIONING",
           "link": 22945
         },
         {
-          "localized_name": "latent_image",
           "name": "latent_image",
           "shape": 7,
           "type": "LATENT",
           "link": 22946
         },
         {
-          "localized_name": "sigmas",
           "name": "sigmas",
           "shape": 7,
           "type": "SIGMAS",
           "link": null
         },
         {
-          "localized_name": "guides",
           "name": "guides",
           "shape": 7,
           "type": "GUIDES",
           "link": null
         },
         {
-          "localized_name": "options0",
           "name": "options_group.options0",
           "shape": 7,
           "type": "OPTIONS",
           "link": null
         },
         {
-          "localized_name": "eta",
-          "name": "eta",
-          "type": "FLOAT",
-          "widget": {
-            "name": "eta"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "sampler_name",
           "name": "sampler_name",
           "type": "COMBO",
           "widget": {
             "name": "sampler_name"
           },
-          "link": null
+          "link": 22982
         },
         {
-          "localized_name": "scheduler",
           "name": "scheduler",
           "type": "COMBO",
           "widget": {
             "name": "scheduler"
           },
-          "link": null
+          "link": 22985
         },
         {
-          "localized_name": "steps",
-          "name": "steps",
-          "type": "INT",
-          "widget": {
-            "name": "steps"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "steps_to_run",
-          "name": "steps_to_run",
-          "type": "INT",
-          "widget": {
-            "name": "steps_to_run"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "denoise",
-          "name": "denoise",
-          "type": "FLOAT",
-          "widget": {
-            "name": "denoise"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "cfg",
-          "name": "cfg",
-          "type": "FLOAT",
-          "widget": {
-            "name": "cfg"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "sampler_mode",
-          "name": "sampler_mode",
-          "type": "COMBO",
-          "widget": {
-            "name": "sampler_mode"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "bongmath",
-          "name": "bongmath",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "bongmath"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "options1",
           "name": "options_group.options1",
           "shape": 7,
           "type": "OPTIONS",
@@ -817,7 +490,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "output",
           "name": "output",
           "type": "LATENT",
           "links": [
@@ -825,26 +497,25 @@
           ]
         },
         {
-          "localized_name": "denoised",
           "name": "denoised",
           "type": "LATENT",
           "links": []
         },
         {
-          "localized_name": "options",
           "name": "options",
           "type": "OPTIONS",
           "links": []
         }
       ],
       "properties": {
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
         "aux_id": "drozbay/RES4LYF",
         "ver": "3802390deff0d508e56a72dd21be4be99a52ff74",
-        "Node name for S&R": "ClownsharKSampler_Beta"
+        "Node name for S&R": "ClownsharKSampler_Beta",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
       },
       "widgets_values": [
         0.5,
@@ -885,43 +556,37 @@
         566
       ],
       "flags": {},
-      "order": 9,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "model",
           "name": "model",
           "type": "MODEL",
           "link": 22978
         },
         {
-          "localized_name": "clip",
           "name": "clip",
           "type": "CLIP",
           "link": 22948
         },
         {
-          "localized_name": "vae",
           "name": "vae",
           "type": "VAE",
           "link": 22949
         },
         {
-          "localized_name": "mask",
           "name": "mask",
           "shape": 7,
           "type": "MASK",
           "link": 22959
         },
         {
-          "localized_name": "boxes",
           "name": "boxes",
           "shape": 7,
           "type": "NKD_KLEIN_BOXES",
           "link": null
         },
         {
-          "localized_name": "upsampler",
           "name": "upsampler",
           "shape": 7,
           "type": "CLIP",
@@ -929,7 +594,6 @@
         },
         {
           "label": "ref_0",
-          "localized_name": "ref_0",
           "name": "ref_images.ref_0",
           "shape": 7,
           "type": "IMAGE",
@@ -937,23 +601,12 @@
         },
         {
           "label": "ref_1",
-          "localized_name": "ref_1",
           "name": "ref_images.ref_1",
           "shape": 7,
           "type": "IMAGE",
           "link": null
         },
         {
-          "localized_name": "Model",
-          "name": "model_family",
-          "type": "COMBO",
-          "widget": {
-            "name": "model_family"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "positive",
           "name": "positive",
           "type": "STRING",
           "widget": {
@@ -962,188 +615,23 @@
           "link": 22951
         },
         {
-          "localized_name": "negative",
-          "name": "negative",
-          "type": "STRING",
-          "widget": {
-            "name": "negative"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "boxes_json",
-          "name": "boxes_json",
-          "type": "STRING",
-          "widget": {
-            "name": "boxes_json"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Pin Model",
-          "name": "pin_model",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "pin_model"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Resize",
-          "name": "resize",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "resize"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Aspect Ratio",
-          "name": "aspect_ratio",
-          "type": "COMBO",
-          "widget": {
-            "name": "aspect_ratio"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Megapixels",
-          "name": "megapixels",
-          "type": "FLOAT",
-          "widget": {
-            "name": "megapixels"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Custom Width",
-          "name": "custom_width",
-          "type": "INT",
-          "widget": {
-            "name": "custom_width"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Custom Height",
-          "name": "custom_height",
-          "type": "INT",
-          "widget": {
-            "name": "custom_height"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Image Fit",
-          "name": "image_fit",
-          "type": "COMBO",
-          "widget": {
-            "name": "image_fit"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Outpaint Fill",
-          "name": "outpaint_fill",
-          "type": "COMBO",
-          "widget": {
-            "name": "outpaint_fill"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Slide",
-          "name": "slide",
-          "type": "FLOAT",
-          "widget": {
-            "name": "slide"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Bypass Reference",
-          "name": "bypass_reference",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "bypass_reference"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Reference Strength",
           "name": "reference_strength",
           "type": "INT",
           "widget": {
             "name": "reference_strength"
           },
-          "link": 22963
+          "link": 22984
         },
         {
-          "localized_name": "Mask Expand",
-          "name": "mask_expand",
-          "type": "INT",
-          "widget": {
-            "name": "mask_expand"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Mask Blur",
-          "name": "mask_blur",
-          "type": "INT",
-          "widget": {
-            "name": "mask_blur"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Inpaint Blend",
-          "name": "inpaint_blend",
-          "type": "FLOAT",
-          "widget": {
-            "name": "inpaint_blend"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Use Detailing",
           "name": "use_detailing",
           "type": "BOOLEAN",
           "widget": {
             "name": "use_detailing"
           },
-          "link": null
-        },
-        {
-          "localized_name": "Detail Padding",
-          "name": "detail_padding",
-          "type": "INT",
-          "widget": {
-            "name": "detail_padding"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Upsample Prompt",
-          "name": "upsample_prompt",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "upsample_prompt"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Upsample Style",
-          "name": "upsample_style",
-          "type": "COMBO",
-          "widget": {
-            "name": "upsample_style"
-          },
-          "link": null
+          "link": 22983
         },
         {
           "label": "ref_2",
-          "localized_name": "ref_images.ref_2",
           "name": "ref_images.ref_2",
           "shape": 7,
           "type": "IMAGE",
@@ -1152,7 +640,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "model",
           "name": "model",
           "type": "MODEL",
           "links": [
@@ -1160,7 +647,6 @@
           ]
         },
         {
-          "localized_name": "positive",
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
@@ -1168,7 +654,6 @@
           ]
         },
         {
-          "localized_name": "negative",
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
@@ -1176,7 +661,6 @@
           ]
         },
         {
-          "localized_name": "latent",
           "name": "latent",
           "type": "LATENT",
           "links": [
@@ -1184,7 +668,6 @@
           ]
         },
         {
-          "localized_name": "bundle",
           "name": "bundle",
           "type": "NKD_KLEIN_BUNDLE",
           "links": [
@@ -1192,34 +675,31 @@
           ]
         },
         {
-          "localized_name": "mask",
           "name": "mask",
           "type": "MASK",
           "links": []
         },
         {
-          "localized_name": "ref_0",
           "name": "ref_0",
           "type": "IMAGE",
           "links": []
         },
         {
-          "localized_name": "prompt",
           "name": "prompt",
           "type": "STRING",
           "links": null
         }
       ],
       "properties": {
+        "cnr_id": "comfyui-nkd-klein-tools",
+        "ver": "e02f203d42acad2b28e30194537124f8329ad9e7",
+        "Node name for S&R": "NKDKleinPresampling",
+        "nkdSchema": 2,
         "ue_properties": {
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {},
           "version": "7.8"
         },
-        "cnr_id": "comfyui-nkd-klein-tools",
-        "ver": "e02f203d42acad2b28e30194537124f8329ad9e7",
-        "Node name for S&R": "NKDKleinPresampling",
-        "nkdSchema": 2,
         "enableTabs": false,
         "tabWidth": 65,
         "tabXOffset": 10,
@@ -1281,8 +761,8 @@
       "id": 1556,
       "type": "7fe91af8-f6f2-4c46-b33b-c4531023a0d6",
       "pos": [
-        2.9547504784919028,
-        5125.664650886106
+        19.423555093683916,
+        5119.705560798674
       ],
       "size": [
         260,
@@ -1291,32 +771,7 @@
       "flags": {},
       "order": 6,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "unet_name",
-          "type": "COMBO",
-          "widget": {
-            "name": "unet_name"
-          },
-          "link": null
-        },
-        {
-          "name": "clip_name",
-          "type": "COMBO",
-          "widget": {
-            "name": "clip_name"
-          },
-          "link": null
-        },
-        {
-          "name": "vae_name",
-          "type": "COMBO",
-          "widget": {
-            "name": "vae_name"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "label": "model",
@@ -1345,13 +800,13 @@
         }
       ],
       "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.17.0",
         "ue_properties": {
           "widget_ue_connectable": {},
           "input_ue_unconnectable": {},
           "version": "7.8"
         },
-        "cnr_id": "comfy-core",
-        "ver": "0.17.0",
         "enableTabs": false,
         "tabWidth": 65,
         "tabXOffset": 10,
@@ -1376,8 +831,8 @@
       "id": 1557,
       "type": "NKDBridgeNumber",
       "pos": [
-        496.00193869771505,
-        5761
+        454.42355509368394,
+        5460.73786930013
       ],
       "size": [
         270,
@@ -1386,77 +841,31 @@
       "flags": {},
       "order": 7,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "name",
-          "name": "name",
-          "type": "STRING",
-          "widget": {
-            "name": "name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "value",
-          "name": "value",
-          "type": "FLOAT",
-          "widget": {
-            "name": "value"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "min",
-          "name": "min",
-          "type": "FLOAT",
-          "widget": {
-            "name": "min"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "max",
-          "name": "max",
-          "type": "FLOAT",
-          "widget": {
-            "name": "max"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "step",
-          "name": "step",
-          "type": "FLOAT",
-          "widget": {
-            "name": "step"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "float",
           "name": "float",
           "type": "FLOAT",
           "links": null
         },
         {
-          "localized_name": "int",
           "name": "int",
           "type": "INT",
           "links": [
-            22963
+            22984
           ]
         }
       ],
       "properties": {
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {}
-        },
         "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
         "ver": "d8d8885336e22fbde6800bc97553ede856aff8e5",
-        "Node name for S&R": "NKDBridgeNumber"
+        "Node name for S&R": "NKDBridgeNumber",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "nkd_order": 2
       },
       "widgets_values": [
         "Reference Strength",
@@ -1479,8 +888,8 @@
       "id": 1564,
       "type": "NKDHint",
       "pos": [
-        1141.1904498360918,
-        5959.771354356693
+        964.5846636031059,
+        5983.607707432147
       ],
       "size": [
         28,
@@ -1511,6 +920,251 @@
         "max": "",
         "texts": {
           "es": "Si necesitas desenfocar la máscara, puedes conectar un Bridge Number a estos parámetros o añadirle un blur directamente desde Photoshop, usando la máscara rápida o cualquier otro método."
+        },
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      }
+    },
+    {
+      "id": 1566,
+      "type": "NKDBridgeOutput",
+      "pos": [
+        1719.2884118638956,
+        5399
+      ],
+      "size": [
+        253.7479543108766,
+        406
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 22980
+        },
+        {
+          "name": "mask",
+          "shape": 7,
+          "type": "MASK",
+          "link": 22981
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "8ed161a46a195c7d5c54900e35276e794e5a3529",
+        "Node name for S&R": "NKDBridgeOutput",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "new:layer",
+        "NKD {n}",
+        "@active",
+        false
+      ],
+      "widgets_values_named": {
+        "destination": "new:layer",
+        "name": "NKD {n}",
+        "document": "@active",
+        "save_after_write": false
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 1567,
+      "type": "NKDBridgeChoice",
+      "pos": [
+        449.42355509368394,
+        5795.73786930013
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "links": [
+            22982
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "3a48240652cc69fdd39c0a1cc8ab7d52bbdedf63",
+        "Node name for S&R": "NKDBridgeChoice",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "nkd_order": 1
+      },
+      "widgets_values": [
+        "Sampler",
+        "linear/euler",
+        "none\nmultistep/res_2m\nmultistep/res_3m\nmultistep/dpmpp_2m\nmultistep/dpmpp_3m\nmultistep/abnorsett_2m\nmultistep/abnorsett_3m\nmultistep/abnorsett_4m\nmultistep/deis_2m\nmultistep/deis_3m\nmultistep/deis_4m\nexponential/res_2s_rkmk2e\nexponential/res_2s\nexponential/res_2s_stable\nexponential/res_3s\nexponential/res_3s_non-monotonic\nexponential/res_3s_alt\nexponential/res_3s_cox_matthews\nexponential/res_3s_lie\nexponential/res_3s_sunstar\nexponential/res_3s_strehmel_weiner\nexponential/res_4s_krogstad\nexponential/res_4s_krogstad_alt\nexponential/res_4s_strehmel_weiner\nexponential/res_4s_strehmel_weiner_alt\nexponential/res_4s_cox_matthews\nexponential/res_4s_cfree4\nexponential/res_4s_friedli\nexponential/res_4s_minchev\nexponential/res_4s_munthe-kaas\nexponential/res_5s\nexponential/res_5s_hochbruck-ostermann\nexponential/res_6s\nexponential/res_8s\nexponential/res_10s\nexponential/res_15s\nexponential/res_16s\nexponential/etdrk2_2s\nexponential/etdrk3_a_3s\nexponential/etdrk3_b_3s\nexponential/etdrk4_4s\nexponential/etdrk4_4s_alt\nexponential/dpmpp_2s\nexponential/dpmpp_sde_2s\nexponential/dpmpp_3s\nexponential/lawson2a_2s\nexponential/lawson2b_2s\nexponential/lawson4_4s\nexponential/lawson41-gen_4s\nexponential/lawson41-gen-mod_4s\nexponential/ddim\nhybrid/pec423_2h2s\nhybrid/pec433_2h3s\nhybrid/abnorsett2_1h2s\nhybrid/abnorsett3_2h2s\nhybrid/abnorsett4_3h2s\nhybrid/lawson42-gen-mod_1h4s\nhybrid/lawson43-gen-mod_2h4s\nhybrid/lawson44-gen-mod_3h4s\nlinear/ralston_2s\nlinear/ralston_3s\nlinear/ralston_4s\nlinear/midpoint_2s\nlinear/heun_2s\nlinear/heun_3s\nlinear/houwen-wray_3s\nlinear/kutta_3s\nlinear/ssprk3_3s\nlinear/ssprk4_4s\nlinear/rk38_4s\nlinear/rk4_4s\nlinear/rk5_7s\nlinear/rk6_7s\nlinear/bogacki-shampine_4s\nlinear/bogacki-shampine_7s\nlinear/dormand-prince_6s\nlinear/dormand-prince_13s\nlinear/tsi_7s\nlinear/euler\ndiag_implicit/irk_exp_diag_2s\ndiag_implicit/kraaijevanger_spijker_2s\ndiag_implicit/qin_zhang_2s\ndiag_implicit/pareschi_russo_2s\ndiag_implicit/pareschi_russo_alt_2s\ndiag_implicit/crouzeix_2s\ndiag_implicit/crouzeix_3s\ndiag_implicit/crouzeix_3s_alt\nfully_implicit/gauss-legendre_2s\nfully_implicit/gauss-legendre_3s\nfully_implicit/gauss-legendre_4s\nfully_implicit/gauss-legendre_4s_alternating_a\nfully_implicit/gauss-legendre_4s_ascending_a\nfully_implicit/gauss-legendre_4s_alt\nfully_implicit/gauss-legendre_5s\nfully_implicit/gauss-legendre_5s_ascending\nfully_implicit/radau_ia_2s\nfully_implicit/radau_ia_3s\nfully_implicit/radau_iia_2s\nfully_implicit/radau_iia_3s\nfully_implicit/radau_iia_3s_alt\nfully_implicit/radau_iia_5s\nfully_implicit/radau_iia_7s\nfully_implicit/radau_iia_9s\nfully_implicit/radau_iia_11s\nfully_implicit/lobatto_iiia_2s\nfully_implicit/lobatto_iiia_3s\nfully_implicit/lobatto_iiia_4s\nfully_implicit/lobatto_iiib_2s\nfully_implicit/lobatto_iiib_3s\nfully_implicit/lobatto_iiib_4s\nfully_implicit/lobatto_iiic_2s\nfully_implicit/lobatto_iiic_3s\nfully_implicit/lobatto_iiic_4s\nfully_implicit/lobatto_iiic_star_2s\nfully_implicit/lobatto_iiic_star_3s\nfully_implicit/lobatto_iiid_2s\nfully_implicit/lobatto_iiid_3s"
+      ],
+      "widgets_values_named": {
+        "name": "Sampler",
+        "value": "linear/euler",
+        "options": "none\nmultistep/res_2m\nmultistep/res_3m\nmultistep/dpmpp_2m\nmultistep/dpmpp_3m\nmultistep/abnorsett_2m\nmultistep/abnorsett_3m\nmultistep/abnorsett_4m\nmultistep/deis_2m\nmultistep/deis_3m\nmultistep/deis_4m\nexponential/res_2s_rkmk2e\nexponential/res_2s\nexponential/res_2s_stable\nexponential/res_3s\nexponential/res_3s_non-monotonic\nexponential/res_3s_alt\nexponential/res_3s_cox_matthews\nexponential/res_3s_lie\nexponential/res_3s_sunstar\nexponential/res_3s_strehmel_weiner\nexponential/res_4s_krogstad\nexponential/res_4s_krogstad_alt\nexponential/res_4s_strehmel_weiner\nexponential/res_4s_strehmel_weiner_alt\nexponential/res_4s_cox_matthews\nexponential/res_4s_cfree4\nexponential/res_4s_friedli\nexponential/res_4s_minchev\nexponential/res_4s_munthe-kaas\nexponential/res_5s\nexponential/res_5s_hochbruck-ostermann\nexponential/res_6s\nexponential/res_8s\nexponential/res_10s\nexponential/res_15s\nexponential/res_16s\nexponential/etdrk2_2s\nexponential/etdrk3_a_3s\nexponential/etdrk3_b_3s\nexponential/etdrk4_4s\nexponential/etdrk4_4s_alt\nexponential/dpmpp_2s\nexponential/dpmpp_sde_2s\nexponential/dpmpp_3s\nexponential/lawson2a_2s\nexponential/lawson2b_2s\nexponential/lawson4_4s\nexponential/lawson41-gen_4s\nexponential/lawson41-gen-mod_4s\nexponential/ddim\nhybrid/pec423_2h2s\nhybrid/pec433_2h3s\nhybrid/abnorsett2_1h2s\nhybrid/abnorsett3_2h2s\nhybrid/abnorsett4_3h2s\nhybrid/lawson42-gen-mod_1h4s\nhybrid/lawson43-gen-mod_2h4s\nhybrid/lawson44-gen-mod_3h4s\nlinear/ralston_2s\nlinear/ralston_3s\nlinear/ralston_4s\nlinear/midpoint_2s\nlinear/heun_2s\nlinear/heun_3s\nlinear/houwen-wray_3s\nlinear/kutta_3s\nlinear/ssprk3_3s\nlinear/ssprk4_4s\nlinear/rk38_4s\nlinear/rk4_4s\nlinear/rk5_7s\nlinear/rk6_7s\nlinear/bogacki-shampine_4s\nlinear/bogacki-shampine_7s\nlinear/dormand-prince_6s\nlinear/dormand-prince_13s\nlinear/tsi_7s\nlinear/euler\ndiag_implicit/irk_exp_diag_2s\ndiag_implicit/kraaijevanger_spijker_2s\ndiag_implicit/qin_zhang_2s\ndiag_implicit/pareschi_russo_2s\ndiag_implicit/pareschi_russo_alt_2s\ndiag_implicit/crouzeix_2s\ndiag_implicit/crouzeix_3s\ndiag_implicit/crouzeix_3s_alt\nfully_implicit/gauss-legendre_2s\nfully_implicit/gauss-legendre_3s\nfully_implicit/gauss-legendre_4s\nfully_implicit/gauss-legendre_4s_alternating_a\nfully_implicit/gauss-legendre_4s_ascending_a\nfully_implicit/gauss-legendre_4s_alt\nfully_implicit/gauss-legendre_5s\nfully_implicit/gauss-legendre_5s_ascending\nfully_implicit/radau_ia_2s\nfully_implicit/radau_ia_3s\nfully_implicit/radau_iia_2s\nfully_implicit/radau_iia_3s\nfully_implicit/radau_iia_3s_alt\nfully_implicit/radau_iia_5s\nfully_implicit/radau_iia_7s\nfully_implicit/radau_iia_9s\nfully_implicit/radau_iia_11s\nfully_implicit/lobatto_iiia_2s\nfully_implicit/lobatto_iiia_3s\nfully_implicit/lobatto_iiia_4s\nfully_implicit/lobatto_iiib_2s\nfully_implicit/lobatto_iiib_3s\nfully_implicit/lobatto_iiib_4s\nfully_implicit/lobatto_iiic_2s\nfully_implicit/lobatto_iiic_3s\nfully_implicit/lobatto_iiic_4s\nfully_implicit/lobatto_iiic_star_2s\nfully_implicit/lobatto_iiic_star_3s\nfully_implicit/lobatto_iiid_2s\nfully_implicit/lobatto_iiid_3s"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 1568,
+      "type": "NKDBridgeChoice",
+      "pos": [
+        454.42355509368394,
+        5675.73786930013
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "links": [
+            22983
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "3a48240652cc69fdd39c0a1cc8ab7d52bbdedf63",
+        "Node name for S&R": "NKDBridgeChoice",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "nkd_order": 3
+      },
+      "widgets_values": [
+        "Detailer",
+        "false",
+        "@boolean"
+      ],
+      "widgets_values_named": {
+        "name": "Detailer",
+        "value": "false",
+        "options": "@boolean"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 1570,
+      "type": "NKDBridgeChoice",
+      "pos": [
+        449.42355509368394,
+        5915.73786930013
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "value",
+          "type": "*",
+          "links": [
+            22985
+          ]
+        }
+      ],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        },
+        "aux_id": "Nekodificador/ComfyUI-NKD-Bridge",
+        "ver": "3a48240652cc69fdd39c0a1cc8ab7d52bbdedf63",
+        "Node name for S&R": "NKDBridgeChoice",
+        "nkd_order": 3
+      },
+      "widgets_values": [
+        "Scheduler",
+        "simple",
+        "simple\nsgm_uniform\nkarras\nexponential\nddim_uniform\nbeta\nnormal\nlinear_quadratic\nkl_optimal\nbong_tangent\nbeta57"
+      ],
+      "widgets_values_named": {
+        "name": "Scheduler",
+        "value": "simple",
+        "options": "simple\nsgm_uniform\nkarras\nexponential\nddim_uniform\nbeta\nnormal\nlinear_quadratic\nkl_optimal\nbong_tangent\nbeta57"
+      },
+      "color": "#0a3a66",
+      "bgcolor": "#001e36"
+    },
+    {
+      "id": 1571,
+      "type": "NKDHint",
+      "pos": [
+        352.7343055434395,
+        5806.920072617585
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Bridge Choice\nConnect this node to different dropdowns, booleans, and logic nodes to connect its functions to the Photoshop panel, so that you can control the internal logic of the workflow from there.",
+        "targets": [
+          {
+            "node": "1568",
+            "widget": null
+          },
+          {
+            "node": "1567",
+            "widget": null
+          },
+          {
+            "node": "1570",
+            "widget": null
+          }
+        ],
+        "style": "info",
+        "step": 0,
+        "pinned": false,
+        "width": 300,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Bridge Choice\nConecta este nodo a distintos dropdowns, booleans y nodos de lógica para conectar sus funciones al panel de Photoshop, de manera que puedas controlar la lógica interna del workflow desde allí."
         }
       }
     }
@@ -1573,6 +1227,46 @@
       "LATENT"
     ],
     [
+      22960,
+      1556,
+      2,
+      1552,
+      1,
+      "VAE"
+    ],
+    [
+      22980,
+      1553,
+      0,
+      1566,
+      0,
+      "IMAGE"
+    ],
+    [
+      22981,
+      23,
+      2,
+      1566,
+      1,
+      "MASK"
+    ],
+    [
+      22982,
+      1567,
+      0,
+      1554,
+      7,
+      "COMBO"
+    ],
+    [
+      22978,
+      1556,
+      0,
+      1555,
+      0,
+      "MODEL"
+    ],
+    [
       22948,
       1556,
       1,
@@ -1589,27 +1283,11 @@
       "VAE"
     ],
     [
-      22950,
-      1553,
-      0,
-      9,
-      0,
-      "IMAGE"
-    ],
-    [
-      22951,
-      31,
-      0,
-      1555,
-      9,
-      "STRING"
-    ],
-    [
-      22956,
+      22959,
       23,
       2,
-      9,
-      1,
+      1555,
+      3,
       "MASK"
     ],
     [
@@ -1621,48 +1299,97 @@
       "IMAGE"
     ],
     [
-      22959,
-      23,
-      2,
+      22951,
+      31,
+      0,
       1555,
-      3,
-      "MASK"
+      8,
+      "STRING"
     ],
     [
-      22960,
-      1556,
-      2,
-      1552,
-      1,
-      "VAE"
-    ],
-    [
-      22963,
+      22984,
       1557,
       1,
       1555,
-      22,
+      9,
       "INT"
     ],
     [
-      22978,
-      1556,
+      22983,
+      1568,
       0,
       1555,
+      10,
+      "BOOLEAN"
+    ],
+    [
+      22985,
+      1570,
       0,
-      "MODEL"
+      1554,
+      8,
+      "COMBO"
     ]
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": 61,
+      "title": "Input Parameters",
+      "bounding": [
+        9.423555093683916,
+        5390.73786930013,
+        800,
+        617
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 62,
+      "title": "Group",
+      "bounding": [
+        863.3661321016489,
+        5269,
+        768.822265625,
+        785.5363245304961
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 63,
+      "title": "Output",
+      "bounding": [
+        1709.2884118638956,
+        5329,
+        273.7479543108766,
+        486
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    },
+    {
+      "id": 64,
+      "title": "Loaders",
+      "bounding": [
+        9.423555093683916,
+        5049.705560798674,
+        800,
+        230
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    }
+  ],
   "definitions": {
     "subgraphs": [
       {
         "id": "7fe91af8-f6f2-4c46-b33b-c4531023a0d6",
         "version": 1,
         "state": {
-          "lastGroupId": 60,
-          "lastNodeId": 1565,
-          "lastLinkId": 22979,
+          "lastGroupId": 64,
+          "lastNodeId": 1571,
+          "lastLinkId": 22985,
           "lastRerouteId": 77
         },
         "revision": 0,
@@ -1792,15 +1519,6 @@
                   "name": "unet_name"
                 },
                 "link": 22835
-              },
-              {
-                "localized_name": "weight_dtype",
-                "name": "weight_dtype",
-                "type": "COMBO",
-                "widget": {
-                  "name": "weight_dtype"
-                },
-                "link": null
               }
             ],
             "outputs": [
@@ -1814,14 +1532,14 @@
               }
             ],
             "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.8.2",
+              "Node name for S&R": "UNETLoader",
               "ue_properties": {
                 "widget_ue_connectable": {},
                 "version": "7.6.2",
                 "input_ue_unconnectable": {}
               },
-              "cnr_id": "comfy-core",
-              "ver": "0.8.2",
-              "Node name for S&R": "UNETLoader",
               "enableTabs": false,
               "tabWidth": 65,
               "tabXOffset": 10,
@@ -1873,25 +1591,6 @@
                   "name": "clip_name"
                 },
                 "link": 22836
-              },
-              {
-                "localized_name": "type",
-                "name": "type",
-                "type": "COMBO",
-                "widget": {
-                  "name": "type"
-                },
-                "link": null
-              },
-              {
-                "localized_name": "device",
-                "name": "device",
-                "shape": 7,
-                "type": "COMBO",
-                "widget": {
-                  "name": "device"
-                },
-                "link": null
               }
             ],
             "outputs": [
@@ -1905,14 +1604,14 @@
               }
             ],
             "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.8.2",
+              "Node name for S&R": "CLIPLoader",
               "ue_properties": {
                 "widget_ue_connectable": {},
                 "version": "7.6.2",
                 "input_ue_unconnectable": {}
               },
-              "cnr_id": "comfy-core",
-              "ver": "0.8.2",
-              "Node name for S&R": "CLIPLoader",
               "enableTabs": false,
               "tabWidth": 65,
               "tabXOffset": 10,
@@ -1979,14 +1678,14 @@
               }
             ],
             "properties": {
+              "cnr_id": "comfy-core",
+              "ver": "0.8.2",
+              "Node name for S&R": "VAELoader",
               "ue_properties": {
                 "widget_ue_connectable": {},
                 "version": "7.6.2",
                 "input_ue_unconnectable": {}
               },
-              "cnr_id": "comfy-core",
-              "ver": "0.8.2",
-              "Node name for S&R": "VAELoader",
               "enableTabs": false,
               "tabWidth": 65,
               "tabXOffset": 10,
@@ -2075,10 +1774,10 @@
   "extra": {
     "ue_links": [],
     "ds": {
-      "scale": 0.8390545288824038,
+      "scale": 0.7627768444385489,
       "offset": [
-        303.8709588825217,
-        -4818.855926069146
+        478.26427277014204,
+        -4764.969753219111
       ]
     },
     "links_added_by_ue": [],
@@ -2096,8 +1795,8 @@
       {
         "id": 74,
         "pos": [
-          782.8225586653153,
-          5159.664650886106
+          773.4779613718064,
+          5153.705560798674
         ],
         "linkIds": [
           22948
@@ -2106,8 +1805,8 @@
       {
         "id": 75,
         "pos": [
-          782.8225586653153,
-          5179.664650886106
+          773.4779613718064,
+          5173.705560798674
         ],
         "linkIds": [
           22949,
@@ -2128,8 +1827,8 @@
       {
         "id": 77,
         "pos": [
-          782.8225586653153,
-          5139.664650886106
+          773.4779613718064,
+          5133.705560798674
         ],
         "linkIds": [
           22978
@@ -2138,22 +1837,53 @@
     ],
     "linkExtensions": [
       {
-        "id": 22948,
-        "parentId": 74
-      },
-      {
-        "id": 22949,
-        "parentId": 75
-      },
-      {
         "id": 22960,
         "parentId": 76
       },
       {
         "id": 22978,
         "parentId": 77
+      },
+      {
+        "id": 22948,
+        "parentId": 74
+      },
+      {
+        "id": 22949,
+        "parentId": 75
       }
-    ]
+    ],
+    "linkPresentation": {
+      "22951": {
+        "hidden": true
+      },
+      "22958": {
+        "hidden": true
+      },
+      "22959": {
+        "hidden": true
+      },
+      "22981": {
+        "hidden": true
+      },
+      "22982": {
+        "hidden": true
+      },
+      "22983": {
+        "hidden": true
+      },
+      "22984": {
+        "hidden": true
+      },
+      "22985": {
+        "hidden": true
+      }
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": true,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
   },
   "version": 0.4
 }

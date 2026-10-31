@@ -1,15 +1,15 @@
 {
   "id": "25a69008-fd97-43e0-b090-59afe90201c5",
   "revision": 0,
-  "last_node_id": 41,
-  "last_link_id": 54,
+  "last_node_id": 42,
+  "last_link_id": 57,
   "nodes": [
     {
       "id": 1,
       "type": "NKDLoader",
       "pos": [
-        731.3524059177321,
-        4872.00907815482
+        668.1861430105546,
+        4681.318235365494
       ],
       "size": [
         270,
@@ -18,17 +18,7 @@
       "flags": {},
       "order": 0,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "recipe",
-          "name": "recipe",
-          "type": "STRING",
-          "widget": {
-            "name": "recipe"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
           "label": "model",
@@ -88,80 +78,30 @@
         550.6781115879828
       ],
       "flags": {},
-      "order": 13,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "model",
           "name": "model",
           "type": "MODEL",
           "link": 39
         },
         {
-          "localized_name": "positive",
           "name": "positive",
           "type": "CONDITIONING",
           "link": 2
         },
         {
-          "localized_name": "negative",
           "name": "negative",
           "type": "CONDITIONING",
           "link": 4
         },
         {
-          "localized_name": "latent_image",
           "name": "latent_image",
           "type": "LATENT",
           "link": 40
         },
         {
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "steps",
-          "name": "steps",
-          "type": "INT",
-          "widget": {
-            "name": "steps"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "cfg",
-          "name": "cfg",
-          "type": "FLOAT",
-          "widget": {
-            "name": "cfg"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "sampler_name",
-          "name": "sampler_name",
-          "type": "COMBO",
-          "widget": {
-            "name": "sampler_name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "scheduler",
-          "name": "scheduler",
-          "type": "COMBO",
-          "widget": {
-            "name": "scheduler"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "denoise",
           "name": "denoise",
           "type": "FLOAT",
           "widget": {
@@ -172,7 +112,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "LATENT",
           "name": "LATENT",
           "type": "LATENT",
           "links": [
@@ -213,8 +152,8 @@
       "id": 3,
       "type": "CLIPTextEncode",
       "pos": [
-        530,
-        5590
+        935.9675491740215,
+        5480
       ],
       "size": [
         400,
@@ -227,13 +166,11 @@
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "clip",
           "name": "clip",
           "type": "CLIP",
           "link": 5
         },
         {
-          "localized_name": "text",
           "name": "text",
           "type": "STRING",
           "widget": {
@@ -244,7 +181,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "CONDITIONING",
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
@@ -274,8 +210,8 @@
       "id": 4,
       "type": "ConditioningZeroOut",
       "pos": [
-        565,
-        5610
+        970.9675491740215,
+        5500
       ],
       "size": [
         204.134765625,
@@ -284,11 +220,10 @@
       "flags": {
         "collapsed": true
       },
-      "order": 12,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "conditioning",
           "name": "conditioning",
           "type": "CONDITIONING",
           "link": 3
@@ -296,7 +231,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "CONDITIONING",
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
@@ -329,17 +263,15 @@
       "flags": {
         "collapsed": true
       },
-      "order": 14,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "samples",
           "name": "samples",
           "type": "LATENT",
           "link": 6
         },
         {
-          "localized_name": "vae",
           "name": "vae",
           "type": "VAE",
           "link": 7
@@ -347,7 +279,6 @@
       ],
       "outputs": [
         {
-          "localized_name": "IMAGE",
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
@@ -370,46 +301,32 @@
       "id": 9,
       "type": "NKDBridgeOutput",
       "pos": [
-        2140,
-        5090
+        2148.9542149881927,
+        5127.024936244286
       ],
       "size": [
         253.7479543108766,
-        146
+        194
       ],
       "flags": {},
-      "order": 16,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "images",
           "name": "images",
           "type": "IMAGE",
           "link": 43
         },
         {
-          "localized_name": "mask",
           "name": "mask",
           "shape": 7,
           "type": "MASK",
-          "link": 53
+          "link": 56
         },
         {
-          "localized_name": "destination",
-          "name": "destination",
-          "type": "STRING",
-          "widget": {
-            "name": "destination"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "name",
-          "name": "name",
-          "type": "STRING",
-          "widget": {
-            "name": "name"
-          },
+          "name": "region",
+          "shape": 7,
+          "type": "NKD_REGION",
           "link": null
         }
       ],
@@ -426,113 +343,53 @@
       },
       "widgets_values": [
         "new:layer",
-        "NKD {n}"
+        "NKD {n}",
+        "@active",
+        false
       ],
       "widgets_values_named": {
-        "destination": "NKD 1 #4",
-        "name": "NKD {n}"
+        "destination": "new:layer",
+        "name": "NKD {n}",
+        "document": "@active",
+        "save_after_write": false
       },
       "color": "#0a3a66",
       "bgcolor": "#001e36"
     },
     {
-      "id": 22,
-      "type": "PreviewImage",
-      "pos": [
-        510,
-        5065
-      ],
-      "size": [
-        208.08182346227272,
-        260
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "link": 29
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "links": [
-            35
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.43.0",
-        "Node name for S&R": "PreviewImage",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      }
-    },
-    {
       "id": 23,
       "type": "NKDBridgeInput",
       "pos": [
-        125.39112442631898,
-        5065
+        645,
+        5070
       ],
       "size": [
         350.5886563097015,
-        122
+        146
       ],
       "flags": {},
       "order": 1,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "source",
-          "name": "source",
-          "type": "STRING",
-          "widget": {
-            "name": "source"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "selection_source",
-          "name": "selection_source",
-          "type": "STRING",
-          "widget": {
-            "name": "selection_source"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "links": [
-            29
+            57
           ]
         },
         {
-          "localized_name": "alpha",
           "name": "alpha",
           "type": "MASK",
           "links": null
         },
         {
-          "localized_name": "selection",
           "name": "selection",
           "type": "MASK",
           "links": [
-            51
+            55,
+            56
           ]
         }
       ],
@@ -548,11 +405,13 @@
       },
       "widgets_values": [
         "@document",
-        "@selection"
+        "@selection",
+        "@active"
       ],
       "widgets_values_named": {
         "source": "@document",
-        "selection_source": "@selection"
+        "selection_source": "@selection",
+        "document": "@active"
       },
       "color": "#0a3a66",
       "bgcolor": "#001e36"
@@ -569,174 +428,34 @@
         330
       ],
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
-          "link": 35
+          "link": 57
         },
         {
-          "localized_name": "mask",
           "name": "mask",
           "type": "MASK",
-          "link": 52
+          "link": 55
         },
         {
-          "localized_name": "model",
           "name": "model",
           "shape": 7,
           "type": "MODEL",
           "link": 54
         },
         {
-          "localized_name": "vae",
           "name": "vae",
           "shape": 7,
           "type": "VAE",
           "link": 38
-        },
-        {
-          "localized_name": "Invert Mask",
-          "name": "invert_mask",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "invert_mask"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Fill Mask Holes",
-          "name": "fill_holes",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "fill_holes"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Mask Expand",
-          "name": "mask_expand",
-          "type": "INT",
-          "widget": {
-            "name": "mask_expand"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Mask Blur",
-          "name": "mask_blur",
-          "type": "INT",
-          "widget": {
-            "name": "mask_blur"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Inpaint Blend",
-          "name": "inpaint_blend",
-          "type": "FLOAT",
-          "widget": {
-            "name": "inpaint_blend"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Context Padding",
-          "name": "padding",
-          "type": "INT",
-          "widget": {
-            "name": "padding"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Resize Mode",
-          "name": "resize_mode",
-          "type": "COMBO",
-          "widget": {
-            "name": "resize_mode"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Megapixels",
-          "name": "megapixels",
-          "type": "FLOAT",
-          "widget": {
-            "name": "megapixels"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Longest Side",
-          "name": "longest_side",
-          "type": "INT",
-          "widget": {
-            "name": "longest_side"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Min Resolution",
-          "name": "min_resolution",
-          "type": "INT",
-          "widget": {
-            "name": "min_resolution"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Max Resolution",
-          "name": "max_resolution",
-          "type": "INT",
-          "widget": {
-            "name": "max_resolution"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Separate Regions",
-          "name": "separate_regions",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "separate_regions"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Min Region Area %",
-          "name": "region_min_area",
-          "type": "FLOAT",
-          "widget": {
-            "name": "region_min_area"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Max Regions",
-          "name": "max_regions",
-          "type": "INT",
-          "widget": {
-            "name": "max_regions"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Region Order",
-          "name": "region_order",
-          "type": "COMBO",
-          "widget": {
-            "name": "region_order"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "model",
           "name": "model",
           "type": "MODEL",
           "links": [
@@ -744,21 +463,18 @@
           ]
         },
         {
-          "localized_name": "image",
           "name": "image",
           "shape": 6,
           "type": "IMAGE",
           "links": null
         },
         {
-          "localized_name": "mask",
           "name": "mask",
           "shape": 6,
           "type": "MASK",
           "links": null
         },
         {
-          "localized_name": "latent",
           "name": "latent",
           "shape": 6,
           "type": "LATENT",
@@ -767,7 +483,6 @@
           ]
         },
         {
-          "localized_name": "crop_data",
           "name": "crop_data",
           "shape": 6,
           "type": "NKD_CROPDATA",
@@ -834,61 +549,22 @@
         150
       ],
       "flags": {},
-      "order": 15,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "link": 42
         },
         {
-          "localized_name": "crop_data",
           "name": "crop_data",
           "type": "NKD_CROPDATA",
           "link": 41
-        },
-        {
-          "localized_name": "Feather",
-          "name": "feather",
-          "type": "INT",
-          "widget": {
-            "name": "feather"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Edge Hardness",
-          "name": "edge_hardness",
-          "type": "FLOAT",
-          "widget": {
-            "name": "edge_hardness"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Match Colors",
-          "name": "match_colors",
-          "type": "FLOAT",
-          "widget": {
-            "name": "match_colors"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Seamless Edges",
-          "name": "seamless_edges",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "seamless_edges"
-          },
-          "link": null
         }
       ],
       "outputs": [
         {
-          "localized_name": "image",
           "name": "image",
           "type": "IMAGE",
           "links": [
@@ -910,13 +586,13 @@
       "widgets_values": [
         10,
         0,
-        0.5,
+        0,
         false
       ],
       "widgets_values_named": {
         "feather": 10,
         "edge_hardness": 0,
-        "match_colors": 0.5,
+        "match_colors": 0,
         "seamless_edges": false
       }
     },
@@ -924,8 +600,8 @@
       "id": 31,
       "type": "NKDBridgeText",
       "pos": [
-        140,
-        5545
+        545.9675491740215,
+        5435
       ],
       "size": [
         335,
@@ -934,29 +610,9 @@
       "flags": {},
       "order": 2,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "name",
-          "name": "name",
-          "type": "STRING",
-          "widget": {
-            "name": "name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "text",
-          "name": "text",
-          "type": "STRING",
-          "widget": {
-            "name": "text"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "text",
           "name": "text",
           "type": "STRING",
           "links": [
@@ -989,7 +645,7 @@
       "id": 33,
       "type": "NKDBridgeNumber",
       "pos": [
-        895,
+        1055.9675491740215,
         5620
       ],
       "size": [
@@ -999,56 +655,9 @@
       "flags": {},
       "order": 3,
       "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "name",
-          "name": "name",
-          "type": "STRING",
-          "widget": {
-            "name": "name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "value",
-          "name": "value",
-          "type": "FLOAT",
-          "widget": {
-            "name": "value"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "min",
-          "name": "min",
-          "type": "FLOAT",
-          "widget": {
-            "name": "min"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "max",
-          "name": "max",
-          "type": "FLOAT",
-          "widget": {
-            "name": "max"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "step",
-          "name": "step",
-          "type": "FLOAT",
-          "widget": {
-            "name": "step"
-          },
-          "link": null
-        }
-      ],
+      "inputs": [],
       "outputs": [
         {
-          "localized_name": "float",
           "name": "float",
           "type": "FLOAT",
           "links": [
@@ -1056,7 +665,6 @@
           ]
         },
         {
-          "localized_name": "int",
           "name": "int",
           "type": "INT",
           "links": null
@@ -1090,99 +698,11 @@
       "bgcolor": "#001e36"
     },
     {
-      "id": 35,
-      "type": "NKDMaskOpsLean",
-      "pos": [
-        735,
-        5110
-      ],
-      "size": [
-        270,
-        338
-      ],
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "mask",
-          "name": "mask",
-          "type": "MASK",
-          "link": 51
-        },
-        {
-          "localized_name": "Fill Holes",
-          "name": "fill_holes",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "fill_holes"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Expand / Contract",
-          "name": "expand",
-          "type": "INT",
-          "widget": {
-            "name": "expand"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "Feather",
-          "name": "feather",
-          "type": "INT",
-          "widget": {
-            "name": "feather"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "mask",
-          "name": "mask",
-          "type": "MASK",
-          "links": [
-            52,
-            53
-          ]
-        },
-        {
-          "localized_name": "mask_inverted",
-          "name": "mask_inverted",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-nkd-basic-tools",
-        "ver": "726d727217a15a469319731d9a17a66159435557",
-        "Node name for S&R": "NKDMaskOpsLean",
-        "nkdSchema": 1,
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        false,
-        30,
-        40
-      ],
-      "widgets_values_named": {
-        "fill_holes": false,
-        "expand": 30,
-        "feather": 40
-      }
-    },
-    {
       "id": 36,
       "type": "NKDHint",
       "pos": [
-        45,
-        5590
+        450.96754917402154,
+        5480
       ],
       "size": [
         28,
@@ -1221,8 +741,8 @@
       "id": 38,
       "type": "NKDHint",
       "pos": [
-        45.37456315116847,
-        5097.074384119139
+        565,
+        5100
       ],
       "size": [
         28,
@@ -1261,8 +781,8 @@
       "id": 39,
       "type": "NKDHint",
       "pos": [
-        2470.572697832435,
-        5170.684419047809
+        2482.213345647479,
+        5193.07016693128
       ],
       "size": [
         28,
@@ -1301,8 +821,8 @@
       "id": 41,
       "type": "NKDHint",
       "pos": [
-        812.4420477025984,
-        5677.442102355323
+        970.9675491740215,
+        5680
       ],
       "size": [
         28,
@@ -1334,6 +854,49 @@
         },
         "texts": {
           "es": "# Bridge Number\nConvierte cualquier número del workflow en un **slider en el panel de Photoshop**, para retocarlo sin abrir ComfyUI.\n\n## Valores\n- **name**: la etiqueta del slider en el panel (y la variable `{denoise}` para nombrar capas).\n- **value**: dónde está el slider ahora. Si lo mueves en PS cambia aquí, y al revés.\n- **min / max**: los extremos del slider. Ajústalos a lo que tiene sentido. Por ejemplo: 0–1 para denoise; 0–250 para el padding de una máscara.\n- **step**: cuánto avanza cada muesca. `0.01` = ajuste fino con decimales, `1` = números enteros (steps, seed), `0.05` = saltos rápidos, etc\n\nConecta la salida al widget según lo que este reciba: `int` si se trata de números enteros (como `steps`) y `float` si se trata de un valor con decimales, como `denoise`"
+        }
+      }
+    },
+    {
+      "id": 42,
+      "type": "NKDHint",
+      "pos": [
+        1070.9675491740215,
+        5315.496852912086
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "text": "# Masks and Blur\nAvoid modifying the masks inside the workflow, especially in cases of Inpainting + Detailing. Instead, modify the selection in Photoshop so that it enters the process with its gradients already applied. That way, the same mask that affects the inpainting is the one that will apply the transparency to the output that returns to Photoshop.",
+        "targets": [
+          {
+            "node": "23",
+            "widget": "Selection source"
+          },
+          {
+            "node": "29",
+            "widget": "mask_expand"
+          },
+          {
+            "node": "29",
+            "widget": "mask_blur"
+          }
+        ],
+        "style": "warn",
+        "step": 0,
+        "pinned": false,
+        "width": 300,
+        "min": "",
+        "max": "",
+        "texts": {
+          "es": "# Masks and Blur\nEvita modificar las máscaras dentro del workflow, especialmente en casos de Inpainting + Detailing. En su lugar, modifica la selección en Photoshop para que ya entre al proceso con sus degradados aplicados. De esa manera, la misma máscara que afecta al inpainting es la que aplicará la transparencia al output que vuelve a Photoshop."
         }
       }
     }
@@ -1386,22 +949,6 @@
       5,
       1,
       "VAE"
-    ],
-    [
-      29,
-      23,
-      0,
-      22,
-      0,
-      "IMAGE"
-    ],
-    [
-      35,
-      22,
-      0,
-      29,
-      0,
-      "IMAGE"
     ],
     [
       38,
@@ -1464,32 +1011,8 @@
       33,
       0,
       2,
-      9,
+      4,
       "FLOAT"
-    ],
-    [
-      51,
-      23,
-      2,
-      35,
-      0,
-      "MASK"
-    ],
-    [
-      52,
-      35,
-      0,
-      29,
-      1,
-      "MASK"
-    ],
-    [
-      53,
-      35,
-      0,
-      9,
-      1,
-      "MASK"
     ],
     [
       54,
@@ -1498,17 +1021,54 @@
       29,
       2,
       "MODEL"
+    ],
+    [
+      55,
+      23,
+      2,
+      29,
+      1,
+      "MASK"
+    ],
+    [
+      56,
+      23,
+      2,
+      9,
+      1,
+      "MASK"
+    ],
+    [
+      57,
+      23,
+      0,
+      29,
+      0,
+      "IMAGE"
     ]
   ],
-  "groups": [],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Loader",
+      "bounding": [
+        658.1861430105546,
+        4611.318235365494,
+        290,
+        178
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    }
+  ],
   "config": {},
   "extra": {
     "ue_links": [],
     "ds": {
-      "scale": 1.1167815779424797,
+      "scale": 0.7627768444385489,
       "offset": [
-        84.60856595811536,
-        -4910.739773947239
+        121.37454998049725,
+        -4490.41739028321
       ]
     },
     "links_added_by_ue": [],
@@ -1535,8 +1095,8 @@
       {
         "id": 2,
         "pos": [
-          1245,
-          5574
+          1305.782714890964,
+          5465
         ],
         "linkIds": [
           2
@@ -1545,8 +1105,8 @@
       {
         "id": 3,
         "pos": [
-          1245,
-          5594
+          1305.782714890964,
+          5485
         ],
         "linkIds": [
           4
@@ -1576,8 +1136,19 @@
       },
       "38": {
         "hidden": true
+      },
+      "54": {
+        "hidden": true
+      },
+      "56": {
+        "hidden": true
       }
-    }
+    },
+    "frontendVersion": "1.57.6",
+    "VHS_latentpreview": true,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
   },
   "version": 0.4
 }

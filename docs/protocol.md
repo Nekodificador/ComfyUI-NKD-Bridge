@@ -13,6 +13,7 @@ Host to server:
 - `{"type": "run", "outputs": [ids] | null}`: ask the runner to queue the workflow, optionally only some Bridge Output nodes.
 - `{"type": "set", "node": id, "widget": name, "value": v}`: change a widget in the runner's graph (`layer` on Layer, `destination` and `name` on Output, `value` on Number and Choice, `text` on Text; a boolean Choice takes `"true"` or `"false"`). Bindings are `Path/Name #id`, with a trailing slash on the path for groups.
 - `{"type": "open", "path": "workflows/Name.json"}`: open one of the manifest's `workflows` in the runner tab.
+- `{"type": "order", "ids": [ids]}`: the order of the panel's controls (`params`); the runner saves it in the workflow and sends `params` in that order from then on.
 - `{"type": "cancel"}`: interrupt the running job.
 
 Server to host:

@@ -5,7 +5,7 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const REV = "0.7.1";   // the server compares it with this file: a tab not reloaded since is stale
+const REV = "0.7.2";   // the server compares it with this file: a tab not reloaded since is stale
 const SOURCES = { NKDBridgeInput: "layer" };
 const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text", NKDBridgeChoice: "choice" };
 const OUTPUT = "NKDBridgeOutput";
@@ -178,12 +178,15 @@ function manifest() {
         if (opts[0] === BOOLEAN) Object.assign(p, { kind: "toggle", value: v("value") === "true" });
         else Object.assign(p, { value: v("value"), options: opts });
       } else p.value = v("text");
-      m.params.push(p);
+      m.params.push(Object.assign(p, { order: n.properties?.nkd_order ?? Infinity }));
     } else {
       m.outputs.push({ id: n.id, title: n.title, dest: v("destination") || "new:layer", name: v("name"),
         doc: boundDoc(v("document")), save: !!v("save_after_write") });
     }
   }
+  // the order dragged in the panel; controls never dragged keep their place after them
+  m.params.sort((a, b) => a.order - b.order);
+  for (const p of m.params) delete p.order;
   return m;
 }
 
@@ -207,6 +210,14 @@ function publish(force) {
 function claim() {
   if (!api.clientId) return;
   tab("claim").then(() => publish(true));
+}
+
+/** Panel order: saved on each node, so it travels with the workflow. */
+function setOrder({ ids }) {
+  (ids ?? []).forEach((id, i) => { const n = app.graph?.getNodeById(id); if (n) (n.properties ||= {}).nkd_order = i; });
+  app.graph?.setDirtyCanvas(true, true);
+  app.extensionManager?.workflow?.activeWorkflow?.changeTracker?.checkState?.();
+  publish();
 }
 
 function setWidget({ node, widget: name, value }) {
@@ -339,6 +350,7 @@ app.registerExtension({
     console.log(`[NKD Bridge] rev ${REV}`);
     api.addEventListener("nkd_bridge.doc", (e) => { doc = e.detail; app.graph?.setDirtyCanvas(true, true); });
     api.addEventListener("nkd_bridge.set", (e) => setWidget(e.detail));
+    api.addEventListener("nkd_bridge.order", (e) => setOrder(e.detail));
     api.addEventListener("nkd_bridge.open", (e) => openWorkflow(e.detail).catch((x) => status("error", { message: `ComfyUI: ${x?.message || x}` })));
     // Same graph, same pixels as the last run that finished: nothing would change, so don't queue it
     // (a "randomize" seed still changes the graph every run, as in ComfyUI).

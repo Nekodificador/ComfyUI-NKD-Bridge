@@ -243,7 +243,7 @@ async def _on_host_msg(ws, msg):
     elif t == "doc":
         S.doc = msg.get("doc")
         send_tab("doc", S.doc, everyone=True)   # every tab gets the layer list for its pickers
-    elif t in ("run", "set", "open"):
+    elif t in ("run", "set", "open", "order"):
         if S.runner is None:
             await ws.send_json({"type": "error", "code": "no_tab",
                                 "message": "Open ComfyUI in your browser to run workflows."})

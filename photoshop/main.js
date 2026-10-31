@@ -11,7 +11,7 @@ const $ = (id) => document.getElementById(id);
 // ── i18n ────────────────────────────────────────────────────────────────────────────────────
 const T = {
   en: {
-    liveCancelled: "CANCELLED", unchanged: "Nothing changed since the last generation.", off: "Not connected, retrying…", noTab: "Connected · open ComfyUI in your browser",
+    dragToOrder: "Drag to reorder", liveCancelled: "CANCELLED", unchanged: "Nothing changed since the last generation.", off: "Not connected, retrying…", noTab: "Connected · open ComfyUI in your browser",
     ok: "Connected to ComfyUI", run: "Generate", cancel: "Stop", live: "Live",
     addLayer: "Add preview as layer", server: "ComfyUI address", res: "Send resolution (longest side)",
     resFull: "Full document", resHint: "Lower = faster. 512–768 is plenty for live SD1.5 + LCM.",
@@ -32,7 +32,7 @@ const T = {
     wfNone: "No workflow matches.", wfEmpty: "No saved workflow has Bridge Input or Output nodes yet.",
   },
   es: {
-    liveCancelled: "CANCELADO", unchanged: "No ha cambiado nada desde la última generación.", off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
+    dragToOrder: "Arrastra para reordenar", liveCancelled: "CANCELADO", unchanged: "No ha cambiado nada desde la última generación.", off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
     ok: "Conectado a ComfyUI", run: "Generar", cancel: "Parar", live: "Live",
     addLayer: "Añadir preview como capa", server: "Dirección de ComfyUI", res: "Resolución de envío (lado largo)",
     resFull: "Documento completo", resHint: "Menos = más rápido. Para live con SD1.5 + LCM bastan 512–768.",
@@ -892,27 +892,28 @@ function renderListsRaw() {
     p.kind === "choice" || p.kind === "toggle" ? p.value : 0]));
   if (key !== listsKey) {
     listsKey = key;
+    const label = (p) => el("div", { class: "label grow" }, p.name);
     setKids($("params"), m.params.map((p) => {
       if (p.kind === "text") {
         const ta = el("sp-textarea", { value: p.value ?? "", "data-id": p.id,
           oninput: (e) => sendParam(p.id, "text", e.target.value) });
-        return el("div", { class: "param" }, el("div", { class: "label" }, p.name), ta);
+        return paramRow(p, label(p), ta);
       }
       if (p.kind === "toggle") {
-        return el("div", { class: "param" }, el("sp-checkbox", { checked: !!p.value,
+        return paramRow(p, el("sp-checkbox", { class: "grow", checked: !!p.value,
           onchange: (e) => sendParam(p.id, "value", e.target.checked ? "true" : "false") }, p.name));
       }
       if (p.kind === "choice") {
         const opts = p.options || [];
         const menu = el("sp-menu", { slot: "options" }, ...opts.map((o) =>
           el("sp-menu-item", { value: o, selected: o === p.value }, o)));
-        return el("div", { class: "param" }, el("div", { class: "label" }, p.name), el("sp-picker", { size: "s", class: "selPick",
+        return paramRow(p, label(p), el("sp-picker", { size: "s", class: "selPick",
           onchange: (e) => sendParam(p.id, "value", e.target.value) }, menu));
       }
       const val = el("span", { class: "val" }, fmt(p.value, p.step));
       const sl = el("sp-slider", { min: p.min, max: p.max, step: p.step || 0.01, value: p.value, "data-id": p.id,
         oninput: (e) => { val.textContent = fmt(e.target.value, p.step); sendParam(p.id, "value", Number(e.target.value)); } });
-      return el("div", { class: "param" }, el("div", { class: "paramHead" }, el("div", { class: "label" }, p.name), val), sl);
+      return paramRow(p, label(p), sl, val);
     }));
   } else {                                   // just refresh values the user isn't touching
     for (const p of m.params) {
@@ -1011,6 +1012,41 @@ function renderListsRaw() {
   });
   $("tabIo").textContent = L.tabIo + (problem ? "  !" : "");
   renderRun();
+}
+
+/** One control in the panel: ⋮⋮ grip + label (+ value) on top, the control under it. */
+function paramRow(p, head, control, extra) {
+  const row = el("div", { class: "param" });
+  const grip = el("div", { class: "grip", title: L.dragToOrder }, "⋮⋮");
+  grip.addEventListener("mousedown", (e) => dragParam(e, row));
+  row.appendChild(el("div", { class: "paramHead" }, grip, head, extra));
+  if (control) row.appendChild(control);
+  row.nkdId = p.id;
+  return row;
+}
+
+/** Drag a control by its grip; on drop the new order is saved in the workflow (the tab stores it). */
+function dragParam(e, row) {
+  e.preventDefault?.();
+  const box = $("params"), before = Array.from(box.children).map((r) => r.nkdId);
+  row.className = "param dragging";
+  const move = (ev) => {
+    const others = Array.from(box.children).filter((r) => r !== row);
+    const at = others.find((r) => { const b = r.getBoundingClientRect(); return ev.clientY < b.top + b.height / 2; });
+    const want = at ? others.indexOf(at) : others.length;
+    if (Array.from(box.children).indexOf(row) === want) return;
+    box.removeChild(row);
+    if (at) box.insertBefore(row, at); else box.appendChild(row);
+  };
+  const up = () => {
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", up);
+    row.className = "param";
+    const ids = Array.from(box.children).map((r) => r.nkdId);
+    if (JSON.stringify(ids) !== JSON.stringify(before)) send({ type: "order", ids });
+  };
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", up);
 }
 
 function fmt(v, step) {

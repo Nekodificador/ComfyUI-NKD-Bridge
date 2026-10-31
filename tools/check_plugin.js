@@ -52,8 +52,10 @@ const photoshop = {
 
 function el() {
   const e = { style: {}, children: [], attrs: {}, textContent: "", value: "",
-    appendChild(c) { this.children.push(c); return c; },
+    appendChild(c) { this.children.push(c); if (c) c.parent = this; return c; },
     removeChild(c) { this.children = this.children.filter((x) => x !== c); },
+    insertBefore(c, ref) { this.children.splice(this.children.indexOf(ref), 0, c); c.parent = this; return c; },
+    getBoundingClientRect() { const i = this.parent ? this.parent.children.indexOf(this) : 0; return { top: i * 40, height: 40 }; },
     setAttribute(k, v) { this.attrs[k] = v; }, getAttribute(k) { return this.attrs[k]; }, removeAttribute(k) { delete this.attrs[k]; },
     hasAttribute(k) { return k in this.attrs; }, addEventListener(k, f) { (this.on ||= {})[k] = f; },
     querySelector() { return null; }, querySelectorAll() { return []; } };
@@ -61,7 +63,9 @@ function el() {
   return e;
 }
 const els = {};
-const document = { getElementById: (id) => (els[id] ||= el()), createElement: (tag) => Object.assign(el(), { tag }),
+const docListeners = {};
+const document = { addEventListener: (k, f) => { docListeners[k] = f; }, removeEventListener: (k) => { delete docListeners[k]; },
+  getElementById: (id) => (els[id] ||= el()), createElement: (tag) => Object.assign(el(), { tag }),
   createTextNode: (t) => ({ t }), activeElement: null };
 
 const puts = [];
@@ -85,6 +89,7 @@ const ctx = vm.createContext({
 vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "photoshop", "main.js"), "utf8"), ctx);
 
 let S_last;
+const byClassAll = (e, c) => (e?.className || "").split(" ").includes(c) ? [e] : (e?.children || []).flatMap((x) => byClassAll(x, c));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
 
@@ -311,6 +316,18 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   st({ state: "idle", unchanged: true });
   if (!/No ha cambiado nada/.test(els.previewEmpty.textContent)) fail("an unchanged run should say so");
   console.log("OK  live frames: LIVE · 3/8 while sampling, hidden once the result lands, CANCELADO when stopped");
+
+  // 18. drag a control by its grip: the new order goes to the tab
+  ws.onmessage({ data: JSON.stringify({ type: "manifest", manifest: { sources: [], outputs: [], workflows: [], workflow: "",
+    params: ["A", "B", "C"].map((name, i) => ({ id: 30 + i, kind: "number", name, value: 0, min: 0, max: 1, step: 0.1 })) } }) });
+  await sleep(20);
+  const grips = byClassAll(els.params, "grip");
+  grips[2].on.mousedown({});                         // grab C
+  docListeners.mousemove({ clientY: 5 });            // above A's middle
+  docListeners.mouseup({});
+  const order = ws.sent.filter((m) => m.type === "order").pop()?.ids;
+  if (String(order) !== "32,30,31") fail(`drag C to the top should send 32,30,31, got ${order}`);
+  console.log("OK  dragging a control by its grip reorders the panel and saves the order");
 
   // 15. workflow picker opens another workflow; Bridge Choice shows as a list, a boolean one as a checkbox
   const find = (e, tag) => e?.tag === tag ? [e] : (e?.children || []).flatMap((c) => find(c, tag));

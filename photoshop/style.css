@@ -117,7 +117,12 @@ sp-textarea { height: 64px; }
 .grow { flex: 1; min-width: 0; }
 
 .param { margin-bottom: 12px; }
-.paramHead { display: flex; justify-content: space-between; align-items: baseline; }
+.param.dragging { opacity: 0.5; }
+.paramHead { display: flex; align-items: center; margin-bottom: 4px; }
+.paramHead .label { margin-bottom: 0; }
+/* ⋮⋮ grip: drag a control up or down to reorder the panel */
+.grip { width: 12px; margin-right: 4px; font-size: 10px; color: var(--fg2); cursor: move; flex: none; }
+.grip:hover { color: var(--fg); }
 .paramHead .val { font-size: 11px; font-variant-numeric: tabular-nums; }
 
 /* ── inputs & outputs ─────────────────────────────────────────────────────────────────── */
