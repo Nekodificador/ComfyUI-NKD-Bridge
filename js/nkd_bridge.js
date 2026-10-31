@@ -5,9 +5,9 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const REV = "0.7.2";   // the server compares it with this file: a tab not reloaded since is stale
+const REV = "0.8.0";   // the server compares it with this file: a tab not reloaded since is stale
 const SOURCES = { NKDBridgeInput: "layer" };
-const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text", NKDBridgeChoice: "choice" };
+const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text", NKDBridgeChoice: "choice", NKDBridgeSeed: "seed" };
 const OUTPUT = "NKDBridgeOutput";
 const NONE = "(pick a layer)";
 const DOCUMENT = "@document";          // Bridge Input reading the whole document
@@ -151,7 +151,7 @@ function adoptTarget(node, link) {
 
 function manifest() {
   const wf = wfStore()?.activeWorkflow;
-  const m = { rev: REV, sources: [], params: [], outputs: [], workflow: wf?.path ?? wf?.filename ?? "", workflows: workflowList() };
+  const m = { rev: REV, sources: [], params: [], outputs: [], workflow: wf?.path ?? wf?.filename ?? "", workflows: workflowList(), groups: groupList() };
   for (const n of bridgeNodes()) {
     const v = (name) => widget(n, name)?.value;
     if (n.type in SOURCES) {
@@ -173,6 +173,7 @@ function manifest() {
     } else if (n.type in PARAMS) {
       const p = { id: n.id, kind: PARAMS[n.type], name: v("name") || n.title };
       if (p.kind === "number") Object.assign(p, { value: v("value"), min: v("min"), max: v("max"), step: v("step") });
+      else if (p.kind === "seed") Object.assign(p, { value: v("seed"), mode: v("control_after_generate") ?? "fixed" });
       else if (p.kind === "choice") {
         const opts = choiceOptions(n);
         if (opts[0] === BOOLEAN) Object.assign(p, { kind: "toggle", value: v("value") === "true" });
@@ -210,6 +211,29 @@ function publish(force) {
 function claim() {
   if (!api.clientId) return;
   tab("claim").then(() => publish(true));
+}
+
+const BYPASS = 4;                       // node mode
+const graphGroups = () => app.graph?.groups ?? app.graph?._groups ?? [];
+function groupNodes(g) { g.recomputeInsideNodes?.(); return [...(g.nodes ?? [])]; }
+/** Groups with nodes, for the panel's switches: on unless every node in it is bypassed. */
+// ponytail: recomputes membership on every 1 s publish; cache per group if big graphs ever lag
+function groupList() {
+  return graphGroups().map((g, i) => ({ g, i, nodes: groupNodes(g) })).filter((x) => x.nodes.length)
+    .map(({ g, i, nodes }) => ({ id: g.id ?? i, title: g.title || `Group ${i + 1}`, on: nodes.some((n) => n.mode !== BYPASS) }));
+}
+
+/** Bypass or restore every node in a group. Muted nodes are left as they are. */
+function setGroup({ group, on }) {
+  const g = graphGroups().find((x, i) => String(x.id ?? i) === String(group));
+  if (!g) return;
+  for (const n of groupNodes(g)) {
+    if (on && n.mode === BYPASS) n.mode = 0;
+    else if (!on && n.mode === 0) n.mode = BYPASS;
+  }
+  app.graph?.setDirtyCanvas(true, true);
+  app.extensionManager?.workflow?.activeWorkflow?.changeTracker?.checkState?.();
+  publish();
 }
 
 /** Panel order: saved on each node, so it travels with the workflow. */
@@ -351,6 +375,7 @@ app.registerExtension({
     api.addEventListener("nkd_bridge.doc", (e) => { doc = e.detail; app.graph?.setDirtyCanvas(true, true); });
     api.addEventListener("nkd_bridge.set", (e) => setWidget(e.detail));
     api.addEventListener("nkd_bridge.order", (e) => setOrder(e.detail));
+    api.addEventListener("nkd_bridge.group", (e) => setGroup(e.detail));
     api.addEventListener("nkd_bridge.open", (e) => openWorkflow(e.detail).catch((x) => status("error", { message: `ComfyUI: ${x?.message || x}` })));
     // Same graph, same pixels as the last run that finished: nothing would change, so don't queue it
     // (a "randomize" seed still changes the graph every run, as in ComfyUI).

@@ -174,6 +174,23 @@ class NKDBridgeText(io.ComfyNode):
         return io.NodeOutput(text)
 
 
+class NKDBridgeSeed(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="NKDBridgeSeed", display_name="😺NKD Bridge Seed", category=CAT,
+            description="A seed you can drive from the Photoshop panel: type one, roll a random one, or "
+                        "choose what happens after each run (fixed, random, +1, -1).",
+            inputs=[io.String.Input("name", default="Seed"),
+                    io.Int.Input("seed", default=0, min=0, max=0xffffffffffffffff,
+                                 control_after_generate=io.ControlAfterGenerate.fixed)],
+            outputs=[io.Int.Output("seed")])
+
+    @classmethod
+    def execute(cls, name, seed):
+        return io.NodeOutput(seed)
+
+
 BOOLEAN = "@boolean"                  # Bridge Choice options for a boolean target (a toggle)
 
 
@@ -284,4 +301,4 @@ def _resize(t, hw):
     return x.movedim(1, -1)
 
 
-NODES = [NKDBridgeInput, NKDBridgeNumber, NKDBridgeText, NKDBridgeChoice, NKDBridgeOutput]
+NODES = [NKDBridgeInput, NKDBridgeNumber, NKDBridgeText, NKDBridgeChoice, NKDBridgeSeed, NKDBridgeOutput]

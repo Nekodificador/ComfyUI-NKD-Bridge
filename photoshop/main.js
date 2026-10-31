@@ -11,9 +11,10 @@ const $ = (id) => document.getElementById(id);
 // ── i18n ────────────────────────────────────────────────────────────────────────────────────
 const T = {
   en: {
-    dragToOrder: "Drag to reorder", liveCancelled: "CANCELLED", unchanged: "Nothing changed since the last generation.", off: "Not connected, retrying…", noTab: "Connected · open ComfyUI in your browser",
+    dragToOrder: "Drag to reorder", groups: "Groups", seedFixed: "Fixed", seedRandom: "Random",
+    seedRoll: "New random seed", liveCancelled: "CANCELLED", unchanged: "Nothing changed since the last generation.", off: "Not connected, retrying…", noTab: "Connected · open ComfyUI in your browser",
     ok: "Connected to ComfyUI", run: "Generate", cancel: "Stop", live: "Live",
-    addLayer: "Add preview as layer", server: "ComfyUI address", res: "Send resolution (longest side)",
+    addLayer: "To canvas ▸", stepDown: "Step down", stepUp: "Step up", server: "ComfyUI address", res: "Send resolution (longest side)",
     resFull: "Full document", resHint: "Lower = faster. 512–768 is plenty for live SD1.5 + LCM.",
     connect: "Save & reconnect", params: "Controls", sources: "Inputs", outputs: "Outputs",
     empty: "Open a workflow in ComfyUI that uses 😺NKD Bridge nodes (Canvas, Layer, Selection, Output). They will show up here.",
@@ -32,9 +33,10 @@ const T = {
     wfNone: "No workflow matches.", wfEmpty: "No saved workflow has Bridge Input or Output nodes yet.",
   },
   es: {
-    dragToOrder: "Arrastra para reordenar", liveCancelled: "CANCELADO", unchanged: "No ha cambiado nada desde la última generación.", off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
+    dragToOrder: "Arrastra para reordenar", groups: "Grupos", seedFixed: "Fija", seedRandom: "Aleatoria",
+    seedRoll: "Nueva seed aleatoria", liveCancelled: "CANCELADO", unchanged: "No ha cambiado nada desde la última generación.", off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
     ok: "Conectado a ComfyUI", run: "Generar", cancel: "Parar", live: "Live",
-    addLayer: "Añadir preview como capa", server: "Dirección de ComfyUI", res: "Resolución de envío (lado largo)",
+    addLayer: "To canvas ▸", stepDown: "Bajar un paso", stepUp: "Subir un paso", server: "Dirección de ComfyUI", res: "Resolución de envío (lado largo)",
     resFull: "Documento completo", resHint: "Menos = más rápido. Para live con SD1.5 + LCM bastan 512–768.",
     connect: "Guardar y reconectar", params: "Controles", sources: "Entradas", outputs: "Salidas",
     empty: "Abre en ComfyUI un workflow con nodos 😺NKD Bridge (Canvas, Layer, Selection, Output). Aparecerán aquí.",
@@ -746,7 +748,7 @@ const sendParam = debounce((node, widget, value) => {
   if (S.live) setTimeout(requestRun, 50);
 }, 120);
 
-let listsKey = "", outputsKey = "";
+let listsKey = "", outputsKey = "", groupsKey = "";
 const outWhereEl = {}, outSegEls = {};
 const varsOpen = {};                         // per output: is the variable list unfolded
 /** What kind of destination: "panel", "layer" (new or bound) or "group" (new or bound). */
@@ -883,13 +885,13 @@ function renderListsRaw() {
     show(id, !has);
     $(id).textContent = !app.activeDocument ? L.noDoc : L.empty;
   }
-  for (const s of ["secParams", "secSources", "secOutputs"]) show(s, false);
-  if (!has) { listsKey = ""; outputsKey = ""; $("tabIo").textContent = L.tabIo; return; }
+  for (const s of ["secParams", "secSources", "secOutputs", "secGroups"]) show(s, false);
+  if (!has) { listsKey = ""; outputsKey = ""; groupsKey = ""; $("tabIo").textContent = L.tabIo; return; }
 
   // params: rebuild only when the set of controls changes, so dragging a slider is never interrupted
   // lists and checkboxes are rebuilt when their value changes too (they only change on a pick)
   const key = JSON.stringify(m.params.map((p) => [p.id, p.kind, p.name, p.min, p.max, p.step, p.options,
-    p.kind === "choice" || p.kind === "toggle" ? p.value : 0]));
+    p.kind === "choice" || p.kind === "toggle" ? p.value : p.kind === "seed" ? p.mode : 0]));
   if (key !== listsKey) {
     listsKey = key;
     const label = (p) => el("div", { class: "label grow" }, p.name);
@@ -903,6 +905,18 @@ function renderListsRaw() {
         return paramRow(p, el("sp-checkbox", { class: "grow", checked: !!p.value,
           onchange: (e) => sendParam(p.id, "value", e.target.checked ? "true" : "false") }, p.name));
       }
+      if (p.kind === "seed") {
+        const field = el("sp-textfield", { size: "s", type: "number", class: "grow", value: String(p.value ?? 0), "data-id": p.id,
+          onchange: (e) => sendParam(p.id, "seed", Math.max(0, Math.floor(Number(e.target.value) || 0))) });
+        const roll = btn("🎲", () => {             // same range as ComfyUI's own "randomize"
+          const v = Math.floor(Math.random() * 1125899906842624);
+          field.value = String(v); sendParam(p.id, "seed", v);
+        }, "", L.seedRoll);
+        const modes = [["fixed", L.seedFixed], ["randomize", L.seedRandom], ["increment", "+1"], ["decrement", "−1"]];
+        const segs = el("div", { class: "segs" }, ...modes.map(([v, t]) => el("div", { class: "seg" + (p.mode === v ? " on" : ""),
+          onclick: () => send({ type: "set", node: p.id, widget: "control_after_generate", value: v }) }, t)));
+        return paramRow(p, label(p), el("div", {}, el("div", { class: "seedRow" }, field, roll), segs));
+      }
       if (p.kind === "choice") {
         const opts = p.options || [];
         const menu = el("sp-menu", { slot: "options" }, ...opts.map((o) =>
@@ -913,7 +927,14 @@ function renderListsRaw() {
       const val = el("span", { class: "val" }, fmt(p.value, p.step));
       const sl = el("sp-slider", { min: p.min, max: p.max, step: p.step || 0.01, value: p.value, "data-id": p.id,
         oninput: (e) => { val.textContent = fmt(e.target.value, p.step); sendParam(p.id, "value", Number(e.target.value)); } });
-      return paramRow(p, label(p), sl, val);
+      // ◀ ▶ step the slider by its own step, within its min and max
+      const dec = (String(p.step || 0.01).split(".")[1] || "").length;
+      const nudge = (dir) => {
+        const v = Math.min(p.max, Math.max(p.min, Number((Number(sl.value) + dir * (Number(p.step) || 0.01)).toFixed(dec))));
+        sl.value = v; val.textContent = fmt(v, p.step); sendParam(p.id, "value", v);
+      };
+      return paramRow(p, label(p), el("div", { class: "sliderRow" },
+        btn("◀", () => nudge(-1), "icon", L.stepDown), sl, btn("▶", () => nudge(1), "icon", L.stepUp)), val);
     }));
   } else {                                   // just refresh values the user isn't touching
     for (const p of m.params) {
@@ -922,6 +943,15 @@ function renderListsRaw() {
     }
   }
   show("secParams", !(!m.params.length));
+
+  // groups: one switch each; off = every node in it bypassed in ComfyUI
+  const groups = m.groups || [], gkey = JSON.stringify(groups);
+  if (gkey !== groupsKey) {
+    groupsKey = gkey;
+    setKids($("groups"), groups.map((g) => el("div", { class: "param" }, el("sp-checkbox", { checked: g.on,
+      onchange: (e) => { send({ type: "group", group: g.id, on: !!e.target.checked }); if (S.live) setTimeout(requestRun, 50); } }, g.title))));
+  }
+  show("secGroups", groups.length > 0);
 
   setKids($("sources"), m.sources.map((s) => {
     const { info } = docFor(s.doc);
@@ -1082,6 +1112,7 @@ function init() {
   $("hintRes").textContent = L.resHint;
   $("btnConnect").textContent = L.connect;
   $("hParams").textContent = L.params;
+  $("hGroups").textContent = L.groups;
   $("hSources").textContent = L.sources;
   $("hOutputs").textContent = L.outputs;
   $("previewEmpty").textContent = L.noPreview;

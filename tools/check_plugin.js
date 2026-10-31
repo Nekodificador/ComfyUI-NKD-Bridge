@@ -328,6 +328,31 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   const order = ws.sent.filter((m) => m.type === "order").pop()?.ids;
   if (String(order) !== "32,30,31") fail(`drag C to the top should send 32,30,31, got ${order}`);
   console.log("OK  dragging a control by its grip reorders the panel and saves the order");
+  const arrows = byClassAll(els.params, "icon");           // ◀ ▶ per slider, rows now C, A, B
+  const lastSet = () => ws.sent.filter((m) => m.type === "set").pop();
+  arrows[1].on.click({ target: arrows[1] }); arrows[1].on.click({ target: arrows[1] }); await sleep(200);
+  if (lastSet()?.value !== 0.2) fail(`▶ twice on a 0.1-step slider should send 0.2, got ${JSON.stringify(lastSet())}`);
+  arrows[2].on.click({ target: arrows[2] }); await sleep(200);
+  if (lastSet()?.value !== 0 || lastSet()?.node !== 30) fail(`◀ at the minimum should stay at 0, got ${JSON.stringify(lastSet())}`);
+  console.log("OK  ◀ ▶ step a slider by its step and stop at its limits");
+
+  // 19. seed: mode buttons and 🎲 write to the node; groups switch bypass
+  ws.onmessage({ data: JSON.stringify({ type: "manifest", manifest: { sources: [], outputs: [], workflows: [], workflow: "",
+    params: [{ id: 40, kind: "seed", name: "Seed", value: 5, mode: "fixed" }], groups: [{ id: 7, title: "Detailer", on: true }] } }) });
+  await sleep(20);
+  const txt = (e) => e.children.map((c) => c.t ?? "").join("");
+  const segsSeed = byClassAll(els.params, "seg");
+  if (String(segsSeed.map(txt)) !== "Fija,Aleatoria,+1,−1" || !segsSeed[0].className.includes("on")) fail(`seed modes: ${segsSeed.map(txt)}`);
+  segsSeed[1].on.click();
+  if (JSON.stringify(ws.sent.pop()) !== JSON.stringify({ type: "set", node: 40, widget: "control_after_generate", value: "randomize" })) fail("seed mode not sent");
+  const roll = byClassAll(els.params, "btn").find((b) => txt(b) === "🎲");
+  roll.on.click({ target: roll }); await sleep(200);
+  const rolled = ws.sent.filter((m) => m.node === 40 && m.widget === "seed").pop();
+  if (!Number.isInteger(rolled?.value)) fail(`🎲 should send a whole seed, got ${JSON.stringify(rolled)}`);
+  const gbox = (function f(e) { return e?.tag === "sp-checkbox" ? e : (e?.children || []).map(f).find(Boolean); })(els.groups);
+  gbox.on.change({ target: { checked: false } });
+  if (JSON.stringify(ws.sent.pop()) !== JSON.stringify({ type: "group", group: 7, on: false })) fail("group switch not sent");
+  console.log("OK  seed: modes and 🎲 write to the node; a group switch bypasses it");
 
   // 15. workflow picker opens another workflow; Bridge Choice shows as a list, a boolean one as a checkbox
   const find = (e, tag) => e?.tag === tag ? [e] : (e?.children || []).flatMap((c) => find(c, tag));

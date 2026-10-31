@@ -1,6 +1,6 @@
 # Bridge nodes
 
-The nodes come in two halves. Bridge Input brings pixels in from Photoshop, and Bridge Output sends the result back. Number, Text and Choice turn into controls in the Photoshop panel. Put each one wherever your workflow needs that piece: there's no single "Photoshop node" that everything has to hang from.
+The nodes come in two halves. Bridge Input brings pixels in from Photoshop, and Bridge Output sends the result back. Number, Text, Choice and Seed turn into controls in the Photoshop panel. Put each one wherever your workflow needs that piece: there's no single "Photoshop node" that everything has to hang from.
 
 Photoshop only sends what the open workflow uses, and only when it changes. An Input node whose layer you didn't touch keeps its previous output, so ComfyUI skips everything downstream of it.
 
@@ -65,6 +65,18 @@ A dropdown or an on/off switch in the Photoshop panel. Connect its output to any
 - **Value**: the option chosen. Picking another one in the panel writes it here, like the Number slider.
 - Its options are saved with the node, so they stay if you disconnect it. Reconnect it to another input to take that input's options.
 
+## Bridge Seed
+
+A seed you control from the Photoshop panel. Connect its `seed` output to a sampler's seed.
+
+- `name`: the label in the panel, and the `{Seed}` variable for naming layers (`{seed}` works too).
+- `seed`: the number. In the panel you can type one, or press 🎲 for a new random one.
+- After each run: **Fixed** keeps it (the default, best for Live), **Random** rolls a new one, **+1** and **−1** step it. It's the same setting as a sampler's *control after generate*.
+
+## Switching groups on and off
+
+If the workflow has groups, the panel lists them under **Groups** with a checkbox each. Unticking one bypasses every node in it, as if you'd bypassed them in ComfyUI; ticking it brings them back. Nodes you muted yourself are left alone. Handy for optional stages like a detailer or an upscaler.
+
 ## Choosing the workflow from the panel
 
 The **Workflow** list at the top of the panel shows the workflows saved in ComfyUI that have a Bridge Input or Bridge Output, in the folders you keep them in (click a folder to open it). Type in the search box to find one by name, even with letters missing, like `kl tool` for `Klein tools`. Picking one opens it in your ComfyUI tab, and the panel switches to its controls, inputs and outputs. If it's already open in a workflow tab, ComfyUI goes to that tab. If not, it replaces the workflow you were on, unless that one has unsaved changes: then it opens in a new tab, so nothing is lost.
@@ -77,7 +89,7 @@ Sends the image back to Photoshop. It runs on every execution, even when nothing
 - **Document**: where the result goes. **Active document** (the default) sends it back to the document its pixels came from. Pick another open document to paint in one and get the result in the other, for example a smart object's contents. The result is scaled to fit that document's canvas.
 - `save_after_write`: saves that document after writing. Turn it on when it's a smart object's contents (the `.psb` that opens when you edit it), so the smart object in the parent document updates by itself.
 - **Destination**: one list that decides where the result goes. What you pick sets the behaviour:
-  - **Panel only**: shown in the panel, the document isn't touched. **Add preview as layer** can keep it.
+  - **Panel only**: shown in the panel, the document isn't touched. **To canvas ▸** in the panel adds it as a new layer.
   - **+ New layer**: creates a layer on the first run, and from then on the node is bound to that layer.
   - **+ New group**: creates a group on the first run and binds to it.
   - A layer (`Background`, `Character/Hair`): replaced on every run.

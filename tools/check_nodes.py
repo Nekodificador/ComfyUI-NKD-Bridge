@@ -36,3 +36,5 @@ assert got["arr"][3, 3, 3] == 255 and got["arr"][0, 0, 3] == 0, "RGBA image must
 O.execute(rgba, "panel", "n", mask=m)                                 # mask cuts the alpha further
 assert got["arr"][3, 3, 3] == 255 and got["arr"][5, 5, 3] == 0
 print("OK  RGBA image keeps its transparency, a mask cuts it further")
+assert pkg.NKDBridgeSeed.execute("Seed", 1234).args[0] == 1234
+print("OK  Seed passes its number through")

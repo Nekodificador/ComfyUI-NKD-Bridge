@@ -41,6 +41,8 @@ section { margin-top: 16px; }
 .btn.quiet { background: transparent; border-color: transparent; color: var(--fg2); padding: 0 4px; }
 .btn.quiet:hover { color: var(--fg); text-decoration: underline; }
 .btn.small { height: 20px; padding: 0 8px; font-size: 11px; }
+.btn.icon { width: var(--h); padding: 0; font-size: 9px; color: var(--fg2); flex: none; }   /* ◀ ▶ */
+.btn.icon:hover { color: var(--fg); }
 .btn.on { border-color: var(--fg); font-weight: bold; }           /* a toggle that is on */
 .btn.off { opacity: 0.4; cursor: default; }                       /* disabled */
 .btn.off:hover { background: var(--fill); }
@@ -120,9 +122,14 @@ sp-textarea { height: 64px; }
 .param.dragging { opacity: 0.5; }
 .paramHead { display: flex; align-items: center; margin-bottom: 4px; }
 .paramHead .label { margin-bottom: 0; }
+/* seed: number + 🎲 on one line, then what happens after each run */
+.seedRow { display: flex; align-items: center; margin-bottom: 4px; }
+.seedRow .btn { margin-left: 4px; }
 /* ⋮⋮ grip: drag a control up or down to reorder the panel */
 .grip { width: 12px; margin-right: 4px; font-size: 10px; color: var(--fg2); cursor: move; flex: none; }
 .grip:hover { color: var(--fg); }
+.sliderRow { display: flex; align-items: center; }
+.sliderRow sp-slider { width: auto; flex: 1; min-width: 0; margin: 0 4px; }
 .paramHead .val { font-size: 11px; font-variant-numeric: tabular-nums; }
 
 /* ── inputs & outputs ─────────────────────────────────────────────────────────────────── */

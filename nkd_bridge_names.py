@@ -8,7 +8,7 @@ import re
 import time
 
 VAR = re.compile(r"\{([^{}]+)\}")
-BRIDGE_PARAMS = {"NKDBridgeText": "text", "NKDBridgeNumber": "value", "NKDBridgeChoice": "value"}
+BRIDGE_PARAMS = {"NKDBridgeText": "text", "NKDBridgeNumber": "value", "NKDBridgeChoice": "value", "NKDBridgeSeed": "seed"}
 SEED_INPUTS = ("seed", "noise_seed")
 MAX_VALUE = 40      # a whole prompt makes an unreadable layer name
 
