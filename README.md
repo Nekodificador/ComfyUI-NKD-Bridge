@@ -21,6 +21,7 @@ All of them live under `😺NKD Nodes/Bridge`.
 | [Bridge Input](docs/nodes.md#bridge-input) | The whole document, or one layer or group bound by id, from the active document or any open one, plus the current selection, or a saved channel or path, as a mask for [inpainting](docs/nodes.md#inpainting-a-selection) |
 | [Bridge Number](docs/nodes.md#bridge-number-and-bridge-text) | A slider in the Photoshop panel |
 | [Bridge Text](docs/nodes.md#bridge-number-and-bridge-text) | A text box in the Photoshop panel |
+| [Bridge Choice](docs/nodes.md#bridge-choice) | Any dropdown (sampler, scheduler, a switch's options) or on/off input as a list or checkbox in the panel |
 | [Bridge Output](docs/nodes.md#bridge-output) | Sends the image back to a named layer, in the same document or [another one](docs/nodes.md#painting-in-one-document-results-in-another) such as a smart object, or to the panel |
 
 More: [Live mode and speed](docs/live.md) · [Protocol, for adding other apps](docs/protocol.md)

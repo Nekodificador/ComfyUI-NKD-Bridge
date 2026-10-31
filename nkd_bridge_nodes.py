@@ -174,6 +174,34 @@ class NKDBridgeText(io.ComfyNode):
         return io.NodeOutput(text)
 
 
+BOOLEAN = "@boolean"                  # Bridge Choice options for a boolean target (a toggle)
+
+
+class NKDBridgeChoice(io.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return io.Schema(
+            node_id="NKDBridgeChoice", display_name="😺NKD Bridge Choice", category=CAT,
+            description="A list or a switch you can drive from the Photoshop panel. Connect it to any "
+                        "dropdown (sampler, scheduler, a switch node's options…) or on/off input: it "
+                        "takes that input's options, and the panel shows them as a list or a checkbox.",
+            inputs=[io.String.Input("name", default="Choice"),
+                    io.String.Input("value", default="", socketless=True,
+                                    tooltip="The chosen option. Use the 'Value' list."),
+                    io.String.Input("options", default="", socketless=True, multiline=True,
+                                    tooltip=f"One option per line, filled in when you connect the output. "
+                                            f"'{BOOLEAN}' for an on/off input.")],
+            outputs=[io.AnyType.Output("value")])
+
+    @classmethod
+    def validate_inputs(cls, name, value, options):
+        return True if value != "" else f"NKD Bridge Choice '{name}': connect it to an input first."
+
+    @classmethod
+    def execute(cls, name, value, options):
+        return io.NodeOutput(value == "true" if options.strip() == BOOLEAN else value)
+
+
 # Destination values (the widget stores one of these; the frontend shows a friendly list):
 #   "panel"        only show it in the panel
 #   "new:layer"    create a layer, then the node gets bound to it
@@ -202,7 +230,9 @@ class NKDBridgeOutput(io.ComfyNode):
                                             "e.g. {Prompt}."),
                     io.Mask.Input("mask", optional=True,
                                   tooltip="Transparency for the written layer (white = keep). Give "
-                                          "it Bridge Input's selection to change only the selection."),
+                                          "it Bridge Input's selection to change only the selection. "
+                                          "An all-black mask (nothing selected) is ignored: the whole "
+                                          "image is written."),
                     io.String.Input("document", default=ACTIVE, socketless=True,
                                     tooltip=f"Which document gets the result: '{ACTIVE}' for the one "
                                             "the pixels came from, or 'Name #id' to send it to another "
@@ -223,8 +253,14 @@ class NKDBridgeOutput(io.ComfyNode):
     def execute(cls, images, destination, name, mask=None, document=ACTIVE, save_after_write=False):
         # ponytail: first image of the batch only; batches → panel gallery when someone needs it
         img = images[:1, ..., :3]
-        a = mask.reshape(-1, *mask.shape[-2:])[:1, ..., None] if mask is not None             else torch.ones((*img.shape[:3], 1))
-        rgba = torch.cat([img, _resize(a.to(img), img.shape[1:3])], dim=-1)
+        # an RGBA image keeps its own transparency; the mask, if any, cuts it further
+        a = images[:1, ..., 3:4] if images.shape[-1] == 4 else torch.ones((*img.shape[:3], 1)).to(img)
+        # an all-black mask means nothing was selected (Bridge Input's selection with no selection):
+        # write the whole image instead of an invisible layer
+        if mask is not None and mask.any():
+            m = mask.reshape(-1, *mask.shape[-2:])[:1, ..., None].to(img)
+            a = a * _resize(m, img.shape[1:3])
+        rgba = torch.cat([img, a], dim=-1)
         doc = _find_doc(document)
         if _doc(document) and not doc:
             raise RuntimeError(f"NKD Bridge Output: the document '{_doc(document)}' isn't open in Photoshop.")
@@ -236,7 +272,7 @@ class NKDBridgeOutput(io.ComfyNode):
                                     "name": layer_name or "NKD {n}",
                                     "x": 0, "y": 0, "doc": doc.get("id"),
                                     "save": bool(save_after_write)})
-        return io.NodeOutput(ui=ui.PreviewImage(img, cls=cls))
+        return io.NodeOutput(ui=ui.PreviewImage(images[:1], cls=cls))
 
 
 def _resize(t, hw):
@@ -248,4 +284,4 @@ def _resize(t, hw):
     return x.movedim(1, -1)
 
 
-NODES = [NKDBridgeInput, NKDBridgeNumber, NKDBridgeText, NKDBridgeOutput]
+NODES = [NKDBridgeInput, NKDBridgeNumber, NKDBridgeText, NKDBridgeChoice, NKDBridgeOutput]

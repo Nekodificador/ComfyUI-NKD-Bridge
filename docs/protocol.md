@@ -11,12 +11,13 @@ Messages are JSON text. The server also sends **binary** frames: those are live 
 Host to server:
 - `{"type": "doc", "doc": {...}}`: the active document. `id`, `name`, `w`, `h` in pixels, and `layers`, a flat list of `{id, name, path, kind}` where `kind` is `layer` or `group` and `path` is `Group/Sub/Name`. Send it on connect and whenever it changes.
 - `{"type": "run", "outputs": [ids] | null}`: ask the runner to queue the workflow, optionally only some Bridge Output nodes.
-- `{"type": "set", "node": id, "widget": name, "value": v}`: change a widget in the runner's graph (`layer` on Layer, `destination` and `name` on Output, `value` on Number, `text` on Text). Bindings are `Path/Name #id`, with a trailing slash on the path for groups.
+- `{"type": "set", "node": id, "widget": name, "value": v}`: change a widget in the runner's graph (`layer` on Layer, `destination` and `name` on Output, `value` on Number and Choice, `text` on Text; a boolean Choice takes `"true"` or `"false"`). Bindings are `Path/Name #id`, with a trailing slash on the path for groups.
+- `{"type": "open", "path": "workflows/Name.json"}`: open one of the manifest's `workflows` in the runner tab.
 - `{"type": "cancel"}`: interrupt the running job.
 
 Server to host:
 - `status`: `{tab, manifest}` on connect and when the runner changes.
-- `manifest`: what the open workflow uses. `sources` (`{id, kind, title, binding, key}`), `params` (`{id, kind, name, value, min, max, step}`) and `outputs` (`{id, title, dest, name}`).
+- `manifest`: what the open workflow uses. `sources` (`{id, kind, title, binding, key}`), `params` (`{id, kind, name, value, min, max, step}`; `kind` is `number`, `text`, `choice` with `options`, or `toggle` with a boolean `value`) and `outputs` (`{id, title, dest, name}`). Also `workflow`, the open workflow's path, and `workflows`, every saved one that has a Bridge Input or Output.
 - `need`: `{keys}`, sources a node asked for that were never uploaded. Upload them.
 - `result`: `{id, w, h, x, y, dest, name, node, doc}`. Fetch the pixels and place them at `x, y` in document pixels, in document `doc`. `dest` is `panel`, `new:layer`, `new:group` or a binding. `name` is the layer name with every variable resolved except `{n}`, which the host fills in. After creating a `new:*` destination, send a `set` of `destination` so the node stays bound to it.
 - `run_status`: `state` is `running`, `progress` (with `value`, `max`), `idle` or `error` (with `message`).

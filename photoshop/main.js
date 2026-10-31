@@ -5,7 +5,7 @@
 const { app, core, action, imaging } = require("photoshop");
 const uxp = require("uxp");
 
-const VERSION = "0.5.0";
+const VERSION = "0.6.0";
 const $ = (id) => document.getElementById(id);
 
 // ── i18n ────────────────────────────────────────────────────────────────────────────────────
@@ -28,7 +28,8 @@ const T = {
     nameLabel: "Name for new layers", insertVar: "Add to the name",
     docClosed: "The document this result belongs to was closed", layerName: "Layer or group name",
     useDoc: "Document", addVar: "Add a variable", channel: "Channel", path: "Path", selLabel: "selection",
-    docMissing: "document not open", inDoc: "in",
+    docMissing: "document not open", inDoc: "in", workflow: "Workflow", wfSearch: "Search workflows…", stale: "Reload the ComfyUI tab (Ctrl+F5): it runs an old version",
+    wfNone: "No workflow matches.", wfEmpty: "No saved workflow has Bridge Input or Output nodes yet.",
   },
   es: {
     off: "Sin conexión, reintentando…", noTab: "Conectado · abre ComfyUI en el navegador",
@@ -48,7 +49,8 @@ const T = {
     nameLabel: "Nombre de las capas nuevas", insertVar: "Añadir al nombre",
     docClosed: "Se cerró el documento al que pertenece este resultado", layerName: "Nombre de capa o grupo",
     useDoc: "Documento", addVar: "Añadir variable", channel: "Canal", path: "Trazado", selLabel: "selección",
-    docMissing: "documento no abierto", inDoc: "en",
+    docMissing: "documento no abierto", inDoc: "en", workflow: "Workflow", wfSearch: "Buscar workflow…", stale: "Recarga la pestaña de ComfyUI (Ctrl+F5): va con una versión antigua",
+    wfNone: "Ningún workflow coincide.", wfEmpty: "Ningún workflow guardado tiene nodos Bridge Input u Output.",
   },
 };
 const L = T[String(uxp.host?.uiLocale || "en").slice(0, 2)] || T.en;
@@ -490,12 +492,21 @@ function toDocDepth(raw, d) {
  *  new:layer / new:group: created now, and the node is re-bound to what got created.
  *  Layers it creates are named from the node's name template; {n} is filled in here. */
 const lastInGroup = {};
+const createdFor = {};       // output node -> {from: its "new:…", to: what we created}, until the tab confirms the re-bind
 const fillN = (tpl, n) => String(tpl || "NKD {n}").replace(/\{\s*n\s*\}/g, String(n)).trim();
+/** The template with {n} one past the highest number its siblings already use, so every new layer
+ *  gets its own number and a deleted one is never repeated. Without {n} the name is used as is. */
+function nextName(siblings, tpl) {
+  const t = String(tpl || "NKD {n}").trim();
+  const re = new RegExp("^" + t.split(/\{\s*n\s*\}/).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("(\\d+)") + "$");
+  let max = 0;
+  for (const l of siblings) { const m = re.exec(l.name); if (m) max = Math.max(max, ...m.slice(1).map(Number)); }
+  return fillN(t, max + 1);
+}
 const groupName = (tpl) => String(tpl || "").replace(/\{\s*n\s*\}/g, "").replace(/[\s·_-]+$/, "").trim() || "NKD";
 
 async function newLayerIn(d, group, tpl) {
-  const kids = flatLayers(group.layers || []).filter((l) => l.kind !== "group");
-  const layer = await d.createPixelLayer({ name: fillN(tpl, kids.length + 1) });
+  const layer = await d.createPixelLayer({ name: nextName(listOf(group.layers), tpl) });
   await layer.move(group, "placeInside");
   lastInGroup[group.id] = layer.id;
   return layer;
@@ -503,12 +514,19 @@ async function newLayerIn(d, group, tpl) {
 
 async function targetLayer(d, msg, forceNew) {
   const all = flatLayers(d.layers);
-  const dest = msg.dest || "new:layer";
-  if (forceNew) return d.createPixelLayer({ name: fillN(msg.name, 1) });
-  const rebind = (l, group) => send({ type: "set", node: msg.node, widget: "destination",
-    value: `${l.name}${group ? "/" : ""} #${l.id}` });
+  let dest = msg.dest || "new:layer";
+  if (forceNew) return d.createPixelLayer({ name: nextName(listOf(d.layers), msg.name) });
+  // Live can queue the next run before the tab applies our re-bind: that run still says "new:…",
+  // so it goes to what we just created instead of creating another one
+  const made = createdFor[msg.node];
+  if (made?.from === dest && findBinding(all, made.to)) dest = made.to;
+  const rebind = (l, group) => {
+    const to = `${l.name}${group ? "/" : ""} #${l.id}`;
+    createdFor[msg.node] = { from: dest, to };
+    send({ type: "set", node: msg.node, widget: "destination", value: to });
+  };
   if (dest === "new:layer") {
-    const layer = await d.createPixelLayer({ name: fillN(msg.name, 1) });
+    const layer = await d.createPixelLayer({ name: nextName(listOf(d.layers), msg.name) });
     rebind(layer, false);
     return layer;
   }
@@ -534,7 +552,15 @@ async function targetLayer(d, msg, forceNew) {
   return layer;
 }
 
-async function writeResult(msg, forceNew) {
+/** One write at a time: two results landing together must not both create the "new" layer. */
+let writing = Promise.resolve();
+function writeResult(msg, forceNew) {
+  const p = writing.then(() => writeResultRaw(msg, forceNew));
+  writing = p.catch(() => {});
+  return p;
+}
+
+async function writeResultRaw(msg, forceNew) {
   const raw = new Uint8Array(await (await fetch(`${S.url}/nkd_bridge/result/${msg.id}`)).arrayBuffer());
   S.ownWriteUntil = Date.now() + 1500;
   const d = forceNew ? app.activeDocument : resultDoc(msg);
@@ -597,6 +623,8 @@ function connect() {
 function setManifest(m) {
   const before = JSON.stringify(S.manifest?.sources);
   S.manifest = m || null;
+  renderStatus();
+  for (const o of S.manifest?.outputs || []) if (createdFor[o.id]?.to === o.dest) delete createdFor[o.id];   // re-bind landed
   renderLists();
   if (JSON.stringify(S.manifest?.sources) !== before) syncSources();
 }
@@ -649,9 +677,10 @@ function el(tag, props = {}, ...kids) {
 }
 
 function renderStatus() {
-  const st = !S.connected ? "off" : S.tab ? "ok" : "warn";
+  const stale = S.connected && S.tab && S.manifest?.stale;
+  const st = !S.connected ? "off" : S.tab && !stale ? "ok" : "warn";
   $("status").className = "status " + st;
-  $("statusText").textContent = L[{ off: "off", warn: "noTab", ok: "ok" }[st]];
+  $("statusText").textContent = stale ? L.stale : L[{ off: "off", warn: "noTab", ok: "ok" }[st]];
   $("status").title = S.url;
   renderRun();
 }
@@ -697,7 +726,7 @@ function outWhere(o) {
   return o.doc ? `${where} · ${L.inDoc} ${info.name}` : where;
 }
 function whereIn(o, dest, info) {
-  if (dest === "new:layer") return `${L.willCreate} “${fillN(o.name, 1)}”`;
+  if (dest === "new:layer") return `${L.willCreate} “${nextName(info ? info.layers.filter((l) => !l.path.includes("/")) : [], o.name)}”`;
   if (dest === "new:group") return `${L.willCreateGroup} “${groupName(o.name)}”`;
   const hit = resolveBinding(dest, info);
   if (!hit) return `${L.missing}: ${bindingName(dest)} · ${L.recreate}`;
@@ -720,7 +749,93 @@ function renderLists() {
   try { renderListsRaw(); } catch (e) { report("panel", e); }   // a UI glitch must not stop syncing
 }
 
+/** The saved workflows that have Bridge nodes, in their folders, with a fuzzy search on top. Picking
+ *  one opens it in the ComfyUI tab. A homemade list, not sp-picker: that one can't filter or nest. */
+const wfLabel = (p) => String(p).replace(/^workflows\//, "").replace(/\.json$/i, "");
+const wfFolders = store.get("wfFolders", {});        // folder path -> unfolded
+const WF = { open: false, query: "", key: "", head: null, browser: null, list: null };
+
+/** Every word of the query must appear in order (letters may be apart). Higher = better: letters in a
+ *  row and at word starts count more, shorter names win ties. -1 = no match. */
+function fuzzy(query, text) {
+  const s = text.toLowerCase();
+  let total = 0;
+  for (const word of query.toLowerCase().split(/\s+/).filter(Boolean)) {
+    let i = 0, last = -2;
+    for (const ch of word) {
+      const j = s.indexOf(ch, i);
+      if (j < 0) return -1;
+      total += j === last + 1 ? 3 : j === 0 || /[\s/_\-.]/.test(s[j - 1]) ? 2 : 1;
+      last = j; i = j + 1;
+    }
+  }
+  return total - s.length * 0.01;
+}
+
+function buildWorkflowBox() {
+  WF.head = el("div", { class: "wfHead", onclick: () => { WF.open = !WF.open; drawWorkflows(); } });
+  const search = el("sp-textfield", { size: "s", placeholder: L.wfSearch, class: "wfSearch",
+    oninput: (e) => { WF.query = String(e.target.value || ""); drawWorkflows(); } });
+  WF.list = el("div", { class: "wfList" });
+  WF.browser = el("div", { class: "wfBrowser" }, search, WF.list);
+  setKids($("wfBox"), [el("sp-detail", {}, L.workflow), WF.head, WF.browser]);
+}
+
+function renderWorkflows() {
+  show("wfBox", S.tab && (S.manifest?.workflows?.length > 0 || !!S.manifest?.workflow));
+  drawWorkflows();
+}
+
+function drawWorkflows() {
+  if (!WF.head) buildWorkflowBox();
+  const list = S.manifest?.workflows || [], cur = S.manifest?.workflow || "";
+  WF.head.textContent = `${WF.open ? "▾" : "▸"} ${cur ? wfLabel(cur).split("/").pop() : "—"}`;
+  WF.browser.style.display = WF.open ? "" : "none";
+  const key = JSON.stringify([list, cur, WF.query, wfFolders, WF.open]);
+  if (key === WF.key) return;                         // typing keeps the search box as it is
+  WF.key = key;
+  const item = (p, depth, text) => {
+    const row = el("div", { class: "wfItem" + (p === cur ? " on" : ""), onclick: () => {
+      if (p !== cur) send({ type: "open", path: p });
+      WF.open = false; drawWorkflows();
+    } }, text);
+    row.style.paddingLeft = `${4 + depth * 12}px`;
+    return row;
+  };
+  const rows = [];
+  if (WF.query.trim()) {                              // search: flat, best first, folder shown dimmed
+    list.map((p) => ({ p, s: fuzzy(WF.query, wfLabel(p)) })).filter((x) => x.s >= 0)
+      .sort((a, b) => b.s - a.s).forEach(({ p }) => {
+        const parts = wfLabel(p).split("/"), name = parts.pop();
+        rows.push(item(p, 0, parts.length ? `${name}   ${parts.join("/")}/` : name));
+      });
+  } else {                                            // tree: folders first, each one folds
+    const tree = { dirs: {}, files: [] };
+    for (const p of list) {
+      const parts = wfLabel(p).split("/"), name = parts.pop();
+      let node = tree, at = "";
+      for (const d of parts) { at += d + "/"; node = node.dirs[d] ||= { dirs: {}, files: [], at }; }
+      node.files.push({ p, name });
+    }
+    const walk = (node, depth) => {
+      for (const [d, sub] of Object.entries(node.dirs).sort(([a], [b]) => a.localeCompare(b))) {
+        const row = el("div", { class: "wfFolder", onclick: () => {
+          wfFolders[sub.at] = !wfFolders[sub.at]; store.set("wfFolders", wfFolders); drawWorkflows();
+        } }, `${wfFolders[sub.at] ? "▾" : "▸"} ${d}/`);
+        row.style.paddingLeft = `${4 + depth * 12}px`;
+        rows.push(row);
+        if (wfFolders[sub.at]) walk(sub, depth + 1);
+      }
+      for (const f of node.files.sort((a, b) => a.name.localeCompare(b.name))) rows.push(item(f.p, depth, f.name));
+    };
+    walk(tree, 0);
+  }
+  if (!rows.length) rows.push(el("div", { class: "sub" }, list.length ? L.wfNone : L.wfEmpty));
+  setKids(WF.list, rows);
+}
+
 function renderListsRaw() {
+  renderWorkflows();
   const m = S.manifest;
   const has = m && (m.sources?.length || m.params?.length || m.outputs?.length);
   for (const id of ["empty", "emptyIo"]) {
@@ -731,7 +846,9 @@ function renderListsRaw() {
   if (!has) { listsKey = ""; outputsKey = ""; $("tabIo").textContent = L.tabIo; return; }
 
   // params: rebuild only when the set of controls changes, so dragging a slider is never interrupted
-  const key = JSON.stringify(m.params.map((p) => [p.id, p.kind, p.name, p.min, p.max, p.step]));
+  // lists and checkboxes are rebuilt when their value changes too (they only change on a pick)
+  const key = JSON.stringify(m.params.map((p) => [p.id, p.kind, p.name, p.min, p.max, p.step, p.options,
+    p.kind === "choice" || p.kind === "toggle" ? p.value : 0]));
   if (key !== listsKey) {
     listsKey = key;
     setKids($("params"), m.params.map((p) => {
@@ -739,6 +856,17 @@ function renderListsRaw() {
         const ta = el("sp-textarea", { value: p.value ?? "", "data-id": p.id,
           oninput: (e) => sendParam(p.id, "text", e.target.value) });
         return el("div", { class: "param" }, el("sp-detail", {}, p.name), ta);
+      }
+      if (p.kind === "toggle") {
+        return el("div", { class: "param" }, el("sp-checkbox", { checked: !!p.value,
+          onchange: (e) => sendParam(p.id, "value", e.target.checked ? "true" : "false") }, p.name));
+      }
+      if (p.kind === "choice") {
+        const opts = p.options || [];
+        const menu = el("sp-menu", { slot: "options" }, ...opts.map((o) =>
+          el("sp-menu-item", { value: o, selected: o === p.value }, o)));
+        return el("div", { class: "param" }, el("sp-detail", {}, p.name), el("sp-picker", { size: "s", class: "selPick",
+          onchange: (e) => sendParam(p.id, "value", e.target.value) }, menu));
       }
       const val = el("span", { class: "val" }, fmt(p.value, p.step));
       const sl = el("sp-slider", { min: p.min, max: p.max, step: p.step || 0.01, value: p.value, "data-id": p.id,
@@ -798,7 +926,7 @@ function renderListsRaw() {
       const where = el("div", { class: "sub" }, outWhere(o));
       outWhereEl[o.id] = where;
       // Layer · Group · Panel: picking another kind starts a new one; "Use active" binds an existing one
-      const setDest = (v) => send({ type: "set", node: o.id, widget: "destination", value: v });
+      const setDest = (v) => { delete createdFor[o.id]; send({ type: "set", node: o.id, widget: "destination", value: v }); };
       const segs = [["layer", L.tLayer, "new:layer"], ["group", L.tGroup, "new:group"], ["panel", L.tPanel, "panel"]]
         .map(([k, label, v]) => el("div", { class: "seg", "data-kind": k,
           onclick: () => {           // o is from the last rebuild: read the live destination

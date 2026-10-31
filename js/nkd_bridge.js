@@ -5,9 +5,9 @@
 import { app } from "../../scripts/app.js";
 import { api } from "../../scripts/api.js";
 
-const REV = "0.4.0";
+const REV = "0.6.2";   // the server compares it with this file: a tab not reloaded since is stale
 const SOURCES = { NKDBridgeInput: "layer" };
-const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text" };
+const PARAMS = { NKDBridgeNumber: "number", NKDBridgeText: "text", NKDBridgeChoice: "choice" };
 const OUTPUT = "NKDBridgeOutput";
 const NONE = "(pick a layer)";
 const DOCUMENT = "@document";          // Bridge Input reading the whole document
@@ -16,6 +16,7 @@ const SELECTION = "@selection";        // selection_source: the live selection
 const SEL_LABEL = "Current selection";
 const ACTIVE = "@active";              // document: whichever one is active in Photoshop
 const ACTIVE_LABEL = "Active document";
+const BOOLEAN = "@boolean";            // Bridge Choice options for an on/off input
 
 let doc = null;        // active document info from the host; doc.docs = every open document
 
@@ -53,6 +54,7 @@ const post = (path, body, raw) =>
     .catch(() => null);
 
 const tab = (event, data) => post("/nkd_bridge/tab", { event, data, client_id: api.clientId });
+const status = (state, extra) => tab("status", { state, ...extra });   // execution status → host panel
 const widget = (node, name) => node.widgets?.find((w) => w.name === name);
 const active = (n) => !n.mode;  // 0 = always; muted (2) and bypassed (4) don't count
 
@@ -78,8 +80,78 @@ function bridgeNodes() {
     (n.type in SOURCES || n.type in PARAMS || n.type === OUTPUT));
 }
 
+const wfStore = () => app.extensionManager?.workflow;
+/** Saved workflows the panel can switch to (paths like "workflows/Folder/Live.json"): only those with a
+ *  Bridge Input or Output, since the rest can't talk to Photoshop. The open one counts as it is now. */
+function workflowList() {
+  const st = wfStore(), cur = st?.activeWorkflow?.path;
+  const live = (n) => n.type in SOURCES || n.type === OUTPUT;
+  return (st?.workflows ?? []).filter((w) => w.isPersisted && !w.isTemporary && w.path?.startsWith("workflows/"))
+    .filter((w) => (w.path === cur ? (app.graph?._nodes ?? []).some(live) : hasBridge(w)))
+    .map((w) => w.path).sort((a, b) => a.localeCompare(b));
+}
+
+// path -> {mod, has}. Each saved file is read once (again only when it's modified), one at a time.
+const bridgeScan = {};
+let scanQueue = Promise.resolve();
+const BRIDGE_TYPE = /"type"\s*:\s*"NKDBridge(Input|Output)"/;   // subgraph definitions included
+function hasBridge(w) {
+  const mod = w.lastModified ?? w.size ?? 0, c = bridgeScan[w.path];
+  if (c?.mod === mod) return c.has;
+  if (c?.pending === mod) return c.has ?? null;
+  bridgeScan[w.path] = { pending: mod, has: c?.has ?? null };
+  scanQueue = scanQueue.then(async () => {
+    let has = null;
+    try {
+      const r = await api.fetchApi("/userdata/" + encodeURIComponent(w.path));
+      if (r.ok) has = BRIDGE_TYPE.test(await r.text());
+    } catch {}
+    bridgeScan[w.path] = { mod, has };
+    publish();
+  });
+  return c?.has ?? null;
+}
+
+async function openWorkflow({ path }) {
+  const st = wfStore(), wf = path && st?.getWorkflowByPath?.(path);
+  if (!wf) { status("error", { message: `ComfyUI: workflow not found: ${path}` }); return; }
+  if (st.isActive?.(wf)) return;
+  const prev = st.activeWorkflow, wasOpen = st.isOpen?.(wf);
+  if (!wf.isLoaded) await wf.load();
+  // what the tab bar does: switches to its tab if it's already open, else opens one
+  await app.loadGraphData(JSON.parse(JSON.stringify(wf.activeState)), true, true, wf);   // a Vue proxy: structuredClone throws
+  // a workflow that wasn't open takes the place of the tab you were on, unless that one has unsaved changes
+  if (!wasOpen && prev && prev !== wf && !prev.isModified && st.isOpen?.(prev)) await st.closeWorkflow(prev);
+  publish(true);
+}
+
+/** Bridge Choice: one option per line, or "@boolean" for an on/off input. */
+const choiceOptions = (n) => String(widget(n, "options")?.value ?? "").split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+
+/** Connecting Bridge Choice to an input takes that input's options (and its value, if ours isn't one). */
+function adoptTarget(node, link) {
+  const target = link && app.graph?.getNodeById(link.target_id);
+  const inp = target?.inputs?.[link.target_slot];
+  if (!inp) return;
+  const tw = widget(target, inp.widget?.name ?? inp.name);
+  let opts, cur = tw?.value;
+  if (inp.type === "BOOLEAN" || tw?.type === "toggle" || tw?.type === "boolean") { opts = [BOOLEAN]; cur = cur ? "true" : "false"; }
+  else {
+    const v = tw?.options?.values;
+    opts = (typeof v === "function" ? v() : v) ?? [];
+    if (!opts.length) return;              // not a list: leave it as it was
+  }
+  widget(node, "options").value = opts.join("\n");
+  const val = widget(node, "value"), allowed = opts[0] === BOOLEAN ? ["true", "false"] : opts.map(String);
+  if (!allowed.includes(String(val.value))) { val.value = String(cur ?? allowed[0]); val.callback?.(val.value); }
+  for (const refresh of node.__nkdPickers || []) refresh();
+  node.setDirtyCanvas(true, true);
+  publish();
+}
+
 function manifest() {
-  const m = { sources: [], params: [], outputs: [], workflow: app.extensionManager?.workflow?.activeWorkflow?.filename ?? "" };
+  const wf = wfStore()?.activeWorkflow;
+  const m = { rev: REV, sources: [], params: [], outputs: [], workflow: wf?.path ?? wf?.filename ?? "", workflows: workflowList() };
   for (const n of bridgeNodes()) {
     const v = (name) => widget(n, name)?.value;
     if (n.type in SOURCES) {
@@ -101,7 +173,11 @@ function manifest() {
     } else if (n.type in PARAMS) {
       const p = { id: n.id, kind: PARAMS[n.type], name: v("name") || n.title };
       if (p.kind === "number") Object.assign(p, { value: v("value"), min: v("min"), max: v("max"), step: v("step") });
-      else p.value = v("text");
+      else if (p.kind === "choice") {
+        const opts = choiceOptions(n);
+        if (opts[0] === BOOLEAN) Object.assign(p, { kind: "toggle", value: v("value") === "true" });
+        else Object.assign(p, { value: v("value"), options: opts });
+      } else p.value = v("text");
       m.params.push(p);
     } else {
       m.outputs.push({ id: n.id, title: n.title, dest: v("destination") || "new:layer", name: v("name"),
@@ -212,6 +288,18 @@ const SETUP = {
     addPicker(n, "selection_source", "Selection source", maskLabels, maskToLabel, labelToMask);
     addDocPicker(n);
   },
+  NKDBridgeChoice: (n) => {
+    const opts = widget(n, "options");
+    if (opts) { hideWidget(opts); (n.__nkdPickers ||= []).push(() => hideWidget(opts)); }
+    addPicker(n, "value", "Value", (node) => { const o = choiceOptions(node); return o[0] === BOOLEAN ? ["true", "false"] : o; },
+      (_, v) => String(v ?? ""), (_, l) => l);
+    const changed = n.onConnectionsChange;
+    n.onConnectionsChange = function (type, slot, connected, link) {
+      const r = changed?.apply(this, arguments);
+      if (type === 2 && connected) adoptTarget(this, link);       // 2 = output side
+      return r;
+    };
+  },
   NKDBridgeOutput: (n) => {
     addPicker(n, "destination", "Destination", destLabels, (_, v) => destToLabel(v), (_, l) => labelToDest(l));
     addDocPicker(n);
@@ -251,6 +339,7 @@ app.registerExtension({
     console.log(`[NKD Bridge] rev ${REV}`);
     api.addEventListener("nkd_bridge.doc", (e) => { doc = e.detail; app.graph?.setDirtyCanvas(true, true); });
     api.addEventListener("nkd_bridge.set", (e) => setWidget(e.detail));
+    api.addEventListener("nkd_bridge.open", (e) => openWorkflow(e.detail).catch((x) => status("error", { message: `ComfyUI: ${x?.message || x}` })));
     api.addEventListener("nkd_bridge.run", async (e) => {
       const outputs = (e.detail?.outputs ?? []).map(String);
       // a workflow ComfyUI refuses never starts, so no execution event would tell the host: say it here
@@ -274,7 +363,6 @@ app.registerExtension({
 
     // execution status → host panel (these events only reach the tab that queued the prompt)
     let lastProgress = 0;
-    const status = (state, extra) => tab("status", { state, ...extra });
     api.addEventListener("execution_start", (e) => status("running", { prompt: e.detail?.prompt_id }));
     api.addEventListener("progress", (e) => {
       const now = performance.now();

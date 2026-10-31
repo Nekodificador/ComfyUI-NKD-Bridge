@@ -14,6 +14,8 @@ import asyncio
 import io as _io
 import itertools
 import json
+import os
+import re
 import logging
 import threading
 import time
@@ -165,6 +167,19 @@ async def get_result(request):
 
 # ── browser tab ↔ server ───────────────────────────────────────────────────────────────────
 
+_JS = os.path.join(os.path.dirname(os.path.realpath(__file__)), "js", "nkd_bridge.js")
+
+
+def _tab_rev():
+    """REV of the tab script on disk now (read every time, so editing it needs no restart)."""
+    try:
+        with open(_JS, encoding="utf-8") as f:
+            m = re.search(r'const REV = "([^"]+)"', f.read())
+        return m and m.group(1)
+    except OSError:
+        return None
+
+
 @routes.post("/nkd_bridge/tab")
 async def from_tab(request):
     msg = await request.json()
@@ -176,6 +191,8 @@ async def from_tab(request):
         await _broadcast_hosts(host_status())
     elif ev == "manifest":
         if msg.get("client_id") == S.runner:
+            # a tab opened before the node pack changed runs old code: the panel says to reload it
+            data["stale"] = (data or {}).get("rev") != _tab_rev()
             S.manifest = data
             await _broadcast_hosts({"type": "manifest", "manifest": data})
     elif ev == "status":                   # execution progress forwarded to the host panel
@@ -226,7 +243,7 @@ async def _on_host_msg(ws, msg):
     elif t == "doc":
         S.doc = msg.get("doc")
         send_tab("doc", S.doc, everyone=True)   # every tab gets the layer list for its pickers
-    elif t in ("run", "set"):
+    elif t in ("run", "set", "open"):
         if S.runner is None:
             await ws.send_json({"type": "error", "code": "no_tab",
                                 "message": "Open ComfyUI in your browser to run workflows."})

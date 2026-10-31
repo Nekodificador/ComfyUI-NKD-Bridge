@@ -1,6 +1,6 @@
 # Bridge nodes
 
-The nodes come in two halves. Bridge Input brings pixels in from Photoshop, and Bridge Output sends the result back. Number and Text turn into controls in the Photoshop panel. Put each one wherever your workflow needs that piece: there's no single "Photoshop node" that everything has to hang from.
+The nodes come in two halves. Bridge Input brings pixels in from Photoshop, and Bridge Output sends the result back. Number, Text and Choice turn into controls in the Photoshop panel. Put each one wherever your workflow needs that piece: there's no single "Photoshop node" that everything has to hang from.
 
 Photoshop only sends what the open workflow uses, and only when it changes. An Input node whose layer you didn't touch keeps its previous output, so ComfyUI skips everything downstream of it.
 
@@ -57,11 +57,23 @@ Text:
 - `name`: the label in the panel.
 - `text`: the text. Outputs it as a string.
 
+## Bridge Choice
+
+A dropdown or an on/off switch in the Photoshop panel. Connect its output to any list input (a sampler's `sampler_name` or `scheduler`, a switch node's options…) or to a boolean input: it takes that input's options and current value, and the panel shows them as a list, or as a checkbox for a boolean.
+
+- `name`: the label in the panel.
+- **Value**: the option chosen. Picking another one in the panel writes it here, like the Number slider.
+- Its options are saved with the node, so they stay if you disconnect it. Reconnect it to another input to take that input's options.
+
+## Choosing the workflow from the panel
+
+The **Workflow** list at the top of the panel shows the workflows saved in ComfyUI that have a Bridge Input or Bridge Output, in the folders you keep them in (click a folder to open it). Type in the search box to find one by name, even with letters missing, like `kl tool` for `Klein tools`. Picking one opens it in your ComfyUI tab, and the panel switches to its controls, inputs and outputs. If it's already open in a workflow tab, ComfyUI goes to that tab. If not, it replaces the workflow you were on, unless that one has unsaved changes: then it opens in a new tab, so nothing is lost.
+
 ## Bridge Output
 
 Sends the image back to Photoshop. It runs on every execution, even when nothing upstream changed, so pressing Generate always delivers. Whatever the destination, the result also shows up in the panel.
 
-- `images`: what to send. Only the first image of a batch is used.
+- `images`: what to send. Only the first image of a batch is used. An image with transparency (RGBA, like a cutout) keeps it in the layer.
 - **Document**: where the result goes. **Active document** (the default) sends it back to the document its pixels came from. Pick another open document to paint in one and get the result in the other, for example a smart object's contents. The result is scaled to fit that document's canvas.
 - `save_after_write`: saves that document after writing. Turn it on when it's a smart object's contents (the `.psb` that opens when you edit it), so the smart object in the parent document updates by itself.
 - **Destination**: one list that decides where the result goes. What you pick sets the behaviour:
@@ -71,12 +83,12 @@ Sends the image back to Photoshop. It runs on every execution, even when nothing
   - A layer (`Background`, `Character/Hair`): replaced on every run.
   - A group, shown with a trailing slash (`Characters/`): a new layer inside on every run, so you keep the variations side by side. While **Live** is on, the latest one is replaced instead, so painting doesn't pile up layers.
 - `name`: how the layers it creates are called. **Insert variable** adds one at the end:
-  - `{n}`: the run number inside the group (1, 2, 3…).
+  - `{n}`: one more than the highest number already used by that name next to it (in the group, or at the top of the document), so every new layer gets its own number.
   - `{seed}`: the sampler's seed.
   - `{date}`, `{time}`: when it ran.
   - `{doc}`: the document's name.
   - Any Bridge Text or Bridge Number by its name, such as `{Prompt}` or `{Denoise}`. Long values are cut to 40 characters.
-- `mask` (optional): transparency for the written layer. Give it Bridge Input's `selection` and only the selected area changes.
+- `mask` (optional): transparency for the written layer. Give it Bridge Input's `selection` and only the selected area changes. A mask that's all black, as `selection` is with nothing selected, is ignored and the whole image is written (with an RGBA image, the mask cuts its own transparency further), so an inpaint workflow still works when you don't need a selection.
 
 The destination is bound by id, like Bridge Input, so renaming the layer or group doesn't break it. If it gets deleted, the next run creates it again. With **Active document**, the result goes back to the document its pixels came from, even if you've switched to another one while it was generating. If the target document has been closed, nothing is written and the panel tells you.
 

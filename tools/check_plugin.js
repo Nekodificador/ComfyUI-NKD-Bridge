@@ -55,13 +55,13 @@ function el() {
     appendChild(c) { this.children.push(c); return c; },
     removeChild(c) { this.children = this.children.filter((x) => x !== c); },
     setAttribute(k, v) { this.attrs[k] = v; }, getAttribute(k) { return this.attrs[k]; }, removeAttribute(k) { delete this.attrs[k]; },
-    hasAttribute(k) { return k in this.attrs; }, addEventListener() {},
+    hasAttribute(k) { return k in this.attrs; }, addEventListener(k, f) { (this.on ||= {})[k] = f; },
     querySelector() { return null; }, querySelectorAll() { return []; } };
   Object.defineProperty(e, "innerHTML", { set() { e.children = []; } });
   return e;
 }
 const els = {};
-const document = { getElementById: (id) => (els[id] ||= el()), createElement: el,
+const document = { getElementById: (id) => (els[id] ||= el()), createElement: (tag) => Object.assign(el(), { tag }),
   createTextNode: (t) => ({ t }), activeElement: null };
 
 const puts = [];
@@ -84,6 +84,7 @@ const ctx = vm.createContext({
 });
 vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "photoshop", "main.js"), "utf8"), ctx);
 
+let S_last;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
 
@@ -283,6 +284,44 @@ const fail = (m) => { console.error("FAIL:", m); process.exit(1); };
   if (writes.slice(nW).pop()?.doc !== 5 || big.saved !== 1) fail(`output to another document: wrote to ${writes.slice(nW).pop()?.doc}, saved ${big.saved}`);
   photoshop.app.documents = [doc];
   console.log("OK  other documents: all published, bound Input reads its own (id, then name), closed one missing, Output writes there and saves");
+
+  // 16. {n} counts past what the siblings already use; Live results racing the re-bind reuse the new layer
+  const nTop = () => doc.layers.filter((l) => /^Toma \d+$/.test(l.name)).map((l) => l.name);
+  doc.layers.push({ id: 90, name: "Toma 4", kind: "pixel", bounds: {} });
+  for (const id of ["n1", "n2"]) ws.onmessage({ data: JSON.stringify({ type: "result", id, w: 4, h: 4, x: 0, y: 0, dest: "new:layer", name: "Toma {n}", node: "77", doc: 1 }) });
+  await sleep(300);
+  if (String(nTop()) !== "Toma 4,Toma 5") fail(`two racing "new:layer" results should make one layer "Toma 5", got ${nTop()}`);
+  S_last = vm.runInContext("S.lastResult", ctx);
+  await vm.runInContext("writeResult", ctx)(S_last, true);
+  if (String(nTop()) !== "Toma 4,Toma 5,Toma 6") fail(`Add as layer should number on, got ${nTop()}`);
+  console.log("OK  {n} numbers on from the siblings (Toma 5, Toma 6); a Live result racing the re-bind reuses the new layer");
+
+  // 15. workflow picker opens another workflow; Bridge Choice shows as a list, a boolean one as a checkbox
+  const find = (e, tag) => e?.tag === tag ? [e] : (e?.children || []).flatMap((c) => find(c, tag));
+  const byClass = (e, c) => (e?.className || "").split(" ").includes(c) ? [e] : (e?.children || []).flatMap((x) => byClass(x, c));
+  const text = (e) => e.children.map((c) => c.t ?? "").join("");
+  ws.onmessage({ data: JSON.stringify({ type: "manifest", manifest: { sources: [], outputs: [],
+    workflows: ["workflows/Live SD.json", "workflows/sub/Inpaint.json", "workflows/sub/deep/Klein tools.json"], workflow: "workflows/Live SD.json",
+    params: [{ id: 20, kind: "choice", name: "Sampler", value: "euler", options: ["euler", "dpmpp_2m"] },
+      { id: 21, kind: "toggle", name: "Upscale", value: false }] } }) });
+  await sleep(50);
+  const [head] = byClass(els.wfBox, "wfHead");
+  head.on.click();
+  const shown = () => [...byClass(els.wfBox, "wfFolder"), ...byClass(els.wfBox, "wfItem")].map(text);
+  if (String(shown()) !== "▸ sub/,Live SD") fail(`folders should start folded: ${shown()}`);
+  byClass(els.wfBox, "wfFolder")[0].on.click();
+  if (String(shown()) !== "▾ sub/,▸ deep/,Inpaint,Live SD") fail(`unfolded sub: ${shown()}`);
+  find(els.wfBox, "sp-textfield")[0].on.input({ target: { value: "kl tool" } });
+  if (String(byClass(els.wfBox, "wfItem").map(text)) !== "Klein tools   sub/deep/") fail(`fuzzy search: ${byClass(els.wfBox, "wfItem").map(text)}`);
+  byClass(els.wfBox, "wfItem")[0].on.click();
+  if (ws.sent.pop()?.path !== "workflows/sub/deep/Klein tools.json") fail("picking a workflow did not ask the tab to open it");
+  const [choice] = find(els.params, "sp-picker"), [toggle] = find(els.params, "sp-checkbox");
+  if (!choice || !toggle || find(choice, "sp-menu-item").length !== 2) fail("choice/toggle params not rendered");
+  choice.on.change({ target: { value: "dpmpp_2m" } }); await sleep(200);
+  toggle.on.change({ target: { checked: true } }); await sleep(200);
+  const sets = ws.sent.filter((m) => m.type === "set" && (m.node === 20 || m.node === 21)).map((m) => `${m.node}=${m.value}`);
+  if (String(sets) !== "20=dpmpp_2m,21=true") fail(`choice/toggle sent ${sets}`);
+  console.log("OK  workflow picker opens the chosen workflow; Choice as a list, boolean Choice as a checkbox");
 
   const errors = ws.sent.filter((m) => m.type === "log" && !/connected|cerr/.test(m.message));
   if (errors.length) fail(`plugin reported errors: ${JSON.stringify(errors)}`);
