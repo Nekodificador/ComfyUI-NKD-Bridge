@@ -18,12 +18,12 @@ All of them live under `😺NKD Nodes/Bridge`.
 
 | Node | What it does |
 |---|---|
-| [Bridge Input](docs/nodes.md#bridge-input) | The whole document, or one layer or group bound by id, from the active document or any open one, plus the current selection, or a saved channel or path, as a mask for [inpainting](docs/nodes.md#inpainting-a-selection) |
-| [Bridge Number](docs/nodes.md#bridge-number-and-bridge-text) | A slider in the Photoshop panel |
-| [Bridge Text](docs/nodes.md#bridge-number-and-bridge-text) | A text box in the Photoshop panel |
-| [Bridge Seed](docs/nodes.md#bridge-seed) | A seed in the Photoshop panel: type one, roll one, or fixed / random / +1 / −1 after each run |
-| [Bridge Choice](docs/nodes.md#bridge-choice) | Any dropdown (sampler, scheduler, a switch's options) or on/off input as a list or checkbox in the panel |
-| [Bridge Output](docs/nodes.md#bridge-output) | Sends the image back to a named layer, in the same document or [another one](docs/nodes.md#painting-in-one-document-results-in-another) such as a smart object, or to the panel |
+| [Bridge Input](docs/bridge-input.md) | The whole document, or one layer or group bound by id, from the active document or any open one, plus the current selection, or a saved channel or path, as a mask for [inpainting](docs/bridge-input.md#inpainting-a-selection) |
+| [Bridge Number](docs/bridge-number-text.md) | A slider in the Photoshop panel |
+| [Bridge Text](docs/bridge-number-text.md) | A text box in the Photoshop panel |
+| [Bridge Seed](docs/bridge-seed.md) | A seed in the Photoshop panel: type one, roll one, or fixed / random / +1 / −1 after each run |
+| [Bridge Choice](docs/bridge-choice.md) | Any dropdown (sampler, scheduler, a switch's options) or on/off input as a list or checkbox in the panel |
+| [Bridge Output](docs/bridge-output.md) | Sends the image back to a named layer, in the same document or [another one](docs/bridge-output.md#painting-in-one-document-results-in-another) such as a smart object, or to the panel |
 
 More: [Live mode and speed](docs/live.md) · [Protocol, for adding other apps](docs/protocol.md)
 
